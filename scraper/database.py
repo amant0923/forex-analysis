@@ -68,5 +68,51 @@ class Database:
              json.dumps(key_drivers), json.dumps(supporting_articles), generated_at),
         )
 
+    def update_article_summary(self, article_id: int, summary: str):
+        self.execute(
+            "UPDATE articles SET summary = %s WHERE id = %s",
+            (summary, article_id),
+        )
+
+    def insert_article_analysis(
+        self,
+        article_id: int,
+        instrument: str,
+        event: str,
+        mechanism: str,
+        impact_direction: str,
+        impact_timeframes: list[str],
+        confidence: str,
+        commentary: str,
+    ):
+        self.execute(
+            """INSERT INTO article_analyses
+               (article_id, instrument, event, mechanism, impact_direction, impact_timeframes, confidence, commentary)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+               ON CONFLICT (article_id, instrument) DO UPDATE SET
+                 event = EXCLUDED.event,
+                 mechanism = EXCLUDED.mechanism,
+                 impact_direction = EXCLUDED.impact_direction,
+                 impact_timeframes = EXCLUDED.impact_timeframes,
+                 confidence = EXCLUDED.confidence,
+                 commentary = EXCLUDED.commentary,
+                 generated_at = NOW()""",
+            (article_id, instrument, event, mechanism, impact_direction,
+             json.dumps(impact_timeframes), confidence, commentary),
+        )
+
+    def get_unanalyzed_articles(self, days: int = 7) -> list[dict]:
+        """Get articles from last N days that don't have a summary yet."""
+        cur = self.execute(
+            """SELECT a.id, a.title, a.content, a.source, a.published_at, a.url
+               FROM articles a
+               WHERE a.summary IS NULL
+                 AND a.published_at >= NOW() - INTERVAL '%s days'
+               ORDER BY a.published_at DESC
+               LIMIT 100""",
+            (days,),
+        )
+        return [dict(row) for row in cur.fetchall()]
+
     def close(self):
         self.conn.close()
