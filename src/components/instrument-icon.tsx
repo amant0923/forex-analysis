@@ -16,9 +16,9 @@ const instrumentConfig: Record<
   EURUSD: { type: "flags", flags: ["eu", "us"] },
   GBPUSD: { type: "flags", flags: ["gb", "us"] },
   GER40: { type: "flags", flags: ["de"] },
-  US30: { type: "icon", icon: BarChart3, bgColor: "bg-gray-100", textColor: "text-gray-600" },
-  NAS100: { type: "icon", icon: Cpu, bgColor: "bg-gray-100", textColor: "text-gray-600" },
-  SP500: { type: "icon", icon: TrendingUp, bgColor: "bg-gray-100", textColor: "text-gray-600" },
+  US30: { type: "flags", flags: ["us"] },
+  NAS100: { type: "flags", flags: ["us"] },
+  SP500: { type: "flags", flags: ["us"] },
 };
 
 export function InstrumentIcon({
