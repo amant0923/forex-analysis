@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Libre_Baskerville } from "next/font/google";
+import { Inter, Libre_Baskerville, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -11,6 +11,12 @@ const baskerville = Libre_Baskerville({
   variable: "--font-serif",
   subsets: ["latin"],
   weight: ["400", "700"],
+});
+
+const jetbrains = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -25,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${baskerville.variable} font-sans`}>
+      <body className={`${inter.variable} ${baskerville.variable} ${jetbrains.variable} font-sans`}>
         {children}
       </body>
     </html>
