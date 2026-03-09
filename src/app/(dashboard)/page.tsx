@@ -1,9 +1,10 @@
 import { getInstrumentsWithBiases } from "@/lib/queries";
-import { Dashboard } from "@/components/dashboard";
+import { DashboardClient } from "@/components/dashboard-client";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const instruments = await getInstrumentsWithBiases();
-  return <Dashboard instruments={instruments} />;
+
+  return <DashboardClient instruments={instruments} />;
 }
