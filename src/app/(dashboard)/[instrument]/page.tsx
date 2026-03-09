@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
 import { BiasBadge } from "@/components/bias-badge";
 import { BiasDetail } from "@/components/bias-detail";
 import { InstrumentIcon } from "@/components/instrument-icon";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +19,11 @@ interface PageProps {
   searchParams: Promise<{ tf?: string }>;
 }
 
-const tfColors: Record<string, { active: string; text: string }> = {
-  daily: { active: "bg-indigo-50 border-indigo-200 text-indigo-700 ring-1 ring-indigo-200", text: "text-indigo-600" },
-  "1week": { active: "bg-violet-50 border-violet-200 text-violet-700 ring-1 ring-violet-200", text: "text-violet-600" },
-  "1month": { active: "bg-cyan-50 border-cyan-200 text-cyan-700 ring-1 ring-cyan-200", text: "text-cyan-600" },
-  "3month": { active: "bg-amber-50 border-amber-200 text-amber-700 ring-1 ring-amber-200", text: "text-amber-600" },
+const tfLabels: Record<string, string> = {
+  daily: "Daily",
+  "1week": "1 Week",
+  "1month": "1 Month",
+  "3month": "3 Months",
 };
 
 export default async function InstrumentPage({
@@ -77,114 +78,116 @@ export default async function InstrumentPage({
         : Minus;
 
   return (
-    <div className="max-w-5xl">
-      {/* Instrument hero header */}
-      <div className="relative mb-8 overflow-hidden rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200/60">
-        {/* Colored top accent bar */}
-        <div className={cn(
-          "absolute top-0 left-0 right-0 h-1",
-          biasDir === "bullish" && "bg-gradient-to-r from-emerald-400 to-emerald-500",
-          biasDir === "bearish" && "bg-gradient-to-r from-red-400 to-red-500",
-          biasDir === "neutral" && "bg-gradient-to-r from-gray-300 to-gray-400",
-        )} />
+    <div>
+      {/* Back link */}
+      <Link
+        href="/"
+        className="mb-4 inline-flex items-center gap-1 text-[13px] text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        All Instruments
+      </Link>
 
-        <div className="flex items-start gap-5 pt-1">
-          <InstrumentIcon code={inst.code} size="lg" />
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                {inst.code}
-              </h2>
-              <span
-                className={cn(
-                  "rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider",
-                  inst.category === "forex"
-                    ? "bg-indigo-50 text-indigo-600"
-                    : "bg-violet-50 text-violet-600"
-                )}
-              >
-                {inst.category}
-              </span>
-            </div>
-            <p className="mt-0.5 text-sm text-gray-500">{inst.name}</p>
+      {/* Two-column layout: hero left, timeframes right */}
+      <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {/* Hero card — spans 2 cols */}
+        <div className="relative overflow-hidden rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200/60 lg:col-span-2">
+          <div className={cn(
+            "absolute top-0 left-0 right-0 h-0.5",
+            biasDir === "bullish" && "bg-emerald-500",
+            biasDir === "bearish" && "bg-red-500",
+            biasDir === "neutral" && "bg-gray-300",
+          )} />
 
-            {/* Large bias direction display */}
-            {selectedBias && (
-              <div
-                className={cn(
-                  "mt-4 inline-flex items-center gap-2 rounded-xl border px-5 py-2.5",
-                  biasDir === "bullish" &&
-                    "border-emerald-200 bg-emerald-50",
-                  biasDir === "bearish" && "border-red-200 bg-red-50",
-                  biasDir === "neutral" && "border-gray-200 bg-gray-50"
-                )}
-              >
-                <DirectionIcon
-                  className={cn(
-                    "h-6 w-6",
-                    biasDir === "bullish" && "text-emerald-500",
-                    biasDir === "bearish" && "text-red-500",
-                    biasDir === "neutral" && "text-gray-400"
-                  )}
-                />
+          <div className="flex items-start gap-4 pt-1">
+            <InstrumentIcon code={inst.code} size="lg" />
+            <div className="flex-1">
+              <div className="flex items-center gap-2.5">
+                <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+                  {inst.code}
+                </h1>
                 <span
                   className={cn(
-                    "text-xl font-extrabold tracking-wide",
-                    biasDir === "bullish" && "text-emerald-600",
-                    biasDir === "bearish" && "text-red-600",
-                    biasDir === "neutral" && "text-gray-500"
+                    "rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                    inst.category === "forex"
+                      ? "bg-indigo-50 text-indigo-600"
+                      : "bg-violet-50 text-violet-600"
                   )}
                 >
-                  {biasDir.toUpperCase()}
-                </span>
-                <span className="ml-2 text-xs text-gray-400">
-                  {timeframes.find((t) => t.key === selectedTf)?.label} outlook
+                  {inst.category}
                 </span>
               </div>
-            )}
+              <p className="mt-0.5 text-sm text-gray-500">{inst.name}</p>
+
+              {selectedBias && (
+                <div
+                  className={cn(
+                    "mt-4 inline-flex items-center gap-2 rounded-lg border px-4 py-2",
+                    biasDir === "bullish" && "border-emerald-200 bg-emerald-50",
+                    biasDir === "bearish" && "border-red-200 bg-red-50",
+                    biasDir === "neutral" && "border-gray-200 bg-gray-50"
+                  )}
+                >
+                  <DirectionIcon
+                    className={cn(
+                      "h-5 w-5",
+                      biasDir === "bullish" && "text-emerald-500",
+                      biasDir === "bearish" && "text-red-500",
+                      biasDir === "neutral" && "text-gray-400"
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      "text-lg font-extrabold tracking-wide",
+                      biasDir === "bullish" && "text-emerald-700",
+                      biasDir === "bearish" && "text-red-700",
+                      biasDir === "neutral" && "text-gray-500"
+                    )}
+                  >
+                    {biasDir.toUpperCase()}
+                  </span>
+                  <span className="ml-1 text-xs text-gray-400">
+                    {tfLabels[selectedTf]} outlook
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
+        </div>
+
+        {/* Timeframe selector — right column */}
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-1 lg:grid-rows-4">
+          {timeframes.map((tfItem) => {
+            const isSelected = tfItem.key === selectedTf;
+            const tfBias = biases[tfItem.key];
+            const dir = tfBias?.direction ?? "neutral";
+            return (
+              <a
+                key={tfItem.key}
+                href={`/${inst.code}?tf=${tfItem.key}`}
+                className={cn(
+                  "flex items-center justify-between rounded-lg border px-4 py-2.5 transition-all duration-150 cursor-pointer",
+                  isSelected
+                    ? "border-indigo-200 bg-indigo-50 ring-1 ring-indigo-200 shadow-sm"
+                    : "border-gray-200 bg-white hover:bg-gray-50"
+                )}
+              >
+                <span
+                  className={cn(
+                    "text-[13px] font-semibold",
+                    isSelected ? "text-indigo-700" : "text-gray-600"
+                  )}
+                >
+                  {tfItem.label}
+                </span>
+                <BiasBadge direction={dir} label="" size="sm" />
+              </a>
+            );
+          })}
         </div>
       </div>
 
-      {/* Timeframe tabs with color coding */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {timeframes.map((tfItem) => {
-          const isSelected = tfItem.key === selectedTf;
-          const tfColor = tfColors[tfItem.key];
-          return (
-            <a
-              key={tfItem.key}
-              href={`/${inst.code}?tf=${tfItem.key}`}
-              className={cn(
-                "relative rounded-xl border p-3 text-center transition-all duration-200 cursor-pointer",
-                isSelected
-                  ? tfColor.active
-                  : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
-              )}
-            >
-              <p
-                className={cn(
-                  "text-[10px] font-semibold uppercase tracking-widest",
-                  isSelected ? tfColor.text : "text-gray-400"
-                )}
-              >
-                {tfItem.label}
-              </p>
-              <div className="mt-1">
-                <BiasBadge
-                  direction={biases[tfItem.key]?.direction ?? null}
-                  label=""
-                  size={isSelected ? "lg" : "sm"}
-                />
-              </div>
-            </a>
-          );
-        })}
-      </div>
-
-      {/* Divider */}
-      <div className="mb-6 border-t border-gray-200" />
-
+      {/* Analysis content */}
       <BiasDetail bias={selectedBias} articles={allArticles} />
     </div>
   );

@@ -12,7 +12,7 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       <TopNav instruments={instruments} />
-      <main className="px-6 py-6">{children}</main>
+      <main className="mx-auto max-w-[1400px] px-6 py-8 lg:px-10">{children}</main>
     </div>
   );
 }

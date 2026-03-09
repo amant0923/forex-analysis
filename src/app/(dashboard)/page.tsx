@@ -1,13 +1,12 @@
 import { getInstrumentsWithBiases } from "@/lib/queries";
 import { InstrumentCard } from "@/components/instrument-card";
-import { Activity, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const instruments = await getInstrumentsWithBiases();
 
-  // Calculate sentiment summary
   const allBiases = instruments.flatMap((i) =>
     Object.values(i.biases ?? {}).map((b: any) => b?.direction).filter(Boolean)
   );
@@ -17,28 +16,26 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/60">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Market Overview</h2>
-            <p className="text-sm text-gray-500 mt-0.5">
-              AI-powered fundamental bias across all instruments
-            </p>
+      {/* Header bar */}
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-gray-900">Market Overview</h1>
+          <p className="text-[13px] text-gray-500 mt-0.5">
+            AI-powered fundamental bias across all instruments
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200/80">
+            <TrendingUp className="h-3 w-3" />
+            {bullishCount} Bullish
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-200">
-              <TrendingUp className="h-3 w-3" />
-              {bullishCount} Bullish
-            </div>
-            <div className="flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 ring-1 ring-red-200">
-              <TrendingDown className="h-3 w-3" />
-              {bearishCount} Bearish
-            </div>
-            <div className="flex items-center gap-1.5 rounded-full bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-500 ring-1 ring-gray-200">
-              <Minus className="h-3 w-3" />
-              {neutralCount} Neutral
-            </div>
+          <div className="flex items-center gap-1.5 rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700 ring-1 ring-red-200/80">
+            <TrendingDown className="h-3 w-3" />
+            {bearishCount} Bearish
+          </div>
+          <div className="flex items-center gap-1.5 rounded-md bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-500 ring-1 ring-gray-200/80">
+            <Minus className="h-3 w-3" />
+            {neutralCount} Neutral
           </div>
         </div>
       </div>
