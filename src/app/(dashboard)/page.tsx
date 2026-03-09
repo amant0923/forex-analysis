@@ -16,7 +16,7 @@ export default async function DashboardPage() {
   const neutralCount = allBiases.filter((d) => d === "neutral").length;
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div>
       {/* Header */}
       <div className="mb-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/60">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -44,7 +44,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Instrument Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {instruments.map((inst) => (
           <InstrumentCard key={inst.code} instrument={inst} />
         ))}

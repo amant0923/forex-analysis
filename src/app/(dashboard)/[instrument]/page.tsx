@@ -77,7 +77,7 @@ export default async function InstrumentPage({
         : Minus;
 
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-5xl">
       {/* Instrument hero header */}
       <div className="relative mb-8 overflow-hidden rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200/60">
         {/* Colored top accent bar */}
