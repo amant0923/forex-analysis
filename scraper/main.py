@@ -12,6 +12,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 from scraper.rss_scraper import RssScraper
 from scraper.analyzer import Analyzer
+from scraper.article_analyzer import ArticleAnalyzer
 from scraper.database import Database
 
 INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"]
@@ -57,6 +58,56 @@ def run():
         if result:
             stored += 1
     print(f"  Stored {stored} new articles ({len(articles) - stored} duplicates)")
+
+    # Step 2.5: Per-article analysis
+    print("\nStep 2.5: Generating per-article AI analysis...")
+    article_analyzer = ArticleAnalyzer(api_key=anthropic_key)
+    unanalyzed = db.get_unanalyzed_articles(days=7)
+    print(f"  {len(unanalyzed)} articles need analysis")
+
+    # Process in batches of 8
+    for i in range(0, len(unanalyzed), 8):
+        batch = unanalyzed[i:i + 8]
+        batch_ids = [a["id"] for a in batch]
+        print(f"  Batch {i // 8 + 1}: articles {batch_ids}")
+
+        # Get instruments for each article in this batch
+        article_instruments = {}
+        for a in batch:
+            cur = db.execute(
+                "SELECT instrument FROM article_instruments WHERE article_id = %s",
+                (a["id"],),
+            )
+            article_instruments[a["id"]] = [row["instrument"] for row in cur.fetchall()]
+
+        results = article_analyzer.analyze_batch(batch, article_instruments)
+
+        for art_result in results:
+            aid = art_result.get("id")
+            if not aid:
+                continue
+            # Store summary
+            summary = art_result.get("summary", "")
+            if summary:
+                db.update_article_summary(aid, summary)
+
+            # Store per-instrument impacts
+            for impact in art_result.get("impacts", []):
+                try:
+                    db.insert_article_analysis(
+                        article_id=aid,
+                        instrument=impact["instrument"],
+                        event=impact["event"],
+                        mechanism=impact["mechanism"],
+                        impact_direction=impact["impact_direction"],
+                        impact_timeframes=impact.get("impact_timeframes", []),
+                        confidence=impact.get("confidence", "medium"),
+                        commentary=impact["commentary"],
+                    )
+                except Exception as e:
+                    print(f"    Error storing analysis for article {aid}: {e}")
+
+        print(f"    Analyzed {len(results)} articles")
 
     # Step 3: Analyze
     print("\nStep 3: Generating AI bias analysis...")
