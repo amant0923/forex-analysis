@@ -11,11 +11,11 @@ export default async function DashboardLayout({
 }) {
   const instruments = await getInstruments();
   return (
-    <div className="min-h-screen bg-zinc-950">
+    <div className="min-h-screen bg-[#f8fafc]">
       <SidebarWrapper>
         <Sidebar instruments={instruments} />
       </SidebarWrapper>
-      <main className="p-6 pt-16 md:ml-64 md:p-8 md:pt-8">{children}</main>
+      <main className="p-5 pt-16 md:ml-64 md:p-8 md:pt-8">{children}</main>
     </div>
   );
 }

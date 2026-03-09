@@ -7,93 +7,55 @@ interface BiasBadgeProps {
   size?: "sm" | "lg";
 }
 
-const directionConfig = {
+const config = {
   bullish: {
     icon: TrendingUp,
     text: "BULLISH",
-    color: "text-emerald-300",
-    bg: "bg-emerald-500/15",
-    border: "border-emerald-500/30",
-    glow: "shadow-emerald-500/20",
-    ring: "ring-emerald-500/30",
-    gradient: "from-emerald-500/20 via-emerald-500/10 to-transparent",
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+    color: "text-emerald-600",
+    iconColor: "text-emerald-500",
+    ringColor: "ring-emerald-300",
   },
   bearish: {
     icon: TrendingDown,
     text: "BEARISH",
-    color: "text-red-300",
-    bg: "bg-red-500/15",
-    border: "border-red-500/30",
-    glow: "shadow-red-500/20",
-    ring: "ring-red-500/30",
-    gradient: "from-red-500/20 via-red-500/10 to-transparent",
+    bg: "bg-red-50",
+    border: "border-red-200",
+    color: "text-red-600",
+    iconColor: "text-red-500",
+    ringColor: "ring-red-300",
   },
   neutral: {
     icon: Minus,
     text: "NEUTRAL",
-    color: "text-zinc-400",
-    bg: "bg-white/[0.04]",
-    border: "border-white/10",
-    glow: "",
-    ring: "ring-white/10",
-    gradient: "from-zinc-500/10 via-zinc-500/5 to-transparent",
+    bg: "bg-gray-50",
+    border: "border-gray-200",
+    color: "text-gray-500",
+    iconColor: "text-gray-400",
+    ringColor: "ring-gray-300",
   },
 };
 
 export function BiasBadge({ direction, label, size = "sm" }: BiasBadgeProps) {
   const dir = direction ?? "neutral";
-  const config = directionConfig[dir];
-  const Icon = config.icon;
-  const isActive = dir !== "neutral";
+  const c = config[dir];
+  const Icon = c.icon;
 
   return (
-    <div
-      className={cn(
-        "relative flex flex-col items-center gap-1.5 overflow-hidden rounded-xl border p-2.5 transition-all duration-300",
-        config.border,
-        config.bg,
-        "backdrop-blur-sm",
-        size === "lg" && "p-5 shadow-lg ring-1 ring-inset",
-        size === "lg" && config.glow,
-        size === "lg" && config.ring
-      )}
-    >
-      {/* Gradient overlay */}
-      <div
-        className={cn(
-          "pointer-events-none absolute inset-0 bg-gradient-to-b opacity-60",
-          config.gradient
-        )}
-      />
-
-      <span
-        className={cn(
-          "relative text-[10px] font-semibold uppercase tracking-widest",
-          isActive ? "text-zinc-400" : "text-zinc-500"
-        )}
-      >
+    <div className={cn(
+      "flex flex-col items-center gap-1 rounded-xl border p-2 transition-all",
+      c.bg, c.border,
+      size === "lg" && "p-3 shadow-sm ring-1",
+      size === "lg" && c.ringColor,
+    )}>
+      <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
         {label}
       </span>
-      <div
-        className={cn(
-          "relative flex items-center gap-1.5",
-          isActive && "animate-bias-pulse"
-        )}
-      >
-        <Icon
-          className={cn(
-            config.color,
-            size === "lg" ? "h-5 w-5" : "h-3.5 w-3.5"
-          )}
-        />
-        <span
-          className={cn(
-            "font-bold tracking-wide",
-            size === "lg" ? "text-lg" : "text-sm",
-            config.color
-          )}
-        >
-          {config.text}
+      <div className="flex items-center gap-1">
+        <Icon className={cn(c.iconColor, size === "lg" ? "h-4 w-4" : "h-3 w-3")} />
+        <span className={cn("font-semibold", c.color, size === "lg" ? "text-sm" : "text-xs")}>
+          {c.text}
         </span>
       </div>
     </div>

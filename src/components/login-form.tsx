@@ -30,15 +30,15 @@ export function LoginForm() {
   }
 
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-8 backdrop-blur-md">
+    <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200/60">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-zinc-100">Sign In</h2>
-        <p className="mt-1 text-xs text-zinc-500">Access your trading dashboard</p>
+        <h2 className="text-lg font-semibold text-gray-900">Sign In</h2>
+        <p className="mt-1 text-xs text-gray-500">Access your trading dashboard</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-xs font-medium text-zinc-400">
+          <Label htmlFor="email" className="text-xs font-medium text-gray-600">
             Email
           </Label>
           <Input
@@ -47,12 +47,12 @@ export function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="border-white/[0.06] bg-white/[0.03] text-zinc-100 placeholder:text-zinc-600 focus:border-purple-500/30 focus:ring-purple-500/20"
+            className="border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:border-indigo-300 focus:ring-indigo-200"
             placeholder="you@example.com"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-xs font-medium text-zinc-400">
+          <Label htmlFor="password" className="text-xs font-medium text-gray-600">
             Password
           </Label>
           <Input
@@ -61,18 +61,18 @@ export function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="border-white/[0.06] bg-white/[0.03] text-zinc-100 placeholder:text-zinc-600 focus:border-purple-500/30 focus:ring-purple-500/20"
+            className="border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:border-indigo-300 focus:ring-indigo-200"
             placeholder="Enter your password"
           />
         </div>
         {error && (
-          <div className="rounded-md bg-red-500/10 border border-red-500/20 px-3 py-2 text-sm text-red-400">
+          <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 ring-1 ring-red-200">
             {error}
           </div>
         )}
         <Button
           type="submit"
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-500 hover:to-blue-500 transition-all duration-200 shadow-lg shadow-purple-500/10"
+          className="w-full cursor-pointer bg-indigo-600 text-white hover:bg-indigo-500 transition-all duration-200 shadow-sm"
         >
           <LogIn className="mr-2 h-4 w-4" />
           Sign In

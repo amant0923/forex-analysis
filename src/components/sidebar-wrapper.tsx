@@ -11,16 +11,16 @@ export function SidebarWrapper({ children }: { children: React.ReactNode }) {
       {/* Mobile hamburger button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed left-4 top-4 z-50 rounded-lg border border-white/[0.06] bg-zinc-950/90 p-2 backdrop-blur-md md:hidden"
+        className="fixed left-4 top-4 z-50 rounded-xl border border-gray-200 bg-white p-2 shadow-sm md:hidden cursor-pointer"
         aria-label="Open menu"
       >
-        <Menu className="h-5 w-5 text-zinc-300" />
+        <Menu className="h-5 w-5 text-gray-600" />
       </button>
 
       {/* Mobile overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/20 md:hidden"
           onClick={() => setOpen(false)}
         />
       )}
@@ -34,7 +34,7 @@ export function SidebarWrapper({ children }: { children: React.ReactNode }) {
         {/* Mobile close button */}
         <button
           onClick={() => setOpen(false)}
-          className="absolute right-3 top-5 z-50 rounded-md p-1 text-zinc-500 hover:text-zinc-300 md:hidden"
+          className="absolute right-3 top-5 z-50 rounded-md p-1 text-gray-400 hover:text-gray-600 md:hidden cursor-pointer"
           aria-label="Close menu"
         >
           <X className="h-4 w-4" />

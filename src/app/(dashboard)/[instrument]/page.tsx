@@ -19,10 +19,10 @@ interface PageProps {
 }
 
 const tfColors: Record<string, { active: string; text: string }> = {
-  daily: { active: "bg-purple-500/20 border-purple-500/30 text-purple-300", text: "text-purple-400" },
-  "1week": { active: "bg-blue-500/20 border-blue-500/30 text-blue-300", text: "text-blue-400" },
-  "1month": { active: "bg-cyan-500/20 border-cyan-500/30 text-cyan-300", text: "text-cyan-400" },
-  "3month": { active: "bg-amber-500/20 border-amber-500/30 text-amber-300", text: "text-amber-400" },
+  daily: { active: "bg-indigo-50 border-indigo-200 text-indigo-700 ring-1 ring-indigo-200", text: "text-indigo-600" },
+  "1week": { active: "bg-violet-50 border-violet-200 text-violet-700 ring-1 ring-violet-200", text: "text-violet-600" },
+  "1month": { active: "bg-cyan-50 border-cyan-200 text-cyan-700 ring-1 ring-cyan-200", text: "text-cyan-600" },
+  "3month": { active: "bg-amber-50 border-amber-200 text-amber-700 ring-1 ring-amber-200", text: "text-amber-600" },
 };
 
 export default async function InstrumentPage({
@@ -79,46 +79,34 @@ export default async function InstrumentPage({
   return (
     <div className="max-w-4xl">
       {/* Instrument hero header */}
-      <div
-        className={cn(
-          "relative mb-8 overflow-hidden rounded-2xl border p-8 backdrop-blur-md",
-          biasDir === "bullish" &&
-            "border-emerald-500/20 bg-gradient-to-br from-emerald-500/[0.08] via-emerald-500/[0.02] to-transparent",
-          biasDir === "bearish" &&
-            "border-red-500/20 bg-gradient-to-br from-red-500/[0.08] via-red-500/[0.02] to-transparent",
-          biasDir === "neutral" &&
-            "border-white/[0.06] bg-gradient-to-br from-zinc-500/[0.06] via-transparent to-transparent"
-        )}
-      >
-        {/* Decorative glow */}
-        <div
-          className={cn(
-            "pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full blur-3xl",
-            biasDir === "bullish" && "bg-emerald-500/10",
-            biasDir === "bearish" && "bg-red-500/10",
-            biasDir === "neutral" && "bg-purple-500/10"
-          )}
-        />
+      <div className="relative mb-8 overflow-hidden rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200/60">
+        {/* Colored top accent bar */}
+        <div className={cn(
+          "absolute top-0 left-0 right-0 h-1",
+          biasDir === "bullish" && "bg-gradient-to-r from-emerald-400 to-emerald-500",
+          biasDir === "bearish" && "bg-gradient-to-r from-red-400 to-red-500",
+          biasDir === "neutral" && "bg-gradient-to-r from-gray-300 to-gray-400",
+        )} />
 
-        <div className="relative flex items-start gap-5">
+        <div className="flex items-start gap-5 pt-1">
           <InstrumentIcon code={inst.code} size="lg" />
           <div className="flex-1">
             <div className="flex items-center gap-3">
-              <h2 className="font-data text-3xl font-bold tracking-tight text-zinc-100">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900">
                 {inst.code}
               </h2>
               <span
                 className={cn(
-                  "rounded-full border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                  "rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider",
                   inst.category === "forex"
-                    ? "border-purple-500/20 bg-purple-500/10 text-purple-400"
-                    : "border-blue-500/20 bg-blue-500/10 text-blue-400"
+                    ? "bg-indigo-50 text-indigo-600"
+                    : "bg-violet-50 text-violet-600"
                 )}
               >
                 {inst.category}
               </span>
             </div>
-            <p className="mt-0.5 text-sm text-zinc-400">{inst.name}</p>
+            <p className="mt-0.5 text-sm text-gray-500">{inst.name}</p>
 
             {/* Large bias direction display */}
             {selectedBias && (
@@ -126,30 +114,30 @@ export default async function InstrumentPage({
                 className={cn(
                   "mt-4 inline-flex items-center gap-2 rounded-xl border px-5 py-2.5",
                   biasDir === "bullish" &&
-                    "border-emerald-500/30 bg-emerald-500/15",
-                  biasDir === "bearish" && "border-red-500/30 bg-red-500/15",
-                  biasDir === "neutral" && "border-zinc-500/20 bg-zinc-500/10"
+                    "border-emerald-200 bg-emerald-50",
+                  biasDir === "bearish" && "border-red-200 bg-red-50",
+                  biasDir === "neutral" && "border-gray-200 bg-gray-50"
                 )}
               >
                 <DirectionIcon
                   className={cn(
                     "h-6 w-6",
-                    biasDir === "bullish" && "text-emerald-400",
-                    biasDir === "bearish" && "text-red-400",
-                    biasDir === "neutral" && "text-zinc-400"
+                    biasDir === "bullish" && "text-emerald-500",
+                    biasDir === "bearish" && "text-red-500",
+                    biasDir === "neutral" && "text-gray-400"
                   )}
                 />
                 <span
                   className={cn(
                     "text-xl font-extrabold tracking-wide",
-                    biasDir === "bullish" && "text-emerald-300",
-                    biasDir === "bearish" && "text-red-300",
-                    biasDir === "neutral" && "text-zinc-400"
+                    biasDir === "bullish" && "text-emerald-600",
+                    biasDir === "bearish" && "text-red-600",
+                    biasDir === "neutral" && "text-gray-500"
                   )}
                 >
                   {biasDir.toUpperCase()}
                 </span>
-                <span className="ml-2 text-xs text-zinc-500">
+                <span className="ml-2 text-xs text-gray-400">
                   {timeframes.find((t) => t.key === selectedTf)?.label} outlook
                 </span>
               </div>
@@ -168,16 +156,16 @@ export default async function InstrumentPage({
               key={tfItem.key}
               href={`/${inst.code}?tf=${tfItem.key}`}
               className={cn(
-                "relative rounded-xl border p-3 text-center transition-all duration-200",
+                "relative rounded-xl border p-3 text-center transition-all duration-200 cursor-pointer",
                 isSelected
                   ? tfColor.active
-                  : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]"
+                  : "border-gray-200 bg-white hover:bg-gray-50 shadow-sm"
               )}
             >
               <p
                 className={cn(
                   "text-[10px] font-semibold uppercase tracking-widest",
-                  isSelected ? tfColor.text : "text-zinc-500"
+                  isSelected ? tfColor.text : "text-gray-400"
                 )}
               >
                 {tfItem.label}
@@ -195,9 +183,7 @@ export default async function InstrumentPage({
       </div>
 
       {/* Divider */}
-      <div className="mb-6 flex items-center gap-3">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-      </div>
+      <div className="mb-6 border-t border-gray-200" />
 
       <BiasDetail bias={selectedBias} articles={allArticles} />
     </div>
