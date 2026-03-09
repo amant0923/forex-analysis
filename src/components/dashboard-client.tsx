@@ -169,7 +169,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
 
               {/* Expanded section */}
               {isExpanded && (
-                <div className="border-t border-gray-200 p-5">
+                <div className="border-t border-gray-200 p-5 expand-transition">
                   {loading ? (
                     <ExpandedSkeleton />
                   ) : expandedData ? (

@@ -123,3 +123,20 @@
     transform: translateY(0);
   }
 }
+
+@layer utilities {
+  .expand-transition {
+    animation: expandIn 0.25s ease-out;
+  }
+}
+
+@keyframes expandIn {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+  }
+}
