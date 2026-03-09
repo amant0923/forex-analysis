@@ -53,7 +53,7 @@ class Analyzer:
             return NEUTRAL_BIAS
 
         news_text = "\n\n".join(
-            f"[ID={a['id']}] [{a['published_at'][:10]}] {a['source']}: {a['title']}\n{str(a.get('content', ''))[:500]}"
+            f"[ID={a['id']}] [{str(a['published_at'])[:10]}] {a['source']}: {a['title']}\n{str(a.get('content', ''))[:500]}"
             for a in articles[:40]
         )
 
