@@ -34,10 +34,30 @@ export async function getInstrumentsWithBiases(): Promise<InstrumentWithBias[]> 
       SELECT COUNT(*) as count FROM article_instruments
       WHERE instrument = ${inst.code}
     `;
+    // Get the most recent article with its analysis for this instrument
+    const latestRows = await sql`
+      SELECT a.id, a.title, a.source, aa.impact_direction, aa.mechanism
+      FROM articles a
+      JOIN article_instruments ai ON a.id = ai.article_id
+      LEFT JOIN article_analyses aa ON a.id = aa.article_id AND aa.instrument = ${inst.code}
+      WHERE ai.instrument = ${inst.code}
+      ORDER BY a.published_at DESC
+      LIMIT 1
+    `;
+
     results.push({
       ...inst,
       biases,
       article_count: Number(countRows[0].count),
+      latestArticle: latestRows.length > 0
+        ? {
+            id: latestRows[0].id,
+            title: latestRows[0].title,
+            source: latestRows[0].source,
+            impact_direction: latestRows[0].impact_direction ?? null,
+            mechanism: latestRows[0].mechanism ?? null,
+          }
+        : null,
     });
   }
   return results;

@@ -47,4 +47,11 @@ export interface Bias {
 export interface InstrumentWithBias extends Instrument {
   biases: Record<string, Bias | null>;
   article_count: number;
+  latestArticle: {
+    id: number;
+    title: string;
+    source: string | null;
+    impact_direction: "bullish" | "bearish" | "neutral" | null;
+    mechanism: string | null;
+  } | null;
 }
