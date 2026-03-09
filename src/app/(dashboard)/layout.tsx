@@ -1,4 +1,5 @@
 import { Sidebar } from "@/components/sidebar";
+import { SidebarWrapper } from "@/components/sidebar-wrapper";
 import { getInstruments } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -11,8 +12,10 @@ export default async function DashboardLayout({
   const instruments = await getInstruments();
   return (
     <div className="min-h-screen bg-zinc-950">
-      <Sidebar instruments={instruments} />
-      <main className="ml-64 p-8">{children}</main>
+      <SidebarWrapper>
+        <Sidebar instruments={instruments} />
+      </SidebarWrapper>
+      <main className="p-6 pt-16 md:ml-64 md:p-8 md:pt-8">{children}</main>
     </div>
   );
 }

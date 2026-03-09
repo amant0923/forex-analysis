@@ -41,11 +41,11 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
   return (
     <div className="max-w-4xl">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold tracking-tight text-zinc-100">{inst.code}</h2>
+        <h2 className="font-data text-3xl font-bold tracking-tight text-zinc-100">{inst.code}</h2>
         <p className="text-sm text-zinc-500">{inst.name}</p>
       </div>
 
-      <div className="mb-6 grid grid-cols-4 gap-3">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {timeframes.map((tfItem) => (
           <a key={tfItem.key} href={`/${inst.code}?tf=${tfItem.key}`}>
             <BiasBadge
