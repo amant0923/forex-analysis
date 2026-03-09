@@ -8,7 +8,7 @@ import {
 import { cn } from "@/lib/utils";
 import { InstrumentIcon } from "@/components/instrument-icon";
 import { BiasIndicator } from "@/components/bias-indicator";
-import { ArrowLeft, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { ArrowLeft, ExternalLink, Clock, AlertCircle, Newspaper } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -50,12 +50,6 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
 
   const biasDir = selectedBias?.direction ?? "neutral";
 
-  // Split into supporting and other articles
-  const supportingIds = new Set((selectedBias?.supporting_articles ?? []).map((sa) => sa.article_id));
-  const supportingRelevance = new Map((selectedBias?.supporting_articles ?? []).map((sa) => [sa.article_id, sa.relevance]));
-  const supportingArticles = articles.filter((a: any) => supportingIds.has(a.id));
-  const otherArticles = articles.filter((a: any) => !supportingIds.has(a.id));
-
   return (
     <div>
       {/* Back link */}
@@ -84,7 +78,7 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
         </div>
       </div>
 
-      {/* Timeframe tabs — underline style */}
+      {/* Timeframe tabs */}
       <div className="flex items-center gap-0 border-b border-gray-200 mb-8">
         {Object.entries(tfLabels).map(([key, label]) => {
           const isSelected = key === selectedTf;
@@ -110,7 +104,7 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
 
       {/* Bias analysis panel */}
       {selectedBias ? (
-        <div className="mb-10">
+        <div className="mb-10 bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center gap-3 mb-4">
             <BiasIndicator direction={biasDir} size="md" />
             <span className="text-xs text-gray-400">
@@ -122,9 +116,8 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
             {selectedBias.summary}
           </p>
 
-          {/* Key drivers */}
           {selectedBias.key_drivers && selectedBias.key_drivers.length > 0 && (
-            <div className="mb-6">
+            <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
                 Key Drivers
               </h3>
@@ -143,92 +136,159 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
         </div>
       ) : (
         <div className="mb-10 py-12 text-center border border-gray-200 rounded-lg">
+          <AlertCircle className="h-5 w-5 text-gray-300 mx-auto mb-2" />
           <p className="text-sm text-gray-400">No analysis available for this timeframe yet.</p>
         </div>
       )}
 
-      {/* Supporting Evidence */}
-      {supportingArticles.length > 0 && (
-        <div className="mb-10">
-          <h2 className="font-serif text-lg font-bold text-gray-900 mb-4">
-            Supporting Evidence
-            <span className="ml-2 text-sm font-normal text-gray-400">{supportingArticles.length} articles</span>
-          </h2>
-          <div className="border border-gray-200 rounded-lg overflow-hidden divide-y divide-gray-200">
-            {supportingArticles.map((article: any) => (
-              <ArticleRow
-                key={article.id}
-                article={article}
-                relevance={supportingRelevance.get(article.id)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Article Analysis Dashboard */}
+      <div className="mb-10">
+        <h2 className="font-serif text-xl font-bold text-gray-900 mb-6">
+          Article Analysis
+          <span className="ml-2 text-sm font-normal text-gray-400">{articles.length} articles</span>
+        </h2>
 
-      {/* Other Recent News */}
-      {otherArticles.length > 0 && (
-        <div className="mb-10">
-          <h2 className="font-serif text-lg font-bold text-gray-900 mb-4">
-            Other Recent News
-            <span className="ml-2 text-sm font-normal text-gray-400">{otherArticles.length} articles</span>
-          </h2>
-          <div className="border border-gray-200 rounded-lg overflow-hidden divide-y divide-gray-200">
-            {otherArticles.map((article: any) => (
-              <ArticleRow key={article.id} article={article} />
+        {articles.length > 0 ? (
+          <div className="space-y-4">
+            {articles.map((article: any) => (
+              <ArticleAnalysisCard key={article.id} article={article} instrument={inst.code} />
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="py-12 text-center border border-gray-200 rounded-lg">
+            <Newspaper className="h-5 w-5 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-400">No recent articles affecting this instrument.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-function ArticleRow({
-  article,
-  relevance,
-}: {
-  article: any;
-  relevance?: string;
-}) {
-  const impactDir = article.impact_direction;
-  const timeAgo = getTimeAgo(article.published_at);
+function ArticleAnalysisCard({ article, instrument }: { article: any; instrument: string }) {
+  const hasAnalysis = article.impact_direction != null;
+  const isHighConfidence = article.confidence === "high";
 
   return (
-    <Link
-      href={`/articles/${article.id}`}
-      className="flex items-center gap-4 px-4 py-3 bg-white hover:bg-gray-50/80 transition-colors cursor-pointer"
-    >
-      {impactDir && (
-        <div className={cn(
-          "h-2 w-2 rounded-full shrink-0",
-          impactDir === "bullish" ? "bg-green-700" : impactDir === "bearish" ? "bg-red-800" : "bg-gray-400"
-        )} />
+    <div className={cn(
+      "bg-white rounded-lg border p-6",
+      isHighConfidence ? "border-[#2563eb]/30" : "border-gray-200"
+    )}>
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div className="flex-1 min-w-0">
+          <Link
+            href={`/articles/${article.id}`}
+            className="font-serif text-lg font-bold text-gray-900 hover:text-[#1e3a5f] transition-colors line-clamp-2"
+          >
+            {article.title}
+          </Link>
+          <div className="flex items-center gap-3 mt-1">
+            {article.source && (
+              <span className="text-xs font-medium text-gray-500">{article.source}</span>
+            )}
+            {article.published_at && (
+              <span className="flex items-center gap-1 text-xs text-gray-400">
+                <Clock className="h-3 w-3" />
+                {new Date(article.published_at).toLocaleDateString("en-US", {
+                  month: "short", day: "numeric", year: "numeric"
+                })}
+              </span>
+            )}
+          </div>
+        </div>
+        {article.url && (
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        )}
+      </div>
+
+      {/* AI Summary */}
+      {article.summary && (
+        <div className="mb-4">
+          <h4 className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
+            AI Summary
+          </h4>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {article.summary}
+          </p>
+        </div>
       )}
 
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate">{article.title}</p>
-        {relevance && (
-          <p className="text-xs text-gray-500 mt-0.5 truncate">{relevance}</p>
-        )}
-      </div>
+      {/* Impact Analysis */}
+      {hasAnalysis && (
+        <div className="border-t border-gray-100 pt-4">
+          <div className="flex items-center gap-3 mb-3">
+            <h4 className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+              Impact on {instrument}
+            </h4>
+            <div className={cn(
+              "text-[10px] font-semibold px-2 py-0.5 rounded",
+              article.impact_direction === "bullish" ? "bg-green-50 text-green-700" :
+              article.impact_direction === "bearish" ? "bg-red-50 text-red-700" :
+              "bg-gray-50 text-gray-500"
+            )}>
+              {article.impact_direction}
+            </div>
+            {article.confidence && (
+              <div className={cn(
+                "text-[10px] font-medium px-2 py-0.5 rounded",
+                article.confidence === "high" ? "bg-blue-50 text-blue-700" :
+                article.confidence === "medium" ? "bg-yellow-50 text-yellow-700" :
+                "bg-gray-50 text-gray-500"
+              )}>
+                {article.confidence} confidence
+              </div>
+            )}
+          </div>
 
-      <div className="flex items-center gap-3 shrink-0">
-        {article.source && (
-          <span className="text-[11px] font-medium text-gray-400">{article.source}</span>
-        )}
-        <span className="text-[11px] text-gray-300">{timeAgo}</span>
-      </div>
-    </Link>
+          {/* Event */}
+          {article.event && (
+            <div className="mb-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mr-2">Event:</span>
+              <span className="text-sm text-gray-700">{article.event}</span>
+            </div>
+          )}
+
+          {/* Mechanism */}
+          {article.mechanism && (
+            <div className="mb-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mr-2">Mechanism:</span>
+              <span className="text-sm text-gray-700">{article.mechanism}</span>
+            </div>
+          )}
+
+          {/* Timeframes */}
+          {article.impact_timeframes && article.impact_timeframes.length > 0 && (
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Timeframes:</span>
+              {article.impact_timeframes.map((tf: string) => (
+                <span key={tf} className="text-[10px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                  {tf}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Analyst Commentary */}
+          {article.commentary && (
+            <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+              <h5 className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1.5">
+                Analyst Commentary
+              </h5>
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {article.commentary}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
-}
-
-function getTimeAgo(dateStr: string | null): string {
-  if (!dateStr) return "";
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const hours = Math.floor(diff / 3600000);
-  if (hours < 1) return "Now";
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  return `${days}d`;
 }
