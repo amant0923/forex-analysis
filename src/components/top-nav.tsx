@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InstrumentIcon } from "./instrument-icon";
 import type { Instrument } from "@/types";
@@ -13,42 +12,50 @@ interface TopNavProps {
 
 export function TopNav({ instruments }: TopNavProps) {
   const pathname = usePathname();
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/90 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 max-w-[1400px] items-center gap-6 px-6 lg:px-10">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 cursor-pointer">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-sm">
-            <Activity className="h-3.5 w-3.5 text-white" />
-          </div>
-          <span className="text-[15px] font-bold tracking-tight text-gray-900">ForexPulse</span>
-        </Link>
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white">
+      <div className="mx-auto flex h-12 max-w-[1400px] items-center justify-between px-6 lg:px-10">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="shrink-0 cursor-pointer">
+            <span className="font-serif text-lg font-bold tracking-tight text-[#1e3a5f]">
+              ForexPulse
+            </span>
+          </Link>
 
-        {/* Divider */}
-        <div className="h-5 w-px bg-gray-200 hidden sm:block" />
+          <div className="hidden sm:block h-4 w-px bg-gray-300" />
 
-        {/* Instrument tabs */}
-        <nav className="flex items-center gap-0.5 overflow-x-auto scrollbar-none">
-          {instruments.map((inst) => {
-            const isActive = pathname === `/${inst.code}`;
-            return (
-              <Link
-                key={inst.code}
-                href={`/${inst.code}`}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-all duration-150 cursor-pointer",
-                  isActive
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-700",
-                )}
-              >
-                <InstrumentIcon code={inst.code} size="sm" />
-                <span>{inst.code}</span>
-              </Link>
-            );
-          })}
-        </nav>
+          <nav className="hidden sm:flex items-center gap-0.5 overflow-x-auto">
+            {instruments.map((inst) => {
+              const isActive = pathname === `/${inst.code}`;
+              return (
+                <Link
+                  key={inst.code}
+                  href={`/${inst.code}`}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 cursor-pointer border-b-2",
+                    isActive
+                      ? "border-[#1e3a5f] text-[#1e3a5f]"
+                      : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300",
+                  )}
+                >
+                  <InstrumentIcon code={inst.code} size="sm" />
+                  {inst.code}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        <span className="hidden md:block text-xs text-gray-400 font-medium">
+          {today}
+        </span>
       </div>
     </header>
   );
