@@ -1,27 +1,24 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { LogIn } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 export function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
+  const [error, setError] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+    const form = new FormData(e.currentTarget);
+
     const res = await signIn("credentials", {
-      email,
-      password,
+      email: form.get("email"),
+      password: form.get("password"),
       redirect: false,
     });
+
     if (res?.error) {
       setError("Invalid email or password");
     } else {
@@ -30,54 +27,23 @@ export function LoginForm() {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200/60">
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Sign In</h2>
-        <p className="mt-1 text-xs text-gray-500">Access your trading dashboard</p>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input id="email" name="email" type="email" required className="w-full rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-[#1e3a5f] focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]" placeholder="you@example.com" />
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-xs font-medium text-gray-600">
-            Email
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:border-indigo-300 focus:ring-indigo-200"
-            placeholder="you@example.com"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password" className="text-xs font-medium text-gray-600">
-            Password
-          </Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:border-indigo-300 focus:ring-indigo-200"
-            placeholder="Enter your password"
-          />
-        </div>
-        {error && (
-          <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 ring-1 ring-red-200">
-            {error}
-          </div>
-        )}
-        <Button
-          type="submit"
-          className="w-full cursor-pointer bg-indigo-600 text-white hover:bg-indigo-500 transition-all duration-200 shadow-sm"
-        >
-          <LogIn className="mr-2 h-4 w-4" />
-          Sign In
-        </Button>
-      </form>
-    </div>
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <input id="password" name="password" type="password" required className="w-full rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-[#1e3a5f] focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]" placeholder="Your password" />
+      </div>
+      <button type="submit" className="w-full rounded bg-[#1e3a5f] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#162d4a] transition-colors cursor-pointer">
+        Sign In
+      </button>
+    </form>
   );
 }
