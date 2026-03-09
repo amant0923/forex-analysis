@@ -8,10 +8,29 @@ export interface Article {
   id: number;
   title: string;
   content: string | null;
+  summary: string | null;
   url: string;
   source: string | null;
   published_at: string | null;
   created_at: string;
+}
+
+export interface ArticleAnalysis {
+  id: number;
+  article_id: number;
+  instrument: string;
+  event: string;
+  mechanism: string;
+  impact_direction: "bullish" | "bearish" | "neutral";
+  impact_timeframes: string[];
+  confidence: "high" | "medium" | "low";
+  commentary: string;
+  generated_at: string;
+}
+
+export interface ArticleWithAnalyses extends Article {
+  analyses: ArticleAnalysis[];
+  instruments: string[];
 }
 
 export interface Bias {
