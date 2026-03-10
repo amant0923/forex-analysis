@@ -5,11 +5,11 @@ import { useEffect, useRef, memo } from "react";
 const TV_SYMBOL_MAP: Record<string, string> = {
   EURUSD: "FX:EURUSD",
   GBPUSD: "FX:GBPUSD",
-  DXY: "TVC:DXY",
-  US30: "TVC:DJI",
-  NAS100: "NASDAQ:NDX",
-  SP500: "SP:SPX",
-  GER40: "XETR:DAX",
+  DXY: "CAPITALCOM:DXY",
+  US30: "BLACKBULL:US30",
+  NAS100: "PEPPERSTONE:NAS100",
+  SP500: "FOREXCOM:SPXUSD",
+  GER40: "PEPPERSTONE:GER40",
 };
 
 interface TradingViewWidgetProps {
