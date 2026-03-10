@@ -102,10 +102,22 @@ export function AccountsManager() {
     setSaving(true);
     setError(null);
 
+    const accountSize = parseFloat(form.account_size);
+    if (!form.name.trim()) {
+      setError("Account name is required");
+      setSaving(false);
+      return;
+    }
+    if (isNaN(accountSize) || accountSize <= 0) {
+      setError("Enter a valid account size");
+      setSaving(false);
+      return;
+    }
+
     const payload = {
       name: form.name.trim(),
       broker: form.broker.trim() || null,
-      account_size: Number(form.account_size),
+      account_size: accountSize,
       currency: form.currency,
       leverage: form.leverage ? Number(form.leverage) : null,
     };
@@ -262,14 +274,16 @@ export function AccountsManager() {
                   </Label>
                   <Input
                     id="account_size"
-                    type="number"
-                    min="0"
-                    step="0.01"
+                    type="text"
+                    inputMode="decimal"
                     placeholder="10000"
                     value={form.account_size}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, account_size: e.target.value }))
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "" || /^\d*\.?\d*$/.test(val)) {
+                        setForm((f) => ({ ...f, account_size: val }));
+                      }
+                    }}
                     required
                   />
                 </div>
@@ -292,13 +306,16 @@ export function AccountsManager() {
                   <Label htmlFor="leverage">Leverage</Label>
                   <Input
                     id="leverage"
-                    type="number"
-                    min="1"
+                    type="text"
+                    inputMode="numeric"
                     placeholder="e.g. 100"
                     value={form.leverage}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, leverage: e.target.value }))
-                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "" || /^\d+$/.test(val)) {
+                        setForm((f) => ({ ...f, leverage: val }));
+                      }
+                    }}
                   />
                 </div>
               </div>
