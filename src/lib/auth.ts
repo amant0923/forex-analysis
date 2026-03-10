@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
           if (!user.password_plain || credentials.password !== user.password_plain) return null;
         }
 
-        return { id: String(user.id), email: user.email, name: user.name };
+        return { id: String(user.id), email: user.email, name: user.name, tier: user.tier || "free" };
       },
     }),
   ],
@@ -36,5 +36,21 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.tier = (user as any).tier || "free";
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        (session.user as any).id = token.id;
+        (session.user as any).tier = token.tier || "free";
+      }
+      return session;
+    },
   },
 };
