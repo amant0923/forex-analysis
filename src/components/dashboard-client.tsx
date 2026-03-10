@@ -54,14 +54,14 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
     <div>
       {/* Page title */}
       <div className="mb-6">
-        <h1 className="font-serif text-2xl font-bold text-gray-900">Market Overview</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="font-serif text-2xl font-bold text-white">Market Overview</h1>
+        <p className="mt-1 text-sm text-white/40">
           AI-powered fundamental bias across forex and index instruments
         </p>
       </div>
 
       {/* Market summary strip */}
-      <div className="mb-6 sm:mb-8 flex items-center gap-3 sm:gap-6 border-y border-gray-200 py-3 overflow-x-auto">
+      <div className="mb-6 sm:mb-8 flex items-center gap-3 sm:gap-6 border-y border-white/[0.08] py-3 overflow-x-auto">
         {instruments.map((inst) => {
           const dominant = getDominantBias(inst.biases);
           return (
@@ -70,7 +70,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
               onClick={() => toggleExpand(inst.code)}
               className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm cursor-pointer hover:opacity-70 transition-opacity shrink-0"
             >
-              <span className="font-semibold text-gray-700">{inst.code}</span>
+              <span className="font-semibold text-white/80">{inst.code}</span>
               <BiasDirectionDot direction={dominant} />
             </button>
           );
@@ -87,8 +87,8 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
             <div
               key={inst.code}
               className={cn(
-                "bg-white rounded-lg border transition-all duration-300",
-                isExpanded ? "border-[#2563eb] sm:col-span-2 shadow-sm" : "border-gray-200"
+                "bg-white/[0.06] rounded-lg border transition-all duration-300",
+                isExpanded ? "border-[#2563eb] sm:col-span-2 shadow-sm" : "border-white/10"
               )}
             >
               {/* Compact card — always visible */}
@@ -101,7 +101,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
                     <InstrumentIcon code={inst.code} size="md" />
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-serif text-lg font-bold text-gray-900">{inst.code}</h3>
+                        <h3 className="font-serif text-lg font-bold text-white">{inst.code}</h3>
                         <span className={cn(
                           "text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded",
                           inst.category === "forex" ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"
@@ -109,26 +109,26 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
                           {inst.category}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400">{inst.name}</p>
+                      <p className="text-xs text-white/30">{inst.name}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     {inst.quote && (
                       <div className="text-right">
-                        <p className="text-sm font-bold tabular-nums text-gray-900">
+                        <p className="text-sm font-bold tabular-nums text-white">
                           {inst.quote.price.toFixed(inst.category === "forex" ? 4 : 2)}
                         </p>
                         <p className={cn(
                           "text-[11px] font-semibold tabular-nums",
-                          inst.quote.change_pct >= 0 ? "text-green-600" : "text-red-600"
+                          inst.quote.change_pct >= 0 ? "text-green-400" : "text-red-400"
                         )}>
                           {inst.quote.change_pct >= 0 ? "+" : ""}{inst.quote.change_pct.toFixed(2)}%
                         </p>
                       </div>
                     )}
                     {isExpanded
-                      ? <ChevronUp className="h-4 w-4 text-gray-400" />
-                      : <ChevronDown className="h-4 w-4 text-gray-300" />
+                      ? <ChevronUp className="h-4 w-4 text-white/30" />
+                      : <ChevronDown className="h-4 w-4 text-white/20" />
                     }
                   </div>
                 </div>
@@ -150,7 +150,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
 
                 {/* Daily summary */}
                 {dailyBias?.summary && (
-                  <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-2">
+                  <p className="text-xs text-white/40 leading-relaxed line-clamp-2 mb-2">
                     {dailyBias.summary}
                   </p>
                 )}
@@ -159,8 +159,8 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
                 {dailyBias?.key_drivers && dailyBias.key_drivers.length > 0 && (
                   <div className="mb-2">
                     {dailyBias.key_drivers.slice(0, 3).map((driver: string, i: number) => (
-                      <p key={i} className="text-[11px] text-gray-400 leading-snug truncate">
-                        <span className="text-gray-500 font-semibold mr-1">{i + 1}.</span>
+                      <p key={i} className="text-[11px] text-white/30 leading-snug truncate">
+                        <span className="text-white/40 font-semibold mr-1">{i + 1}.</span>
                         {driver}
                       </p>
                     ))}
@@ -169,15 +169,15 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
 
                 {/* Latest headline */}
                 {inst.latestArticle && (
-                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-100">
+                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-white/[0.06]">
                     {inst.latestArticle.impact_direction && (
                       <BiasDirectionDot direction={inst.latestArticle.impact_direction} />
                     )}
-                    <p className="text-xs text-gray-600 font-medium truncate flex-1">
+                    <p className="text-xs text-white/60 font-medium truncate flex-1">
                       {inst.latestArticle.title}
                     </p>
                     {inst.latestArticle.source && (
-                      <span className="text-[10px] text-gray-400 shrink-0">
+                      <span className="text-[10px] text-white/30 shrink-0">
                         {inst.latestArticle.source}
                       </span>
                     )}
@@ -185,7 +185,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
                 )}
 
                 {/* Footer */}
-                <div className="flex items-center gap-1.5 text-[11px] text-gray-400 mt-2">
+                <div className="flex items-center gap-1.5 text-[11px] text-white/30 mt-2">
                   <Newspaper className="h-3 w-3" />
                   {inst.article_count} articles
                 </div>
@@ -193,7 +193,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
 
               {/* Expanded section */}
               {isExpanded && (
-                <div className="border-t border-gray-200 p-4 sm:p-5 expand-transition">
+                <div className="border-t border-white/10 p-4 sm:p-5 expand-transition">
                   {loading ? (
                     <ExpandedSkeleton />
                   ) : expandedData ? (
@@ -204,7 +204,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
                       onTfChange={setExpandedTf}
                     />
                   ) : (
-                    <p className="text-sm text-gray-400 text-center py-8">Failed to load data.</p>
+                    <p className="text-sm text-white/30 text-center py-8">Failed to load data.</p>
                   )}
                 </div>
               )}
@@ -220,12 +220,12 @@ function ExpandedSkeleton() {
   return (
     <div className="animate-pulse space-y-4 py-4">
       <div className="flex gap-2">
-        {[1,2,3,4].map(i => <div key={i} className="h-8 w-20 bg-gray-100 rounded" />)}
+        {[1,2,3,4].map(i => <div key={i} className="h-8 w-20 bg-white/[0.06] rounded" />)}
       </div>
-      <div className="h-4 bg-gray-100 rounded w-3/4" />
-      <div className="h-4 bg-gray-100 rounded w-1/2" />
+      <div className="h-4 bg-white/[0.06] rounded w-3/4" />
+      <div className="h-4 bg-white/[0.06] rounded w-1/2" />
       <div className="space-y-3 mt-4">
-        {[1,2,3].map(i => <div key={i} className="h-16 bg-gray-50 rounded" />)}
+        {[1,2,3].map(i => <div key={i} className="h-16 bg-white/[0.04] rounded" />)}
       </div>
     </div>
   );
@@ -253,11 +253,11 @@ function ExpandedContent({
       </div>
 
       {/* Timeframe tabs */}
-      <div className="flex items-center gap-0 border-b border-gray-200 mb-4 sm:mb-6 overflow-x-auto">
+      <div className="flex items-center gap-0 border-b border-white/10 mb-4 sm:mb-6 overflow-x-auto">
         {tfKeys.map((key) => {
           const isSelected = key === selectedTf;
           const dir = data.biases?.[key]?.direction ?? "neutral";
-          const dotColor = dir === "bullish" ? "bg-green-700" : dir === "bearish" ? "bg-red-800" : "bg-gray-400";
+          const dotColor = dir === "bullish" ? "bg-green-700" : dir === "bearish" ? "bg-red-800" : "bg-white/30";
           return (
             <button
               key={key}
@@ -266,7 +266,7 @@ function ExpandedContent({
                 "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer whitespace-nowrap",
                 isSelected
                   ? "border-[#1e3a5f] text-[#1e3a5f]"
-                  : "border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300"
+                  : "border-transparent text-white/30 hover:text-white/60 hover:border-white/20"
               )}
             >
               {tfLabels[key]}
@@ -282,19 +282,19 @@ function ExpandedContent({
           <div className="flex items-center gap-3 mb-3">
             <BiasIndicator direction={bias.direction} size="md" />
             {bias.generated_at && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-white/30">
                 {new Date(bias.generated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-600 leading-relaxed mb-4 max-w-3xl">
+          <p className="text-sm text-white/60 leading-relaxed mb-4 max-w-3xl">
             {bias.summary}
           </p>
           {bias.key_drivers && bias.key_drivers.length > 0 && (
             <ol className="space-y-1.5 mb-4">
               {bias.key_drivers.map((driver: string, i: number) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-gray-100 text-[10px] font-bold text-gray-500">
+                <li key={i} className="flex items-start gap-2 text-sm text-white/60">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-white/[0.06] text-[10px] font-bold text-white/40">
                     {i + 1}
                   </span>
                   {driver}
@@ -304,13 +304,13 @@ function ExpandedContent({
           )}
         </div>
       ) : (
-        <p className="text-sm text-gray-400 mb-6">No analysis available for this timeframe.</p>
+        <p className="text-sm text-white/30 mb-6">No analysis available for this timeframe.</p>
       )}
 
       {/* Headline dashboard */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-white/30">
             Recent Headlines
           </h4>
           <Link
@@ -322,24 +322,24 @@ function ExpandedContent({
         </div>
 
         {articles.length > 0 ? (
-          <div className="border border-gray-200 rounded-lg overflow-hidden divide-y divide-gray-100">
+          <div className="border border-white/10 rounded-lg overflow-hidden divide-y divide-white/[0.06]">
             {articles.slice(0, 8).map((article: any) => (
               <Link
                 key={article.id}
                 href={`/articles/${article.id}`}
-                className="flex items-start sm:items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-3 hover:bg-gray-50/80 transition-colors cursor-pointer"
+                className="flex items-start sm:items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-3 hover:bg-white/[0.04] transition-colors cursor-pointer"
               >
                 {article.impact_direction && (
                   <div className={cn(
                     "h-2 w-2 rounded-full shrink-0 mt-1.5 sm:mt-0",
                     article.impact_direction === "bullish" ? "bg-green-700" :
-                    article.impact_direction === "bearish" ? "bg-red-800" : "bg-gray-400"
+                    article.impact_direction === "bearish" ? "bg-red-800" : "bg-white/30"
                   )} />
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] sm:text-sm font-medium text-gray-900 line-clamp-2 sm:truncate">{article.title}</p>
+                  <p className="text-[13px] sm:text-sm font-medium text-white line-clamp-2 sm:truncate">{article.title}</p>
                   {article.mechanism && (
-                    <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{article.mechanism}</p>
+                    <p className="text-xs text-white/40 mt-0.5 line-clamp-1">{article.mechanism}</p>
                   )}
                   <div className="flex items-center gap-2 mt-1 sm:hidden">
                     {article.confidence && (
@@ -347,13 +347,13 @@ function ExpandedContent({
                         "text-[10px] font-medium px-1.5 py-0.5 rounded",
                         article.confidence === "high" ? "bg-green-50 text-green-700" :
                         article.confidence === "medium" ? "bg-yellow-50 text-yellow-700" :
-                        "bg-gray-50 text-gray-500"
+                        "bg-white/[0.04] text-white/40"
                       )}>
                         {article.confidence}
                       </span>
                     )}
                     {article.source && (
-                      <span className="text-[10px] text-gray-400">{article.source}</span>
+                      <span className="text-[10px] text-white/30">{article.source}</span>
                     )}
                   </div>
                 </div>
@@ -363,20 +363,20 @@ function ExpandedContent({
                       "text-[10px] font-medium px-1.5 py-0.5 rounded",
                       article.confidence === "high" ? "bg-green-50 text-green-700" :
                       article.confidence === "medium" ? "bg-yellow-50 text-yellow-700" :
-                      "bg-gray-50 text-gray-500"
+                      "bg-white/[0.04] text-white/40"
                     )}>
                       {article.confidence}
                     </span>
                   )}
                   {article.source && (
-                    <span className="text-[10px] text-gray-400">{article.source}</span>
+                    <span className="text-[10px] text-white/30">{article.source}</span>
                   )}
                 </div>
               </Link>
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-400 text-center py-6 border border-gray-200 rounded-lg">
+          <p className="text-sm text-white/30 text-center py-6 border border-white/10 rounded-lg">
             No recent articles for this instrument.
           </p>
         )}

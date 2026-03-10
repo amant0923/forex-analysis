@@ -27,10 +27,10 @@ const dirConfig = {
   neutral: {
     icon: Minus,
     text: "Neutral",
-    dotColor: "bg-gray-400",
-    textColor: "text-gray-500",
-    bgColor: "bg-gray-50",
-    borderColor: "border-gray-200",
+    dotColor: "bg-white/30",
+    textColor: "text-white/40",
+    bgColor: "bg-white/[0.04]",
+    borderColor: "border-white/10",
   },
 };
 
@@ -43,7 +43,7 @@ export function BiasIndicator({ direction, label, size = "sm" }: BiasIndicatorPr
     return (
       <div className="flex items-center gap-1.5">
         {label && (
-          <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider w-8">
+          <span className="text-[11px] font-medium text-white/30 uppercase tracking-wider w-8">
             {label}
           </span>
         )}
@@ -57,7 +57,7 @@ export function BiasIndicator({ direction, label, size = "sm" }: BiasIndicatorPr
     <div className={cn("flex items-center gap-2 rounded border px-3 py-1.5", c.bgColor, c.borderColor)}>
       <Icon className={cn("h-3.5 w-3.5", c.textColor)} />
       <span className={cn("text-sm font-semibold", c.textColor)}>{c.text}</span>
-      {label && <span className="text-xs text-gray-400 ml-1">{label}</span>}
+      {label && <span className="text-xs text-white/30 ml-1">{label}</span>}
     </div>
   );
 }

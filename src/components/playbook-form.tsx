@@ -118,12 +118,12 @@ export function PlaybookForm({ mode, playbook }: PlaybookFormProps) {
   return (
     <Card>
       <CardContent className="pt-2">
-        <h3 className="text-sm font-medium text-gray-900 mb-4">
+        <h3 className="text-sm font-medium text-white mb-4">
           {mode === "edit" ? "Edit Playbook" : "New Playbook"}
         </h3>
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 mb-4">
+          <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400 mb-4">
             {error}
           </div>
         )}
@@ -196,7 +196,7 @@ export function PlaybookForm({ mode, playbook }: PlaybookFormProps) {
             </div>
 
             {rules.length === 0 && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-white/30">
                 No rules yet. Add rules to define your playbook criteria.
               </p>
             )}
@@ -230,7 +230,7 @@ export function PlaybookForm({ mode, playbook }: PlaybookFormProps) {
                   size="icon-xs"
                   onClick={() => removeRule(rule.id)}
                 >
-                  <X className="h-3.5 w-3.5 text-gray-400" />
+                  <X className="h-3.5 w-3.5 text-white/30" />
                 </Button>
               </div>
             ))}

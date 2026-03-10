@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { cn } from "@/lib/utils";
 import type { JournalStats } from "@/types";
 
@@ -29,22 +30,25 @@ function StatCard({
   colorClass?: string;
 }) {
   return (
-    <Card className="flex-1 min-w-[140px]">
-      <CardContent className="py-3 px-4">
-        <p className="text-xs text-gray-500 mb-0.5">{label}</p>
-        <p className={cn("text-lg font-semibold font-mono", colorClass || "text-gray-900")}>
-          {value}
-        </p>
-      </CardContent>
-    </Card>
+    <div className="relative rounded-[1.25rem] border-[0.75px] border-white/10 p-2">
+      <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+      <Card className="flex-1 min-w-[140px]">
+        <CardContent className="py-3 px-4">
+          <p className="text-xs text-white/40 mb-0.5">{label}</p>
+          <p className={cn("text-lg font-semibold font-mono", colorClass || "text-white")}>
+            {value}
+          </p>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
 export function JournalStatsBar({ stats }: JournalStatsBarProps) {
   const pnlColor = (val: number) =>
-    val > 0 ? "text-green-600" : val < 0 ? "text-red-600" : "text-gray-500";
+    val > 0 ? "text-green-400" : val < 0 ? "text-red-400" : "text-white/40";
 
-  const winRateColor = stats.win_rate > 50 ? "text-green-600" : stats.win_rate < 50 ? "text-red-600" : "text-gray-900";
+  const winRateColor = stats.win_rate > 50 ? "text-green-400" : stats.win_rate < 50 ? "text-red-400" : "text-white";
 
   return (
     <div className="flex flex-wrap gap-3 mb-6">

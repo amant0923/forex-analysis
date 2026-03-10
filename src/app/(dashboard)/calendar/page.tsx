@@ -120,8 +120,8 @@ export default function CalendarPage() {
   return (
     <div>
       <div className="mb-5 sm:mb-6">
-        <h1 className="font-serif text-xl sm:text-2xl font-bold text-gray-900">Economic Calendar</h1>
-        <p className="mt-1 text-xs sm:text-sm text-gray-500">
+        <h1 className="font-serif text-xl sm:text-2xl font-bold text-white">Economic Calendar</h1>
+        <p className="mt-1 text-xs sm:text-sm text-white/40">
           Upcoming economic events for USD, EUR, and GBP instruments
         </p>
       </div>
@@ -130,16 +130,16 @@ export default function CalendarPage() {
       <div className="flex items-center justify-between sm:justify-start sm:gap-4 mb-4 sm:mb-5">
         <button
           onClick={() => setWeekOffset((w) => w - 1)}
-          className="text-xs sm:text-sm text-gray-500 hover:text-gray-800 font-medium cursor-pointer px-2 py-1"
+          className="text-xs sm:text-sm text-white/40 hover:text-white font-medium cursor-pointer px-2 py-1"
         >
           ← Prev
         </button>
-        <span className="text-sm font-semibold text-gray-800 min-w-[100px] text-center">
+        <span className="text-sm font-semibold text-white min-w-[100px] text-center">
           {weekLabel}
         </span>
         <button
           onClick={() => setWeekOffset((w) => w + 1)}
-          className="text-xs sm:text-sm text-gray-500 hover:text-gray-800 font-medium cursor-pointer px-2 py-1"
+          className="text-xs sm:text-sm text-white/40 hover:text-white font-medium cursor-pointer px-2 py-1"
         >
           Next →
         </button>
@@ -148,7 +148,7 @@ export default function CalendarPage() {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-5 sm:mb-6">
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <span className="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase tracking-wider">Currency</span>
+          <span className="text-[10px] sm:text-xs text-white/30 font-semibold uppercase tracking-wider">Currency</span>
           {CURRENCIES.map((c) => (
             <button
               key={c}
@@ -157,7 +157,7 @@ export default function CalendarPage() {
                 "text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1 rounded-full border cursor-pointer transition-colors",
                 activeCurrencies.has(c)
                   ? "bg-[#1e3a5f] text-white border-[#1e3a5f]"
-                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
+                  : "bg-white/[0.06] text-white/40 border-white/10 hover:border-white/30"
               )}
             >
               {c}
@@ -165,7 +165,7 @@ export default function CalendarPage() {
           ))}
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <span className="text-[10px] sm:text-xs text-gray-400 font-semibold uppercase tracking-wider">Impact</span>
+          <span className="text-[10px] sm:text-xs text-white/30 font-semibold uppercase tracking-wider">Impact</span>
           {IMPACTS.map((i) => (
             <button
               key={i}
@@ -174,7 +174,7 @@ export default function CalendarPage() {
                 "text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1 rounded-full border cursor-pointer transition-colors capitalize",
                 activeImpacts.has(i)
                   ? "bg-[#1e3a5f] text-white border-[#1e3a5f]"
-                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
+                  : "bg-white/[0.06] text-white/40 border-white/10 hover:border-white/30"
               )}
             >
               {i}
@@ -187,18 +187,18 @@ export default function CalendarPage() {
       {loading ? (
         <div className="animate-pulse space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-12 bg-gray-100 rounded" />
+            <div key={i} className="h-12 bg-white/[0.06] rounded" />
           ))}
         </div>
       ) : sortedDates.length === 0 ? (
-        <div className="text-center py-12 border border-gray-200 rounded-lg">
-          <p className="text-sm text-gray-500">No events match your filters for this week.</p>
-          <p className="text-xs text-gray-400 mt-1">Try adjusting currency or impact filters.</p>
+        <div className="text-center py-12 border border-white/10 rounded-lg">
+          <p className="text-sm text-white/40">No events match your filters for this week.</p>
+          <p className="text-xs text-white/30 mt-1">Try adjusting currency or impact filters.</p>
         </div>
       ) : (
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className="border border-white/10 rounded-lg overflow-hidden">
           {/* Column headers — desktop only */}
-          <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-gray-50 border-b border-gray-200 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+          <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-white/[0.04] border-b border-white/10 text-[10px] font-semibold uppercase tracking-wider text-white/30">
             <span className="w-16 shrink-0">Time</span>
             <span className="shrink-0 w-6" />
             <span className="shrink-0 w-2" />
@@ -211,8 +211,8 @@ export default function CalendarPage() {
           {sortedDates.map((date) => (
             <div key={date}>
               {/* Date header */}
-              <div className="bg-gray-50 px-3 sm:px-4 py-2 border-b border-gray-200">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <div className="bg-white/[0.04] px-3 sm:px-4 py-2 border-b border-white/10">
+                <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
                   {formatDate(date)}
                 </span>
               </div>
@@ -227,23 +227,23 @@ export default function CalendarPage() {
                   <div
                     key={event.id}
                     className={cn(
-                      "border-b border-gray-100 last:border-b-0",
+                      "border-b border-white/[0.06] last:border-b-0",
                       event.impact === "high" && "border-l-3 border-l-red-500",
-                      isPast && "bg-gray-50/50"
+                      isPast && "bg-white/[0.02]"
                     )}
                   >
                     {/* Desktop row */}
                     <div className="hidden sm:flex items-center gap-3 px-4 py-3">
-                      <span className="text-xs text-gray-400 w-16 shrink-0 font-mono">
+                      <span className="text-xs text-white/30 w-16 shrink-0 font-mono">
                         {event.event_time || "\u2014"}
                       </span>
                       <span className="text-sm shrink-0">{COUNTRY_FLAGS[event.country] ?? ""}</span>
                       <div className={cn("h-2 w-2 rounded-full shrink-0", IMPACT_COLORS[event.impact])} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-800 font-medium truncate">{event.event_name}</p>
+                        <p className="text-sm text-white font-medium truncate">{event.event_name}</p>
                         <div className="flex gap-1 mt-0.5">
                           {instruments.map((inst) => (
-                            <span key={inst} className="text-[9px] bg-gray-100 text-gray-500 px-1 py-0.5 rounded">
+                            <span key={inst} className="text-[9px] bg-white/[0.06] text-white/40 px-1 py-0.5 rounded">
                               {inst}
                             </span>
                           ))}
@@ -253,51 +253,51 @@ export default function CalendarPage() {
                         {isPast ? (
                           <span className={cn(
                             "text-xs font-semibold",
-                            result === "beat" ? "text-green-600" : result === "miss" ? "text-red-600" : "text-gray-700"
+                            result === "beat" ? "text-green-400" : result === "miss" ? "text-red-400" : "text-white/80"
                           )}>
                             {event.actual}
                           </span>
                         ) : (
-                          <span className="text-xs text-gray-300">{"\u2014"}</span>
+                          <span className="text-xs text-white/20">{"\u2014"}</span>
                         )}
                       </div>
                       <div className="w-16 text-right shrink-0">
-                        <span className="text-xs text-gray-500">{event.forecast || "\u2014"}</span>
+                        <span className="text-xs text-white/40">{event.forecast || "\u2014"}</span>
                       </div>
                       <div className="w-16 text-right shrink-0">
-                        <span className="text-xs text-gray-400">{event.previous || "\u2014"}</span>
+                        <span className="text-xs text-white/30">{event.previous || "\u2014"}</span>
                       </div>
                     </div>
 
                     {/* Mobile row — stacked layout */}
                     <div className="sm:hidden px-3 py-3">
                       <div className="flex items-center gap-2 mb-1.5">
-                        <span className="text-[11px] text-gray-400 font-mono">
+                        <span className="text-[11px] text-white/30 font-mono">
                           {event.event_time || "TBD"}
                         </span>
                         <span className="text-sm">{COUNTRY_FLAGS[event.country] ?? ""}</span>
                         <div className={cn("h-2 w-2 rounded-full", IMPACT_COLORS[event.impact])} />
                       </div>
-                      <p className="text-[13px] text-gray-800 font-medium leading-snug mb-1.5">
+                      <p className="text-[13px] text-white font-medium leading-snug mb-1.5">
                         {event.event_name}
                       </p>
                       <div className="flex items-center gap-3 text-[11px]">
                         {isPast && event.actual ? (
                           <span className={cn(
                             "font-semibold",
-                            result === "beat" ? "text-green-600" : result === "miss" ? "text-red-600" : "text-gray-700"
+                            result === "beat" ? "text-green-400" : result === "miss" ? "text-red-400" : "text-white/80"
                           )}>
                             A: {event.actual}
                           </span>
                         ) : (
-                          <span className="text-gray-300">A: {"\u2014"}</span>
+                          <span className="text-white/20">A: {"\u2014"}</span>
                         )}
-                        <span className="text-gray-500">F: {event.forecast || "\u2014"}</span>
-                        <span className="text-gray-400">P: {event.previous || "\u2014"}</span>
+                        <span className="text-white/40">F: {event.forecast || "\u2014"}</span>
+                        <span className="text-white/30">P: {event.previous || "\u2014"}</span>
                       </div>
                       <div className="flex gap-1 mt-1.5">
                         {instruments.map((inst) => (
-                          <span key={inst} className="text-[9px] bg-gray-100 text-gray-500 px-1 py-0.5 rounded">
+                          <span key={inst} className="text-[9px] bg-white/[0.06] text-white/40 px-1 py-0.5 rounded">
                             {inst}
                           </span>
                         ))}

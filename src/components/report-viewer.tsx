@@ -77,7 +77,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
       {/* Controls */}
       <div className="flex flex-wrap items-end gap-4">
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Report Type</label>
+          <label className="block text-xs text-white/30 mb-1">Report Type</label>
           <div className="flex rounded-lg overflow-hidden border border-[#2a3040]">
             <button
               onClick={() => setType("weekly")}
@@ -85,7 +85,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
               className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer ${
                 type === "weekly"
                   ? "bg-blue-600 text-white"
-                  : "bg-[#1e2433] text-gray-400 hover:text-white"
+                  : "bg-[#1e2433] text-white/30 hover:text-white"
               } ${!hasWeekly ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Weekly
@@ -96,7 +96,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
               className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 type === "monthly"
                   ? "bg-blue-600 text-white"
-                  : "bg-[#1e2433] text-gray-400 hover:text-white"
+                  : "bg-[#1e2433] text-white/30 hover:text-white"
               } ${!hasMonthly ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               Monthly
@@ -106,7 +106,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
         </div>
 
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Period Ending</label>
+          <label className="block text-xs text-white/30 mb-1">Period Ending</label>
           <input
             type="date"
             value={date}
@@ -183,7 +183,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-gray-400 text-left">
+                    <tr className="text-white/30 text-left">
                       <th className="pb-2 font-medium">Instrument</th>
                       <th className="pb-2 font-medium text-right">Trades</th>
                       <th className="pb-2 font-medium text-right">P&L</th>
@@ -193,7 +193,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                     {report.by_instrument.map((row) => (
                       <tr key={row.instrument} className="border-t border-[#2a3040]">
                         <td className="py-2 text-white font-medium">{row.instrument}</td>
-                        <td className="py-2 text-right text-gray-300">{row.count}</td>
+                        <td className="py-2 text-right text-white/20">{row.count}</td>
                         <td
                           className={`py-2 text-right font-medium ${
                             Number(row.pnl) >= 0 ? "text-emerald-400" : "text-red-400"
@@ -242,7 +242,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                 {report.daily_pnl.map((day) => (
                   <div
                     key={day.day}
-                    className="flex-1 text-center text-[10px] text-gray-500 truncate"
+                    className="flex-1 text-center text-[10px] text-white/40 truncate"
                   >
                     {day.day.slice(5)}
                   </div>
@@ -259,7 +259,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                 <h3 className="text-sm font-semibold text-white">AI Insights</h3>
               </div>
 
-              <p className="text-sm text-gray-300 leading-relaxed">
+              <p className="text-sm text-white/20 leading-relaxed">
                 {report.ai_insights.summary}
               </p>
 
@@ -272,7 +272,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                   </div>
                   <ul className="space-y-1">
                     {report.ai_insights.strengths.map((s, i) => (
-                      <li key={i} className="text-sm text-gray-300 pl-5 relative before:content-[''] before:absolute before:left-1.5 before:top-2 before:w-1 before:h-1 before:rounded-full before:bg-emerald-500">
+                      <li key={i} className="text-sm text-white/20 pl-5 relative before:content-[''] before:absolute before:left-1.5 before:top-2 before:w-1 before:h-1 before:rounded-full before:bg-emerald-500">
                         {s}
                       </li>
                     ))}
@@ -287,7 +287,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                   </div>
                   <ul className="space-y-1">
                     {report.ai_insights.weaknesses.map((w, i) => (
-                      <li key={i} className="text-sm text-gray-300 pl-5 relative before:content-[''] before:absolute before:left-1.5 before:top-2 before:w-1 before:h-1 before:rounded-full before:bg-red-500">
+                      <li key={i} className="text-sm text-white/20 pl-5 relative before:content-[''] before:absolute before:left-1.5 before:top-2 before:w-1 before:h-1 before:rounded-full before:bg-red-500">
                         {w}
                       </li>
                     ))}
@@ -303,7 +303,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                 </div>
                 <ul className="space-y-1">
                   {report.ai_insights.patterns.map((p, i) => (
-                    <li key={i} className="text-sm text-gray-300 pl-5 relative before:content-[''] before:absolute before:left-1.5 before:top-2 before:w-1 before:h-1 before:rounded-full before:bg-blue-500">
+                    <li key={i} className="text-sm text-white/20 pl-5 relative before:content-[''] before:absolute before:left-1.5 before:top-2 before:w-1 before:h-1 before:rounded-full before:bg-blue-500">
                       {p}
                     </li>
                   ))}
@@ -316,7 +316,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                   <Brain className="h-3.5 w-3.5" />
                   Emotional Analysis
                 </div>
-                <p className="text-sm text-gray-300 leading-relaxed">
+                <p className="text-sm text-white/20 leading-relaxed">
                   {report.ai_insights.emotional_analysis}
                 </p>
               </div>
@@ -327,7 +327,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                   <TrendingUp className="h-3.5 w-3.5" />
                   Bias Alignment
                 </div>
-                <p className="text-sm text-gray-300 leading-relaxed">
+                <p className="text-sm text-white/20 leading-relaxed">
                   {report.ai_insights.bias_alignment}
                 </p>
               </div>
@@ -340,7 +340,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                 </div>
                 <ol className="space-y-1">
                   {report.ai_insights.top_suggestions.map((s, i) => (
-                    <li key={i} className="text-sm text-gray-300 pl-5 relative">
+                    <li key={i} className="text-sm text-white/20 pl-5 relative">
                       <span className="absolute left-0 text-purple-400 font-medium">{i + 1}.</span>
                       {s}
                     </li>
@@ -358,7 +358,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
                 <p className="text-sm font-medium text-purple-300">
                   Upgrade to Premium for AI-powered insights
                 </p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-white/30 mt-1">
                   Get personalized analysis of your trading patterns, emotional tendencies,
                   strengths, weaknesses, and actionable suggestions.
                 </p>
@@ -370,7 +370,7 @@ export function ReportViewer({ hasWeekly, hasMonthly }: ReportViewerProps) {
 
       {/* Empty state */}
       {!report && !loading && !error && (
-        <div className="text-center py-16 text-gray-500">
+        <div className="text-center py-16 text-white/40">
           <BarChart3 className="h-10 w-10 mx-auto mb-3 opacity-50" />
           <p className="text-sm">Select a period and generate your report</p>
         </div>
@@ -390,7 +390,7 @@ function StatCard({
 }) {
   return (
     <div className="bg-[#1e2433] border border-[#2a3040] rounded-lg p-3">
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
+      <p className="text-xs text-white/30 mb-1">{label}</p>
       <p
         className={`text-lg font-semibold ${
           color === "green"

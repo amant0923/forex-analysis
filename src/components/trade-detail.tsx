@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -117,7 +118,7 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
       {/* Back link */}
       <Link
         href="/journal"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white/80 mb-4 transition-colors"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to Journal
@@ -127,15 +128,15 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="font-serif text-2xl font-bold text-gray-900">
+            <h1 className="font-serif text-2xl font-bold text-white">
               {trade.instrument}
             </h1>
             <span
               className={cn(
                 "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase",
                 trade.direction === "buy"
-                  ? "bg-blue-100 text-blue-800"
-                  : "bg-red-100 text-red-800"
+                  ? "bg-blue-500/20 text-blue-400"
+                  : "bg-red-500/20 text-red-400"
               )}
             >
               {trade.direction === "buy" ? (
@@ -146,7 +147,7 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
               {trade.direction}
             </span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-gray-500">
+          <div className="flex items-center gap-3 text-xs text-white/40">
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
               Opened {formatDate(trade.opened_at)}
@@ -163,69 +164,84 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
 
       {/* Price Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
-        <Card size="sm">
-          <CardContent>
-            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Entry</p>
-            <p className="text-lg font-mono font-bold text-gray-900 mt-0.5">
-              {formatPrice(trade.entry_price, trade.instrument)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card size="sm">
-          <CardContent>
-            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Exit</p>
-            <p className="text-lg font-mono font-bold text-gray-900 mt-0.5">
-              {trade.exit_price ? formatPrice(trade.exit_price, trade.instrument) : "—"}
-            </p>
-          </CardContent>
-        </Card>
-        <Card size="sm">
-          <CardContent>
-            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Stop Loss</p>
-            <p className="text-lg font-mono font-bold text-gray-900 mt-0.5">
-              {trade.stop_loss ? formatPrice(trade.stop_loss, trade.instrument) : "—"}
-            </p>
-          </CardContent>
-        </Card>
-        <Card size="sm">
-          <CardContent>
-            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Take Profit</p>
-            <p className="text-lg font-mono font-bold text-gray-900 mt-0.5">
-              {trade.take_profit ? formatPrice(trade.take_profit, trade.instrument) : "—"}
-            </p>
-          </CardContent>
-        </Card>
-        <Card size="sm">
-          <CardContent>
-            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Lot Size</p>
-            <p className="text-lg font-mono font-bold text-gray-900 mt-0.5">
-              {trade.lot_size}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="relative rounded-[1.25rem] border-[0.75px] border-white/10 p-1.5">
+          <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+          <Card size="sm">
+            <CardContent>
+              <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">Entry</p>
+              <p className="text-lg font-mono font-bold text-white mt-0.5">
+                {formatPrice(trade.entry_price, trade.instrument)}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="relative rounded-[1.25rem] border-[0.75px] border-white/10 p-1.5">
+          <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+          <Card size="sm">
+            <CardContent>
+              <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">Exit</p>
+              <p className="text-lg font-mono font-bold text-white mt-0.5">
+                {trade.exit_price ? formatPrice(trade.exit_price, trade.instrument) : "—"}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="relative rounded-[1.25rem] border-[0.75px] border-white/10 p-1.5">
+          <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+          <Card size="sm">
+            <CardContent>
+              <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">Stop Loss</p>
+              <p className="text-lg font-mono font-bold text-white mt-0.5">
+                {trade.stop_loss ? formatPrice(trade.stop_loss, trade.instrument) : "—"}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="relative rounded-[1.25rem] border-[0.75px] border-white/10 p-1.5">
+          <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+          <Card size="sm">
+            <CardContent>
+              <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">Take Profit</p>
+              <p className="text-lg font-mono font-bold text-white mt-0.5">
+                {trade.take_profit ? formatPrice(trade.take_profit, trade.instrument) : "—"}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="relative rounded-[1.25rem] border-[0.75px] border-white/10 p-1.5">
+          <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+          <Card size="sm">
+            <CardContent>
+              <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">Lot Size</p>
+              <p className="text-lg font-mono font-bold text-white mt-0.5">
+                {trade.lot_size}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* P&L Summary */}
       {pnlDollars !== null && (
-        <Card className={cn("mb-6", isProfitable ? "ring-green-200" : isLoss ? "ring-red-200" : "")}>
+        <Card className={cn("mb-6", isProfitable ? "ring-green-500/20" : isLoss ? "ring-red-500/20" : "")}>
           <CardContent>
             <div className="flex items-center gap-2 mb-3">
               {isProfitable ? (
-                <TrendingUp className="h-4 w-4 text-green-600" />
+                <TrendingUp className="h-4 w-4 text-green-400" />
               ) : isLoss ? (
-                <TrendingDown className="h-4 w-4 text-red-600" />
+                <TrendingDown className="h-4 w-4 text-red-400" />
               ) : null}
-              <h3 className="text-sm font-semibold text-gray-700">P&L Summary</h3>
+              <h3 className="text-sm font-semibold text-white/80">P&L Summary</h3>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
-                <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
+                <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">
                   {forex ? "Pips" : "Ticks"}
                 </p>
                 <p
                   className={cn(
                     "text-xl font-mono font-bold",
-                    isProfitable ? "text-green-600" : isLoss ? "text-red-600" : "text-gray-900"
+                    isProfitable ? "text-green-400" : isLoss ? "text-red-400" : "text-white"
                   )}
                 >
                   {forex
@@ -238,28 +254,28 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
                 </p>
               </div>
               <div>
-                <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Dollars</p>
+                <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">Dollars</p>
                 <p
                   className={cn(
                     "text-xl font-mono font-bold",
-                    isProfitable ? "text-green-600" : isLoss ? "text-red-600" : "text-gray-900"
+                    isProfitable ? "text-green-400" : isLoss ? "text-red-400" : "text-white"
                   )}
                 >
                   {pnlDollars > 0 ? "+" : ""}${pnlDollars.toFixed(2)}
                 </p>
               </div>
               <div>
-                <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">R:R Ratio</p>
-                <p className="text-xl font-mono font-bold text-gray-900">
+                <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">R:R Ratio</p>
+                <p className="text-xl font-mono font-bold text-white">
                   {rrRatio !== null ? rrRatio.toFixed(2) : "—"}
                 </p>
               </div>
               <div>
-                <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Account Impact</p>
+                <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">Account Impact</p>
                 <p
                   className={cn(
                     "text-xl font-mono font-bold",
-                    isProfitable ? "text-green-600" : isLoss ? "text-red-600" : "text-gray-900"
+                    isProfitable ? "text-green-400" : isLoss ? "text-red-400" : "text-white"
                   )}
                 >
                   {acctImpact !== null
@@ -277,10 +293,10 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
         {trade.account_name && (
           <Card size="sm">
             <CardContent className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-gray-400" />
+              <Briefcase className="h-4 w-4 text-white/30" />
               <div>
-                <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Account</p>
-                <p className="text-sm font-medium text-gray-900">{trade.account_name}</p>
+                <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">Account</p>
+                <p className="text-sm font-medium text-white">{trade.account_name}</p>
               </div>
             </CardContent>
           </Card>
@@ -288,10 +304,10 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
         {trade.playbook_name && (
           <Card size="sm">
             <CardContent className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-indigo-500" />
+              <BookOpen className="h-4 w-4 text-indigo-400" />
               <div>
-                <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Playbook</p>
-                <p className="text-sm font-medium text-gray-900">{trade.playbook_name}</p>
+                <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider">Playbook</p>
+                <p className="text-sm font-medium text-white">{trade.playbook_name}</p>
               </div>
             </CardContent>
           </Card>
@@ -329,17 +345,17 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
-              <ShieldCheck className="h-4 w-4 text-gray-500" />
+              <ShieldCheck className="h-4 w-4 text-white/40" />
               Rule Adherence
               {trade.rule_adherence_score != null && (
                 <span
                   className={cn(
                     "ml-auto text-xs font-mono font-bold",
                     trade.rule_adherence_score >= 80
-                      ? "text-green-600"
+                      ? "text-green-400"
                       : trade.rule_adherence_score >= 50
-                        ? "text-yellow-600"
-                        : "text-red-600"
+                        ? "text-yellow-400"
+                        : "text-red-400"
                   )}
                 >
                   {trade.rule_adherence_score}%
@@ -350,7 +366,7 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
           <CardContent>
             {/* Score bar */}
             {trade.rule_adherence_score != null && (
-              <div className="w-full h-2 bg-gray-100 rounded-full mb-3 overflow-hidden">
+              <div className="w-full h-2 bg-white/[0.06] rounded-full mb-3 overflow-hidden">
                 <div
                   className={cn(
                     "h-full rounded-full transition-all",
@@ -372,7 +388,7 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
                   ) : (
                     <ShieldX className="h-4 w-4 text-red-500 shrink-0" />
                   )}
-                  <span className={detail.followed ? "text-gray-700" : "text-red-700"}>
+                  <span className={detail.followed ? "text-white/80" : "text-red-400"}>
                     Rule #{detail.rule_id}
                   </span>
                 </li>
@@ -387,9 +403,9 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
-              <ImageIcon className="h-4 w-4 text-gray-500" />
+              <ImageIcon className="h-4 w-4 text-white/40" />
               Screenshots
-              <span className="text-xs font-normal text-gray-400 ml-1">
+              <span className="text-xs font-normal text-white/30 ml-1">
                 ({trade.screenshots.length})
               </span>
             </CardTitle>
@@ -400,7 +416,7 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
                 <button
                   key={ss.id}
                   onClick={() => setLightboxIndex(i)}
-                  className="relative aspect-video overflow-hidden rounded-lg border border-gray-200 bg-gray-50 hover:ring-2 hover:ring-blue-300 transition-all cursor-pointer group"
+                  className="relative aspect-video overflow-hidden rounded-lg border border-white/10 bg-white/[0.04] hover:ring-2 hover:ring-white/25 transition-all cursor-pointer group"
                 >
                   <img
                     src={ss.url}
@@ -474,12 +490,12 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
-              <StickyNote className="h-4 w-4 text-gray-500" />
+              <StickyNote className="h-4 w-4 text-white/40" />
               Notes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-white/60 leading-relaxed whitespace-pre-wrap">
               {trade.notes}
             </p>
           </CardContent>
@@ -502,7 +518,7 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
 
         {showDeleteConfirm ? (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-red-600">Delete this trade?</span>
+            <span className="text-sm text-red-400">Delete this trade?</span>
             <Button
               variant="destructive"
               size="sm"

@@ -129,7 +129,7 @@ export function ChatInterface() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-white/30" />
       </div>
     );
   }
@@ -140,8 +140,8 @@ export function ChatInterface() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center px-8">
-            <Bot className="h-12 w-12 text-indigo-300 mb-4" />
-            <p className="text-gray-500 text-sm leading-relaxed max-w-md">
+            <Bot className="h-12 w-12 text-indigo-400 mb-4" />
+            <p className="text-white/40 text-sm leading-relaxed max-w-md">
               Ask me anything about your trading. I have access to your full
               trade history, playbooks, and market analysis.
             </p>
@@ -161,7 +161,7 @@ export function ChatInterface() {
                 "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
                 msg.role === "user"
                   ? "bg-indigo-600 text-white"
-                  : "bg-gray-100 text-gray-800"
+                  : "glass-sm text-white/80"
               )}
             >
               {msg.role === "assistant" ? (
@@ -175,11 +175,11 @@ export function ChatInterface() {
 
         {sending && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-2xl px-4 py-2.5">
+            <div className="bg-white/[0.06] rounded-2xl px-4 py-2.5">
               <div className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-gray-400 animate-bounce [animation-delay:0ms]" />
-                <span className="h-2 w-2 rounded-full bg-gray-400 animate-bounce [animation-delay:150ms]" />
-                <span className="h-2 w-2 rounded-full bg-gray-400 animate-bounce [animation-delay:300ms]" />
+                <span className="h-2 w-2 rounded-full bg-white/30 animate-bounce [animation-delay:0ms]" />
+                <span className="h-2 w-2 rounded-full bg-white/30 animate-bounce [animation-delay:150ms]" />
+                <span className="h-2 w-2 rounded-full bg-white/30 animate-bounce [animation-delay:300ms]" />
               </div>
             </div>
           </div>
@@ -189,7 +189,7 @@ export function ChatInterface() {
       </div>
 
       {/* Input area */}
-      <div className="border-t border-gray-200 p-4">
+      <div className="border-t border-white/10 p-4">
         <div className="flex items-center gap-2">
           <input
             ref={inputRef}
@@ -199,7 +199,7 @@ export function ChatInterface() {
             onKeyDown={handleKeyDown}
             placeholder="Ask about your trading..."
             disabled={sending}
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:opacity-50"
+            className="flex-1 rounded-lg border bg-white/[0.06] border-white/[0.12] px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-white/25 focus:border-transparent disabled:opacity-50"
           />
           <Button
             size="sm"

@@ -41,7 +41,7 @@ export function UpcomingEvents({ events }: { events: EconomicEvent[] }) {
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-white/30">
           Upcoming Events
         </h2>
         <Link
@@ -62,33 +62,33 @@ export function UpcomingEvents({ events }: { events: EconomicEvent[] }) {
               key={event.id}
               className={cn(
                 "flex-shrink-0 rounded-lg border px-3 py-2.5 min-w-[180px] max-w-[220px]",
-                past ? "bg-gray-50 border-gray-200" : "bg-white border-gray-200"
+                past ? "bg-white/[0.04] border-white/10" : "bg-white/[0.06] border-white/10"
               )}
             >
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="text-sm">{COUNTRY_FLAGS[event.country] ?? ""}</span>
                 <div className={cn("h-2 w-2 rounded-full", IMPACT_COLORS[event.impact])} />
-                <span className="text-[10px] text-gray-400">
+                <span className="text-[10px] text-white/30">
                   {formatEventTime(event.event_time)}
                 </span>
               </div>
-              <p className="text-xs font-medium text-gray-800 leading-snug line-clamp-2 mb-1.5">
+              <p className="text-xs font-medium text-white leading-snug line-clamp-2 mb-1.5">
                 {event.event_name}
               </p>
               {past && event.actual ? (
                 <div className="flex items-center gap-2 text-[10px]">
                   <span className={cn(
                     "font-semibold",
-                    result === "beat" ? "text-green-600" : result === "miss" ? "text-red-600" : "text-gray-600"
+                    result === "beat" ? "text-green-400" : result === "miss" ? "text-red-400" : "text-white/60"
                   )}>
                     {event.actual}
                   </span>
                   {event.forecast && (
-                    <span className="text-gray-400">vs {event.forecast}</span>
+                    <span className="text-white/30">vs {event.forecast}</span>
                   )}
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
+                <div className="flex items-center gap-1.5 text-[10px] text-white/30">
                   {event.forecast && <span>F: {event.forecast}</span>}
                   {event.previous && <span>P: {event.previous}</span>}
                 </div>
@@ -96,7 +96,7 @@ export function UpcomingEvents({ events }: { events: EconomicEvent[] }) {
               {instruments.length > 0 && (
                 <div className="flex gap-1 mt-1.5">
                   {instruments.map((inst) => (
-                    <span key={inst} className="text-[9px] bg-gray-100 text-gray-500 px-1 py-0.5 rounded">
+                    <span key={inst} className="text-[9px] bg-white/[0.06] text-white/40 px-1 py-0.5 rounded">
                       {inst}
                     </span>
                   ))}

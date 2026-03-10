@@ -35,7 +35,7 @@ export function SentimentGauge({ score, size = "sm", showLabel = true }: Sentime
 
   return (
     <div className="flex items-center gap-2">
-      <div className={cn("flex-1 rounded-full bg-gray-100 overflow-hidden", h)}>
+      <div className={cn("flex-1 rounded-full bg-white/[0.06] overflow-hidden", h)}>
         <div
           className={cn("h-full rounded-full transition-all", getColor(score))}
           style={{ width: `${score}%` }}

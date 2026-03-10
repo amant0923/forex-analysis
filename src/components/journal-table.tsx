@@ -132,7 +132,7 @@ export function JournalTable() {
           </select>
 
           {/* Direction toggle */}
-          <div className="flex bg-gray-100 rounded-lg p-0.5">
+          <div className="flex bg-white/[0.06] rounded-lg p-0.5">
             {DIRECTIONS.map((d) => (
               <button
                 key={d}
@@ -140,8 +140,8 @@ export function JournalTable() {
                 className={cn(
                   "px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer capitalize",
                   direction === d
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "bg-white/[0.06] text-white shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
+                    : "text-white/40 hover:text-white/80"
                 )}
               >
                 {d === "all" ? "All" : d}
@@ -199,16 +199,16 @@ export function JournalTable() {
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-              <span className="ml-2 text-sm text-gray-500">Loading trades...</span>
+              <Loader2 className="h-5 w-5 animate-spin text-white/30" />
+              <span className="ml-2 text-sm text-white/40">Loading trades...</span>
             </div>
           ) : trades.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="rounded-full bg-gray-100 p-3 mb-4">
-                <BookOpen className="h-6 w-6 text-gray-400" />
+              <div className="rounded-full bg-white/[0.06] p-3 mb-4">
+                <BookOpen className="h-6 w-6 text-white/30" />
               </div>
-              <p className="text-sm font-medium text-gray-900 mb-1">No trades yet</p>
-              <p className="text-sm text-gray-500 mb-5">
+              <p className="text-sm font-medium text-white mb-1">No trades yet</p>
+              <p className="text-sm text-white/40 mb-5">
                 Log your first trade to start tracking.
               </p>
               <Button size="sm" onClick={() => router.push("/journal/add")}>
@@ -220,16 +220,16 @@ export function JournalTable() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500">Date</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500">Instrument</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500">Direction</th>
-                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">Entry</th>
-                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">Exit</th>
-                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">P&L</th>
-                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-500">R:R</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500">Session</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500">Emotion</th>
+                  <tr className="border-b border-white/[0.06]">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-white/40">Date</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-white/40">Instrument</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-white/40">Direction</th>
+                    <th className="text-right py-3 px-4 text-xs font-medium text-white/40">Entry</th>
+                    <th className="text-right py-3 px-4 text-xs font-medium text-white/40">Exit</th>
+                    <th className="text-right py-3 px-4 text-xs font-medium text-white/40">P&L</th>
+                    <th className="text-right py-3 px-4 text-xs font-medium text-white/40">R:R</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-white/40">Session</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-white/40">Emotion</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -237,12 +237,12 @@ export function JournalTable() {
                     <tr
                       key={trade.id}
                       onClick={() => router.push(`/journal/${trade.id}`)}
-                      className="border-b border-gray-50 hover:bg-gray-50/50 cursor-pointer transition-colors"
+                      className="border-b border-white/[0.04] hover:bg-white/[0.04] cursor-pointer transition-colors"
                     >
-                      <td className="py-3 px-4 text-xs text-gray-600 whitespace-nowrap">
+                      <td className="py-3 px-4 text-xs text-white/60 whitespace-nowrap">
                         {formatDate(trade.opened_at)}
                       </td>
-                      <td className="py-3 px-4 font-medium text-gray-900">
+                      <td className="py-3 px-4 font-medium text-white">
                         {trade.instrument}
                       </td>
                       <td className="py-3 px-4">
@@ -251,38 +251,38 @@ export function JournalTable() {
                           className={cn(
                             "text-[10px] uppercase font-semibold",
                             trade.direction === "buy"
-                              ? "bg-blue-50 text-blue-700"
-                              : "bg-red-50 text-red-700"
+                              ? "bg-blue-500/20 text-blue-400"
+                              : "bg-red-500/20 text-red-400"
                           )}
                         >
                           {trade.direction}
                         </Badge>
                       </td>
-                      <td className="py-3 px-4 text-right font-mono text-xs text-gray-700">
+                      <td className="py-3 px-4 text-right font-mono text-xs text-white/80">
                         {trade.entry_price}
                       </td>
-                      <td className="py-3 px-4 text-right font-mono text-xs text-gray-700">
+                      <td className="py-3 px-4 text-right font-mono text-xs text-white/80">
                         {trade.exit_price ?? "--"}
                       </td>
                       <td
                         className={cn(
                           "py-3 px-4 text-right font-mono text-xs whitespace-nowrap",
                           trade.pnl_dollars !== null && trade.pnl_dollars > 0
-                            ? "text-green-600"
+                            ? "text-green-400"
                             : trade.pnl_dollars !== null && trade.pnl_dollars < 0
-                              ? "text-red-600"
-                              : "text-gray-500"
+                              ? "text-red-400"
+                              : "text-white/40"
                         )}
                       >
                         {formatPnl(trade)}
                       </td>
-                      <td className="py-3 px-4 text-right font-mono text-xs text-gray-700">
+                      <td className="py-3 px-4 text-right font-mono text-xs text-white/80">
                         {trade.rr_ratio !== null ? trade.rr_ratio.toFixed(2) : "--"}
                       </td>
-                      <td className="py-3 px-4 text-xs text-gray-500 capitalize">
+                      <td className="py-3 px-4 text-xs text-white/40 capitalize">
                         {trade.session?.replace("_", " ") ?? "--"}
                       </td>
-                      <td className="py-3 px-4 text-xs text-gray-500 capitalize">
+                      <td className="py-3 px-4 text-xs text-white/40 capitalize">
                         {trade.emotion_before ?? "--"}
                       </td>
                     </tr>
@@ -297,7 +297,7 @@ export function JournalTable() {
       {/* Pagination */}
       {!loading && trades.length > 0 && (
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-white/40">
             Showing {startIndex}-{endIndex}
           </span>
           <div className="flex items-center gap-2">
@@ -310,7 +310,7 @@ export function JournalTable() {
               <ChevronLeft className="h-3.5 w-3.5" data-icon="inline-start" />
               Prev
             </Button>
-            <span className="text-xs text-gray-600 px-2">Page {page}</span>
+            <span className="text-xs text-white/60 px-2">Page {page}</span>
             <Button
               variant="outline"
               size="sm"

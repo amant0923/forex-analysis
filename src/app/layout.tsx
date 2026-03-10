@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${baskerville.variable} ${jetbrains.variable} font-sans`}>
+      <body className={`${inter.variable} ${baskerville.variable} ${jetbrains.variable} font-sans bg-[#09090b]`}>
         {children}
       </body>
     </html>

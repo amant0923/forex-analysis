@@ -67,13 +67,13 @@ function TradingViewWidgetInner({ instrument, height = 500, compact = false }: T
   return (
     <div className="relative">
       <div
-        className="tradingview-widget-container rounded-lg overflow-hidden border border-gray-200"
+        className="tradingview-widget-container rounded-lg overflow-hidden border border-white/10"
         style={{ height }}
       >
         <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
       </div>
       {proxyLabel && !compact && (
-        <p className="text-[10px] text-gray-400 mt-1 text-right">
+        <p className="text-[10px] text-white/30 mt-1 text-right">
           Showing {proxyLabel}
         </p>
       )}

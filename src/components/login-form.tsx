@@ -29,19 +29,19 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="rounded border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
           {error}
         </p>
       )}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input id="email" name="email" type="email" required className="w-full rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-[#1e3a5f] focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]" placeholder="you@example.com" />
+        <label htmlFor="email" className="block text-sm font-medium text-white/80 mb-1">Email</label>
+        <input id="email" name="email" type="email" required className="w-full rounded border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-white/25 focus:outline-none focus:ring-1 focus:ring-white/25" placeholder="you@example.com" />
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-        <input id="password" name="password" type="password" required className="w-full rounded border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-[#1e3a5f] focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]" placeholder="Your password" />
+        <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-1">Password</label>
+        <input id="password" name="password" type="password" required className="w-full rounded border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white placeholder-white/30 focus:border-white/25 focus:outline-none focus:ring-1 focus:ring-white/25" placeholder="Your password" />
       </div>
-      <button type="submit" className="w-full rounded bg-[#1e3a5f] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#162d4a] transition-colors cursor-pointer">
+      <button type="submit" className="w-full rounded bg-white/[0.15] border border-white/20 px-4 py-2.5 text-sm font-medium text-white hover:bg-white/20 transition-colors cursor-pointer">
         Sign In
       </button>
     </form>

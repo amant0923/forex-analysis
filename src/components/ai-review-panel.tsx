@@ -23,15 +23,15 @@ interface AiReviewPanelProps {
 }
 
 const verdictConfig = {
-  good: { label: "Good Trade", className: "bg-green-100 text-green-800", icon: CheckCircle2 },
-  acceptable: { label: "Acceptable", className: "bg-yellow-100 text-yellow-800", icon: Minus },
-  poor: { label: "Poor Trade", className: "bg-red-100 text-red-800", icon: XCircle },
+  good: { label: "Good Trade", className: "bg-green-500/20 text-green-400", icon: CheckCircle2 },
+  acceptable: { label: "Acceptable", className: "bg-yellow-500/20 text-yellow-400", icon: Minus },
+  poor: { label: "Poor Trade", className: "bg-red-500/20 text-red-400", icon: XCircle },
 };
 
 const alignmentConfig = {
-  with: { label: "With Bias", className: "text-green-700" },
-  against: { label: "Against Bias", className: "text-red-700" },
-  neutral: { label: "Neutral", className: "text-gray-600" },
+  with: { label: "With Bias", className: "text-green-400" },
+  against: { label: "Against Bias", className: "text-red-400" },
+  neutral: { label: "Neutral", className: "text-white/60" },
 };
 
 export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReviewPanelProps) {
@@ -74,7 +74,7 @@ export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReview
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Bot className="h-4 w-4 text-indigo-600" />
+          <Bot className="h-4 w-4 text-indigo-400" />
           AI Trade Review
         </CardTitle>
       </CardHeader>
@@ -108,10 +108,10 @@ export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReview
             {/* Bias alignment explanation */}
             {review.bias_alignment_explanation && (
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-white/30 mb-1">
                   Bias Alignment
                 </h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm text-white/60 leading-relaxed">
                   {review.bias_alignment_explanation}
                 </p>
               </div>
@@ -120,10 +120,10 @@ export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReview
             {/* Rule adherence review */}
             {review.rule_adherence_review && (
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-white/30 mb-1">
                   Rule Adherence
                 </h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm text-white/60 leading-relaxed">
                   {review.rule_adherence_review}
                 </p>
               </div>
@@ -132,10 +132,10 @@ export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReview
             {/* Risk assessment */}
             {review.risk_assessment && (
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-white/30 mb-1">
                   Risk Assessment
                 </h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm text-white/60 leading-relaxed">
                   {review.risk_assessment}
                 </p>
               </div>
@@ -144,10 +144,10 @@ export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReview
             {/* Timing analysis */}
             {review.timing_analysis && (
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-white/30 mb-1">
                   Timing Analysis
                 </h4>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm text-white/60 leading-relaxed">
                   {review.timing_analysis}
                 </p>
               </div>
@@ -155,10 +155,10 @@ export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReview
 
             {/* Psychology flag */}
             {review.psychology_flag && (
-              <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
+              <div className="flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
                 <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-semibold text-amber-800 mb-0.5">
+                  <h4 className="text-xs font-semibold text-amber-400 mb-0.5">
                     Psychology Flag
                   </h4>
                   <p className="text-sm text-amber-700 leading-relaxed">
@@ -171,13 +171,13 @@ export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReview
             {/* Suggestions */}
             {review.suggestions && review.suggestions.length > 0 && (
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-white/30 mb-2">
                   Suggestions
                 </h4>
                 <ol className="space-y-1.5">
                   {review.suggestions.map((suggestion, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-gray-100 text-[10px] font-bold text-gray-500">
+                    <li key={i} className="flex items-start gap-2 text-sm text-white/60">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-white/[0.06] text-[10px] font-bold text-white/40">
                         {i + 1}
                       </span>
                       {suggestion}
@@ -188,7 +188,7 @@ export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReview
             )}
 
             {/* Generated at */}
-            <p className="text-[11px] text-gray-400 pt-2 border-t border-gray-100">
+            <p className="text-[11px] text-white/30 pt-2 border-t border-white/[0.06]">
               Generated{" "}
               {new Date(review.generated_at).toLocaleDateString("en-US", {
                 month: "short",
@@ -199,14 +199,14 @@ export function AiReviewPanel({ tradeId, review: initialReview, tier }: AiReview
             </p>
           </>
         ) : (
-          <p className="text-sm text-gray-400 py-4 text-center">
+          <p className="text-sm text-white/30 py-4 text-center">
             No AI review yet. Click below to analyze this trade.
           </p>
         )}
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-            <p className="text-sm text-red-700">{error}</p>
+          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
+            <p className="text-sm text-red-400">{error}</p>
           </div>
         )}
 

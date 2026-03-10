@@ -36,16 +36,16 @@ function SentimentDot({ label, direction }: { label: string; direction: string |
         "flex items-center gap-1.5 rounded-md px-2.5 py-1",
         dir === "bullish" && "bg-green-500/[0.08]",
         dir === "bearish" && "bg-red-500/[0.08]",
-        dir === "neutral" && "bg-gray-400/[0.08]",
+        dir === "neutral" && "bg-white/30/[0.08]",
       )}
     >
-      <span className="font-mono text-[11px] font-medium text-gray-400 tracking-wide">{label}</span>
+      <span className="font-mono text-[11px] font-medium text-white/30 tracking-wide">{label}</span>
       <span
         className={cn(
           "h-1.5 w-1.5 rounded-full",
           dir === "bullish" && "bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.4)]",
           dir === "bearish" && "bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.4)]",
-          dir === "neutral" && "bg-gray-400 shadow-[0_0_6px_rgba(161,161,170,0.3)]",
+          dir === "neutral" && "bg-white/30 shadow-[0_0_6px_rgba(161,161,170,0.3)]",
         )}
       />
     </div>
@@ -60,21 +60,21 @@ function InstrumentCard({ instrument, index }: { instrument: InstrumentWithBias;
     ? "bg-green-500"
     : dominant === "bearish"
       ? "bg-red-500"
-      : "bg-gray-400";
+      : "bg-white/30";
 
   const hoverBorder = dominant === "bullish"
     ? "hover:border-green-500/25"
     : dominant === "bearish"
       ? "hover:border-red-500/25"
-      : "hover:border-gray-400/25";
+      : "hover:border-white/20";
 
   return (
     <Link
       href={`/${instrument.code}`}
       className={cn(
-        "group block rounded-2xl border border-gray-100 bg-white overflow-hidden cursor-pointer",
+        "group block rounded-2xl border border-white/[0.06] bg-white/[0.06] overflow-hidden cursor-pointer",
         "transition-all duration-300 ease-out",
-        "hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] hover:-translate-y-0.5",
+        "hover:shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:-translate-y-0.5",
         hoverBorder,
       )}
       style={{
@@ -91,14 +91,14 @@ function InstrumentCard({ instrument, index }: { instrument: InstrumentWithBias;
             <InstrumentIcon code={instrument.code} size="lg" />
             <div>
               <div className="flex items-baseline gap-2.5">
-                <span className="text-[22px] font-bold tracking-tight text-gray-900">
+                <span className="text-[22px] font-bold tracking-tight text-white">
                   {instrument.code}
                 </span>
-                <span className="font-mono text-[10px] font-semibold text-gray-400 bg-gray-50 px-2 py-0.5 rounded tracking-widest uppercase">
+                <span className="font-mono text-[10px] font-semibold text-white/30 bg-white/[0.04] px-2 py-0.5 rounded tracking-widest uppercase">
                   {instrument.category}
                 </span>
               </div>
-              <p className="text-[13px] text-gray-500 mt-0.5">{instrument.name}</p>
+              <p className="text-[13px] text-white/40 mt-0.5">{instrument.name}</p>
             </div>
           </div>
         </div>
@@ -116,14 +116,14 @@ function InstrumentCard({ instrument, index }: { instrument: InstrumentWithBias;
 
         {/* Summary */}
         {dailyBias?.summary && (
-          <p className="text-[13.5px] leading-[1.65] text-gray-500 mb-4 line-clamp-3">
+          <p className="text-[13.5px] leading-[1.65] text-white/40 mb-4 line-clamp-3">
             {dailyBias.summary}
           </p>
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <span className="font-mono text-[12px] text-gray-400">
+        <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
+          <span className="font-mono text-[12px] text-white/30">
             {instrument.article_count} articles
           </span>
           <span className="text-[12px] font-medium text-blue-500 flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
@@ -153,10 +153,10 @@ export function Dashboard({ instruments }: DashboardProps) {
     <div>
       {/* Page title */}
       <div className="mb-2">
-        <h1 className="text-[36px] font-bold tracking-tight text-gray-900">
+        <h1 className="text-[36px] font-bold tracking-tight text-white">
           Market Overview
         </h1>
-        <p className="mt-1 text-[15px] text-gray-500">
+        <p className="mt-1 text-[15px] text-white/40">
           AI-powered fundamental bias across forex and index instruments
         </p>
       </div>
@@ -165,28 +165,28 @@ export function Dashboard({ instruments }: DashboardProps) {
       <div className="flex items-center gap-5 mt-8 mb-8 flex-wrap">
         {/* Bearish count */}
         <div className="flex items-center gap-2 rounded-xl border border-red-500/10 bg-red-500/[0.05] px-4 py-2.5">
-          <span className="font-mono text-xl font-bold text-red-600">{bearishCount}</span>
-          <span className="text-[13px] font-medium text-red-600">Bearish</span>
+          <span className="font-mono text-xl font-bold text-red-400">{bearishCount}</span>
+          <span className="text-[13px] font-medium text-red-400">Bearish</span>
         </div>
 
         {/* Bullish count */}
         <div className="flex items-center gap-2 rounded-xl border border-green-500/10 bg-green-500/[0.05] px-4 py-2.5">
-          <span className="font-mono text-xl font-bold text-green-600">{bullishCount}</span>
-          <span className="text-[13px] font-medium text-green-600">Bullish</span>
+          <span className="font-mono text-xl font-bold text-green-400">{bullishCount}</span>
+          <span className="text-[13px] font-medium text-green-400">Bullish</span>
         </div>
 
         {/* Neutral count */}
         {neutralCount > 0 && (
-          <div className="flex items-center gap-2 rounded-xl border border-gray-300/30 bg-gray-100/50 px-4 py-2.5">
-            <span className="font-mono text-xl font-bold text-gray-500">{neutralCount}</span>
-            <span className="text-[13px] font-medium text-gray-500">Neutral</span>
+          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5">
+            <span className="font-mono text-xl font-bold text-white/40">{neutralCount}</span>
+            <span className="text-[13px] font-medium text-white/40">Neutral</span>
           </div>
         )}
 
         <div className="flex-1" />
 
         {/* Filter tabs */}
-        <div className="flex bg-gray-100 rounded-xl p-1">
+        <div className="flex bg-white/[0.06] rounded-xl p-1">
           {(["all", "forex", "index"] as const).map((f) => (
             <button
               key={f}
@@ -194,8 +194,8 @@ export function Dashboard({ instruments }: DashboardProps) {
               className={cn(
                 "px-5 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 cursor-pointer",
                 filter === f
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700",
+                  ? "bg-white/[0.12] text-white shadow-sm"
+                  : "text-white/40 hover:text-white/80",
               )}
             >
               {f === "all" ? "All" : f === "forex" ? "Forex" : "Indices"}

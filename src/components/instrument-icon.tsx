@@ -48,7 +48,7 @@ export function InstrumentIcon({
             alt={flag.toUpperCase()}
             width={fs}
             height={fs}
-            className="rounded-full ring-1 ring-gray-200"
+            className="rounded-full ring-1 ring-white/10"
             style={{
               marginLeft: idx > 0 ? -(fs * 0.25) : 0,
               zIndex: config.flags!.length - idx,

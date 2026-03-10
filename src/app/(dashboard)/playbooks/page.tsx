@@ -48,8 +48,8 @@ export default function PlaybooksPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-        <span className="ml-2 text-sm text-gray-500">Loading playbooks...</span>
+        <Loader2 className="h-5 w-5 animate-spin text-white/30" />
+        <span className="ml-2 text-sm text-white/40">Loading playbooks...</span>
       </div>
     );
   }
@@ -63,10 +63,10 @@ export default function PlaybooksPage() {
             <div className="rounded-full bg-amber-50 p-3 mb-4">
               <BookOpen className="h-6 w-6 text-amber-500" />
             </div>
-            <p className="text-sm font-medium text-gray-900 mb-1">
+            <p className="text-sm font-medium text-white mb-1">
               Playbooks are not available on your current plan
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-white/40">
               Upgrade to create and manage trading playbooks.
             </p>
           </CardContent>
@@ -96,13 +96,13 @@ export default function PlaybooksPage() {
       {playbooks.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="rounded-full bg-gray-100 p-3 mb-4">
-              <BookOpen className="h-6 w-6 text-gray-400" />
+            <div className="rounded-full bg-white/[0.06] p-3 mb-4">
+              <BookOpen className="h-6 w-6 text-white/30" />
             </div>
-            <p className="text-sm font-medium text-gray-900 mb-1">
+            <p className="text-sm font-medium text-white mb-1">
               No playbooks yet
             </p>
-            <p className="text-sm text-gray-500 mb-5">
+            <p className="text-sm text-white/40 mb-5">
               Create one to track your strategies.
             </p>
             <Link href="/playbooks/add">

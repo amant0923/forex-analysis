@@ -24,7 +24,7 @@ export function TopNav({ instruments }: TopNavProps) {
   });
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#1a1f2e] border-b border-[#2a3040]">
+    <header className="sticky top-0 z-50 w-full bg-black/40 backdrop-blur-xl border-b border-white/[0.06]">
       <div className="mx-auto flex h-12 max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-10">
         <Link href="/" className="shrink-0 cursor-pointer">
           <span className="font-serif text-lg font-bold tracking-tight text-white">
@@ -32,7 +32,7 @@ export function TopNav({ instruments }: TopNavProps) {
           </span>
         </Link>
 
-        <div className="hidden sm:block h-4 w-px bg-gray-600 shrink-0" />
+        <div className="hidden sm:block h-4 w-px bg-white/10 shrink-0" />
 
         {/* Desktop nav — single scrollable row */}
         <nav className="hidden sm:flex items-center gap-0.5 overflow-x-auto flex-1 min-w-0 scrollbar-hide">
@@ -55,7 +55,7 @@ export function TopNav({ instruments }: TopNavProps) {
             );
           })}
 
-          <div className="h-4 w-px bg-gray-600 shrink-0 mx-1" />
+          <div className="h-4 w-px bg-white/10 shrink-0 mx-1" />
 
           <Link
             href="/calendar"
@@ -69,7 +69,7 @@ export function TopNav({ instruments }: TopNavProps) {
             Calendar
           </Link>
 
-          <div className="h-4 w-px bg-gray-600 shrink-0 mx-1" />
+          <div className="h-4 w-px bg-white/10 shrink-0 mx-1" />
 
           {[
             { href: "/journal", label: "Journal" },
@@ -125,7 +125,7 @@ export function TopNav({ instruments }: TopNavProps) {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <nav className="sm:hidden bg-[#1a1f2e] border-t border-[#2a3040] px-4 py-3 space-y-1">
+        <nav className="sm:hidden bg-black/80 backdrop-blur-xl border-t border-white/[0.06] px-4 py-3 space-y-1">
           {instruments.map((inst) => {
             const isActive = pathname === `/${inst.code}`;
             return (
@@ -146,7 +146,7 @@ export function TopNav({ instruments }: TopNavProps) {
               </Link>
             );
           })}
-          <div className="h-px bg-gray-700 my-2" />
+          <div className="h-px bg-white/10 my-2" />
           <Link
             href="/calendar"
             onClick={() => setMobileOpen(false)}
@@ -160,7 +160,7 @@ export function TopNav({ instruments }: TopNavProps) {
             <Calendar className="h-4 w-4" />
             <span>Economic Calendar</span>
           </Link>
-          <div className="h-px bg-gray-700 my-2" />
+          <div className="h-px bg-white/10 my-2" />
           {[
             { href: "/journal", label: "Journal" },
             { href: "/journal/add", label: "Log Trade" },
@@ -184,7 +184,7 @@ export function TopNav({ instruments }: TopNavProps) {
               <span>{link.label}</span>
             </Link>
           ))}
-          <div className="h-px bg-gray-700 my-2" />
+          <div className="h-px bg-white/10 my-2" />
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer w-full"

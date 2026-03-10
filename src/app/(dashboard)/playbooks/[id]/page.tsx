@@ -94,8 +94,8 @@ export default function PlaybookDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-        <span className="ml-2 text-sm text-gray-500">Loading playbook...</span>
+        <Loader2 className="h-5 w-5 animate-spin text-white/30" />
+        <span className="ml-2 text-sm text-white/40">Loading playbook...</span>
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function PlaybookDetailPage() {
       <div>
         <button
           onClick={() => router.push("/playbooks")}
-          className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
+          className="flex items-center gap-1 text-sm text-white/40 hover:text-white/80 mb-4"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Playbooks
@@ -124,7 +124,7 @@ export default function PlaybookDetailPage() {
       <div>
         <button
           onClick={() => setEditing(false)}
-          className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
+          className="flex items-center gap-1 text-sm text-white/40 hover:text-white/80 mb-4"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Playbook
@@ -148,7 +148,7 @@ export default function PlaybookDetailPage() {
     <div>
       <button
         onClick={() => router.push("/playbooks")}
-        className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
+        className="flex items-center gap-1 text-sm text-white/40 hover:text-white/80 mb-4"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to Playbooks
@@ -165,7 +165,7 @@ export default function PlaybookDetailPage() {
         <div>
           <h1 className="text-2xl font-semibold">{playbook.name}</h1>
           {playbook.description && (
-            <p className="text-sm text-gray-500 mt-1">{playbook.description}</p>
+            <p className="text-sm text-white/40 mt-1">{playbook.description}</p>
           )}
           <div className="flex items-center gap-1.5 mt-2">
             {playbook.instrument && (
@@ -190,7 +190,7 @@ export default function PlaybookDetailPage() {
             size="sm"
             onClick={handleDelete}
             disabled={deleting}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-red-400 hover:text-red-700 hover:bg-red-50"
           >
             {deleting ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" data-icon="inline-start" />
@@ -206,29 +206,29 @@ export default function PlaybookDetailPage() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-6">
         <Card>
           <CardContent className="text-center py-3">
-            <p className="text-xs text-gray-500 mb-1">Trades</p>
-            <p className="text-xl font-mono font-bold text-gray-900">
+            <p className="text-xs text-white/40 mb-1">Trades</p>
+            <p className="text-xl font-mono font-bold text-white">
               {playbook.trade_count}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="text-center py-3">
-            <p className="text-xs text-gray-500 mb-1">Win Rate</p>
-            <p className="text-xl font-mono font-bold text-gray-900">
+            <p className="text-xs text-white/40 mb-1">Win Rate</p>
+            <p className="text-xl font-mono font-bold text-white">
               {winRate.toFixed(1)}%
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="text-center py-3">
-            <p className="text-xs text-gray-500 mb-1">Total P&L</p>
+            <p className="text-xs text-white/40 mb-1">Total P&L</p>
             <p
               className={cn(
                 "text-xl font-mono font-bold flex items-center justify-center gap-1",
-                pnl > 0 && "text-green-600",
-                pnl < 0 && "text-red-600",
-                pnl === 0 && "text-gray-400"
+                pnl > 0 && "text-green-400",
+                pnl < 0 && "text-red-400",
+                pnl === 0 && "text-white/30"
               )}
             >
               {pnl > 0 ? (
@@ -243,8 +243,8 @@ export default function PlaybookDetailPage() {
         </Card>
         <Card>
           <CardContent className="text-center py-3">
-            <p className="text-xs text-gray-500 mb-1">Avg R:R</p>
-            <p className="text-xl font-mono font-bold text-gray-900">
+            <p className="text-xs text-white/40 mb-1">Avg R:R</p>
+            <p className="text-xl font-mono font-bold text-white">
               {playbook.avg_rr != null ? playbook.avg_rr.toFixed(2) : "—"}
             </p>
           </CardContent>
@@ -257,16 +257,16 @@ export default function PlaybookDetailPage() {
           {rulesByCategory.map((group) => (
             <Card key={group.category}>
               <CardContent>
-                <h3 className="text-sm font-medium text-gray-900 mb-3">
+                <h3 className="text-sm font-medium text-white mb-3">
                   {group.label}
                 </h3>
                 <ul className="space-y-2">
                   {group.rules.map((rule) => (
                     <li
                       key={rule.id}
-                      className="flex items-start gap-2 text-sm text-gray-600"
+                      className="flex items-start gap-2 text-sm text-white/60"
                     >
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-300" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/20" />
                       {rule.rule_text}
                     </li>
                   ))}
@@ -278,7 +278,7 @@ export default function PlaybookDetailPage() {
       ) : (
         <Card>
           <CardContent>
-            <p className="text-sm text-gray-400 text-center py-4">
+            <p className="text-sm text-white/30 text-center py-4">
               No rules defined. Edit this playbook to add rules.
             </p>
           </CardContent>

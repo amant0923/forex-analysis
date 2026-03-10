@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Pencil, Trash2, Loader2, X, Wallet } from "lucide-react";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 interface Account {
   id: number;
@@ -186,8 +187,8 @@ export function AccountsManager() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-        <span className="ml-2 text-sm text-gray-500">Loading accounts...</span>
+        <Loader2 className="h-5 w-5 animate-spin text-white/30" />
+        <span className="ml-2 text-sm text-white/40">Loading accounts...</span>
       </div>
     );
   }
@@ -196,7 +197,7 @@ export function AccountsManager() {
     <div className="space-y-5">
       {/* Header actions */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-white/40">
           {accounts.length} account{accounts.length !== 1 ? "s" : ""}
         </p>
         {!showForm && (
@@ -209,7 +210,7 @@ export function AccountsManager() {
 
       {/* Tier limit warning */}
       {limitReached && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-400">
           You have reached the maximum number of trading accounts for your plan.
           Upgrade to add more.
         </div>
@@ -217,7 +218,7 @@ export function AccountsManager() {
 
       {/* Error banner */}
       {error && !showForm && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
           {error}
         </div>
       )}
@@ -227,7 +228,7 @@ export function AccountsManager() {
         <Card>
           <CardContent className="pt-2">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-900">
+              <h3 className="text-sm font-medium text-white">
                 {editingId ? "Edit Account" : "New Account"}
               </h3>
               <Button variant="ghost" size="icon-xs" onClick={closeForm}>
@@ -236,7 +237,7 @@ export function AccountsManager() {
             </div>
 
             {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 mb-4">
+              <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400 mb-4">
                 {error}
               </div>
             )}
@@ -342,13 +343,13 @@ export function AccountsManager() {
       {accounts.length === 0 && !showForm && (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="rounded-full bg-gray-100 p-3 mb-4">
-              <Wallet className="h-6 w-6 text-gray-400" />
+            <div className="rounded-full bg-white/[0.06] p-3 mb-4">
+              <Wallet className="h-6 w-6 text-white/30" />
             </div>
-            <p className="text-sm font-medium text-gray-900 mb-1">
+            <p className="text-sm font-medium text-white mb-1">
               No trading accounts yet
             </p>
-            <p className="text-sm text-gray-500 mb-5">
+            <p className="text-sm text-white/40 mb-5">
               Add one to start logging trades.
             </p>
             <Button onClick={openAddForm} size="sm">
@@ -363,61 +364,64 @@ export function AccountsManager() {
       {accounts.length > 0 && (
         <div className="space-y-3">
           {accounts.map((account) => (
-            <Card key={account.id}>
-              <CardContent>
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4 min-w-0">
-                    <div className="shrink-0 rounded-lg bg-blue-50 p-2">
-                      <Wallet className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-baseline gap-2 flex-wrap">
-                        <span className="text-sm font-semibold text-gray-900 truncate">
-                          {account.name}
-                        </span>
-                        {account.broker && (
-                          <span className="text-xs text-gray-400">
-                            {account.broker}
+            <div key={account.id} className="relative rounded-[1.25rem] border-[0.75px] border-white/10 p-2">
+              <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+              <Card>
+                <CardContent>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="shrink-0 rounded-lg bg-blue-500/10 p-2">
+                        <Wallet className="h-4 w-4 text-blue-400" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-baseline gap-2 flex-wrap">
+                          <span className="text-sm font-semibold text-white truncate">
+                            {account.name}
                           </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-500">
-                        <span className="font-mono font-medium text-gray-700">
-                          {formatCurrency(account.account_size, account.currency)}
-                        </span>
-                        <span>{account.currency}</span>
-                        {account.leverage && (
-                          <span>1:{account.leverage}</span>
-                        )}
+                          {account.broker && (
+                            <span className="text-xs text-white/30">
+                              {account.broker}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-0.5 text-xs text-white/40">
+                          <span className="font-mono font-medium text-white/80">
+                            {formatCurrency(account.account_size, account.currency)}
+                          </span>
+                          <span>{account.currency}</span>
+                          {account.leverage && (
+                            <span>1:{account.leverage}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => openEditForm(account)}
+                        title="Edit"
+                      >
+                        <Pencil className="h-3.5 w-3.5 text-white/30" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => handleDelete(account.id)}
+                        disabled={deletingId === account.id}
+                        title="Delete"
+                      >
+                        {deletingId === account.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin text-white/30" />
+                        ) : (
+                          <Trash2 className="h-3.5 w-3.5 text-white/30 hover:text-red-500" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={() => openEditForm(account)}
-                      title="Edit"
-                    >
-                      <Pencil className="h-3.5 w-3.5 text-gray-400" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={() => handleDelete(account.id)}
-                      disabled={deletingId === account.id}
-                      title="Delete"
-                    >
-                      {deletingId === account.id ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin text-gray-400" />
-                      ) : (
-                        <Trash2 className="h-3.5 w-3.5 text-gray-400 hover:text-red-500" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           ))}
         </div>
       )}

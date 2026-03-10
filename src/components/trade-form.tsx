@@ -256,8 +256,8 @@ export function TradeForm({ tradeId }: TradeFormProps) {
   if (loadingTrade) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-        <span className="ml-2 text-sm text-gray-500">Loading trade...</span>
+        <Loader2 className="h-5 w-5 animate-spin text-white/30" />
+        <span className="ml-2 text-sm text-white/40">Loading trade...</span>
       </div>
     );
   }
@@ -281,7 +281,7 @@ export function TradeForm({ tradeId }: TradeFormProps) {
       {/* Trade Details */}
       <Card>
         <CardContent className="pt-2">
-          <h3 className="text-sm font-medium text-gray-900 mb-4">Trade Details</h3>
+          <h3 className="text-sm font-medium text-white mb-4">Trade Details</h3>
 
           <div className="space-y-4">
             {/* Account */}
@@ -319,8 +319,8 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                     className={cn(
                       "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer",
                       form.instrument === inst
-                        ? "bg-gray-900 text-white border-gray-900"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                        ? "bg-white/[0.2] text-white border-white/25"
+                        : "bg-white/[0.06] text-white/60 border-white/10 hover:border-white/[0.15]"
                     )}
                   >
                     {inst}
@@ -347,7 +347,7 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                     "flex-1 py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer",
                     form.direction === "buy"
                       ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                      : "bg-white/[0.06] text-white/60 border-white/10 hover:border-white/[0.15]"
                   )}
                 >
                   Buy
@@ -359,7 +359,7 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                     "flex-1 py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer",
                     form.direction === "sell"
                       ? "bg-red-600 text-white border-red-600"
-                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                      : "bg-white/[0.06] text-white/60 border-white/10 hover:border-white/[0.15]"
                   )}
                 >
                   Sell
@@ -468,16 +468,16 @@ export function TradeForm({ tradeId }: TradeFormProps) {
       {pnlCalc && pnlCalc.pnl && (
         <Card>
           <CardContent className="pt-2">
-            <h3 className="text-sm font-medium text-gray-900 mb-3">Calculated P&L</h3>
+            <h3 className="text-sm font-medium text-white mb-3">Calculated P&L</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
-                <p className="text-xs text-gray-500 mb-0.5">
+                <p className="text-xs text-white/40 mb-0.5">
                   {isForex(form.instrument) ? "Pips" : "Ticks"}
                 </p>
                 <p
                   className={cn(
                     "text-sm font-semibold font-mono",
-                    (pnlCalc.pnl.pnl_dollars ?? 0) >= 0 ? "text-green-600" : "text-red-600"
+                    (pnlCalc.pnl.pnl_dollars ?? 0) >= 0 ? "text-green-400" : "text-red-400"
                   )}
                 >
                   {isForex(form.instrument)
@@ -486,11 +486,11 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-0.5">P&L ($)</p>
+                <p className="text-xs text-white/40 mb-0.5">P&L ($)</p>
                 <p
                   className={cn(
                     "text-sm font-semibold font-mono",
-                    pnlCalc.pnl.pnl_dollars >= 0 ? "text-green-600" : "text-red-600"
+                    pnlCalc.pnl.pnl_dollars >= 0 ? "text-green-400" : "text-red-400"
                   )}
                 >
                   {pnlCalc.pnl.pnl_dollars >= 0 ? "+" : ""}
@@ -498,17 +498,17 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-0.5">R:R</p>
-                <p className="text-sm font-semibold font-mono text-gray-900">
+                <p className="text-xs text-white/40 mb-0.5">R:R</p>
+                <p className="text-sm font-semibold font-mono text-white">
                   {pnlCalc.rr !== null ? pnlCalc.rr.toFixed(2) : "--"}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-500 mb-0.5">Account %</p>
+                <p className="text-xs text-white/40 mb-0.5">Account %</p>
                 <p
                   className={cn(
                     "text-sm font-semibold font-mono",
-                    pnlCalc.pnl.account_pct_impact >= 0 ? "text-green-600" : "text-red-600"
+                    pnlCalc.pnl.account_pct_impact >= 0 ? "text-green-400" : "text-red-400"
                   )}
                 >
                   {pnlCalc.pnl.account_pct_impact >= 0 ? "+" : ""}
@@ -524,7 +524,7 @@ export function TradeForm({ tradeId }: TradeFormProps) {
       {playbooks.length > 0 && (
         <Card>
           <CardContent className="pt-2">
-            <h3 className="text-sm font-medium text-gray-900 mb-4">Strategy</h3>
+            <h3 className="text-sm font-medium text-white mb-4">Strategy</h3>
 
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -549,7 +549,7 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                 <div className="space-y-3">
                   {Object.entries(rulesByCategory).map(([category, rules]) => (
                     <div key={category}>
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                      <p className="text-xs font-medium text-white/40 uppercase tracking-wide mb-2">
                         {category} Rules
                       </p>
                       <div className="space-y-1.5">
@@ -562,9 +562,9 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                               type="checkbox"
                               checked={checkedRules.has(rule.id)}
                               onChange={() => toggleRule(rule.id)}
-                              className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              className="mt-0.5 h-4 w-4 rounded border-white/[0.12] text-blue-600 focus:ring-blue-500"
                             />
-                            <span className="text-sm text-gray-700 group-hover:text-gray-900">
+                            <span className="text-sm text-white/80 group-hover:text-white">
                               {rule.rule_text}
                             </span>
                           </label>
@@ -574,15 +574,15 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                   ))}
                   {ruleAdherenceScore !== null && (
                     <div className="flex items-center gap-2 pt-1">
-                      <span className="text-xs text-gray-500">Rule Adherence:</span>
+                      <span className="text-xs text-white/40">Rule Adherence:</span>
                       <span
                         className={cn(
                           "text-xs font-semibold",
                           ruleAdherenceScore >= 80
-                            ? "text-green-600"
+                            ? "text-green-400"
                             : ruleAdherenceScore >= 50
                               ? "text-amber-600"
-                              : "text-red-600"
+                              : "text-red-400"
                         )}
                       >
                         {ruleAdherenceScore}%
@@ -599,7 +599,7 @@ export function TradeForm({ tradeId }: TradeFormProps) {
       {/* Context */}
       <Card>
         <CardContent className="pt-2">
-          <h3 className="text-sm font-medium text-gray-900 mb-4">Context</h3>
+          <h3 className="text-sm font-medium text-white mb-4">Context</h3>
 
           <div className="space-y-4">
             {/* Session */}
@@ -614,8 +614,8 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                     className={cn(
                       "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer capitalize",
                       form.session === s
-                        ? "bg-gray-900 text-white border-gray-900"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                        ? "bg-white/[0.2] text-white border-white/25"
+                        : "bg-white/[0.06] text-white/60 border-white/10 hover:border-white/[0.15]"
                     )}
                   >
                     {s.replace("_", " ")}
@@ -636,8 +636,8 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                     className={cn(
                       "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer",
                       form.timeframe_traded === tf
-                        ? "bg-gray-900 text-white border-gray-900"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                        ? "bg-white/[0.2] text-white border-white/25"
+                        : "bg-white/[0.06] text-white/60 border-white/10 hover:border-white/[0.15]"
                     )}
                   >
                     {tf}
@@ -658,8 +658,8 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                     className={cn(
                       "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer capitalize",
                       form.emotion_before === em
-                        ? "bg-gray-900 text-white border-gray-900"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                        ? "bg-white/[0.2] text-white border-white/25"
+                        : "bg-white/[0.06] text-white/60 border-white/10 hover:border-white/[0.15]"
                     )}
                   >
                     {em}
@@ -680,8 +680,8 @@ export function TradeForm({ tradeId }: TradeFormProps) {
                     className={cn(
                       "px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer capitalize",
                       form.emotion_after === em
-                        ? "bg-gray-900 text-white border-gray-900"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                        ? "bg-white/[0.2] text-white border-white/25"
+                        : "bg-white/[0.06] text-white/60 border-white/10 hover:border-white/[0.15]"
                     )}
                   >
                     {em}
@@ -696,7 +696,7 @@ export function TradeForm({ tradeId }: TradeFormProps) {
       {/* Notes */}
       <Card>
         <CardContent className="pt-2">
-          <h3 className="text-sm font-medium text-gray-900 mb-4">Notes</h3>
+          <h3 className="text-sm font-medium text-white mb-4">Notes</h3>
           <textarea
             value={form.notes}
             onChange={(e) => updateField("notes", e.target.value)}
