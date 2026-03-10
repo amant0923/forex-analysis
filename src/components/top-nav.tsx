@@ -19,6 +19,7 @@ import {
   Bot,
   BarChart3,
   ChevronDown,
+  Home,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import type { Instrument } from "@/types";
@@ -40,8 +41,8 @@ export function TopNav({ instruments }: TopNavProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const homeActive = pathname === "/";
   const newsActive =
-    pathname === "/" ||
     pathname === "/calendar" ||
     instruments.some((i) => pathname === `/${i.code}`);
   const journalActive = journalLinks.some((l) => pathname === l.href);
@@ -60,6 +61,20 @@ export function TopNav({ instruments }: TopNavProps) {
 
         {/* Desktop nav — two dropdown sections */}
         <nav className="hidden sm:flex items-center gap-1 flex-1">
+          {/* Home */}
+          <Link
+            href="/"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+              homeActive
+                ? "text-white bg-white/10"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <Home className="h-4 w-4" />
+            Home
+          </Link>
+
           {/* News Dropdown */}
           <div className="relative group/news">
             <button
@@ -219,6 +234,22 @@ export function TopNav({ instruments }: TopNavProps) {
       {/* Mobile drawer */}
       {mobileOpen && (
         <nav className="sm:hidden bg-black/80 backdrop-blur-xl border-t border-white/[0.06] px-4 py-3 space-y-1">
+          <Link
+            href="/"
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+              homeActive
+                ? "bg-white/10 text-white"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <Home className="h-4 w-4" />
+            <span>Home</span>
+          </Link>
+
+          <div className="h-px bg-white/10 my-2" />
+
           <p className="text-[10px] uppercase tracking-wider text-white/30 font-semibold px-3 mb-1">
             News
           </p>

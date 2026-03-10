@@ -212,32 +212,30 @@ export function HomeFeed({ instruments, articles }: HomeFeedProps) {
             <h3 className="text-xs font-semibold uppercase tracking-wider text-white/30 mb-3">
               Instrument Bias
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {instruments.map((inst) => (
                 <Link
                   key={inst.code}
                   href={`/${inst.code}`}
-                  className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer group"
+                  className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer group"
                 >
                   <InstrumentIcon code={inst.code} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-semibold text-white">{inst.code}</span>
-                      {inst.quote && (
-                        <span className={cn(
-                          "text-[10px] font-semibold tabular-nums",
-                          inst.quote.change_pct >= 0 ? "text-green-400" : "text-red-400"
-                        )}>
-                          {inst.quote.change_pct >= 0 ? "+" : ""}{inst.quote.change_pct.toFixed(2)}%
-                        </span>
-                      )}
-                    </div>
+                  <div className="min-w-0 w-16 shrink-0">
+                    <span className="text-sm font-semibold text-white block">{inst.code}</span>
+                    {inst.quote && (
+                      <span className={cn(
+                        "text-[10px] font-semibold tabular-nums block",
+                        inst.quote.change_pct >= 0 ? "text-green-400" : "text-red-400"
+                      )}>
+                        {inst.quote.change_pct >= 0 ? "+" : ""}{inst.quote.change_pct.toFixed(2)}%
+                      </span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2 ml-auto">
                     <BiasIndicator direction={inst.biases?.daily?.direction ?? null} label="1D" />
                     <BiasIndicator direction={inst.biases?.["1week"]?.direction ?? null} label="1W" />
+                    <ChevronRight className="h-3.5 w-3.5 text-white/20 group-hover:text-white/40 transition-colors" />
                   </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-white/20 group-hover:text-white/40 transition-colors" />
                 </Link>
               ))}
             </div>
