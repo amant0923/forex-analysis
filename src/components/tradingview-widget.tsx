@@ -5,11 +5,18 @@ import { useEffect, useRef, memo } from "react";
 const TV_SYMBOL_MAP: Record<string, string> = {
   EURUSD: "FX:EURUSD",
   GBPUSD: "FX:GBPUSD",
-  DXY: "CAPITALCOM:DXY",
-  US30: "BLACKBULL:US30",
-  NAS100: "PEPPERSTONE:NAS100",
-  SP500: "FOREXCOM:SPXUSD",
-  GER40: "PEPPERSTONE:GER40",
+  DXY: "TVC:DXY",
+  US30: "AMEX:DIA",
+  NAS100: "NASDAQ:QQQ",
+  SP500: "AMEX:SPY",
+  GER40: "XETR:DAX",
+};
+
+const TV_PROXY_LABEL: Record<string, string> = {
+  US30: "DIA ETF (Dow Jones proxy)",
+  NAS100: "QQQ ETF (Nasdaq 100 proxy)",
+  SP500: "SPY ETF (S&P 500 proxy)",
+  GER40: "DAX Index",
 };
 
 interface TradingViewWidgetProps {
@@ -54,12 +61,21 @@ function TradingViewWidgetInner({ instrument, height = 500, compact = false }: T
     };
   }, [instrument, compact]);
 
+  const proxyLabel = TV_PROXY_LABEL[instrument];
+
   return (
-    <div
-      className="tradingview-widget-container rounded-lg overflow-hidden border border-gray-200"
-      style={{ height }}
-    >
-      <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
+    <div className="relative">
+      <div
+        className="tradingview-widget-container rounded-lg overflow-hidden border border-gray-200"
+        style={{ height }}
+      >
+        <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
+      </div>
+      {proxyLabel && !compact && (
+        <p className="text-[10px] text-gray-400 mt-1 text-right">
+          Showing {proxyLabel}
+        </p>
+      )}
     </div>
   );
 }
