@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { InstrumentIcon } from "@/components/instrument-icon";
-import { BiasIndicator, BiasDirectionDot } from "@/components/bias-indicator";
+import { BiasDirectionDot } from "@/components/bias-indicator";
 import { SentimentGauge } from "@/components/sentiment-gauge";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import {
@@ -220,20 +220,20 @@ export function HomeFeed({ instruments, articles }: HomeFeedProps) {
                   className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer group"
                 >
                   <InstrumentIcon code={inst.code} size="sm" />
-                  <div className="min-w-0 w-16 shrink-0">
-                    <span className="text-sm font-semibold text-white block">{inst.code}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-semibold text-white">{inst.code}</span>
                     {inst.quote && (
                       <span className={cn(
-                        "text-[10px] font-semibold tabular-nums block",
+                        "text-[10px] font-semibold tabular-nums ml-1.5",
                         inst.quote.change_pct >= 0 ? "text-green-400" : "text-red-400"
                       )}>
                         {inst.quote.change_pct >= 0 ? "+" : ""}{inst.quote.change_pct.toFixed(2)}%
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 ml-auto">
-                    <BiasIndicator direction={inst.biases?.daily?.direction ?? null} label="1D" />
-                    <BiasIndicator direction={inst.biases?.["1week"]?.direction ?? null} label="1W" />
+                  <div className="flex items-center gap-3 shrink-0">
+                    <BiasDirectionDot direction={inst.biases?.daily?.direction ?? null} />
+                    <BiasDirectionDot direction={inst.biases?.["1week"]?.direction ?? null} />
                     <ChevronRight className="h-3.5 w-3.5 text-white/20 group-hover:text-white/40 transition-colors" />
                   </div>
                 </Link>
