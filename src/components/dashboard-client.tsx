@@ -6,6 +6,8 @@ import { InstrumentIcon } from "@/components/instrument-icon";
 import { BiasIndicator, BiasDirectionDot } from "@/components/bias-indicator";
 import { Newspaper, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SentimentGauge } from "@/components/sentiment-gauge";
+import { TradingViewWidget } from "@/components/tradingview-widget";
 import type { InstrumentWithBias, Bias } from "@/types";
 
 interface DashboardClientProps {
@@ -110,10 +112,25 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
                       <p className="text-xs text-gray-400">{inst.name}</p>
                     </div>
                   </div>
-                  {isExpanded
-                    ? <ChevronUp className="h-4 w-4 text-gray-400" />
-                    : <ChevronDown className="h-4 w-4 text-gray-300" />
-                  }
+                  <div className="flex items-center gap-3">
+                    {inst.quote && (
+                      <div className="text-right">
+                        <p className="text-sm font-bold tabular-nums text-gray-900">
+                          {inst.quote.price.toFixed(inst.category === "forex" ? 4 : 2)}
+                        </p>
+                        <p className={cn(
+                          "text-[11px] font-semibold tabular-nums",
+                          inst.quote.change_pct >= 0 ? "text-green-600" : "text-red-600"
+                        )}>
+                          {inst.quote.change_pct >= 0 ? "+" : ""}{inst.quote.change_pct.toFixed(2)}%
+                        </p>
+                      </div>
+                    )}
+                    {isExpanded
+                      ? <ChevronUp className="h-4 w-4 text-gray-400" />
+                      : <ChevronDown className="h-4 w-4 text-gray-300" />
+                    }
+                  </div>
                 </div>
 
                 {/* Bias strip */}
@@ -123,6 +140,13 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
                   <BiasIndicator direction={inst.biases?.["1month"]?.direction ?? null} label="1M" />
                   <BiasIndicator direction={inst.biases?.["3month"]?.direction ?? null} label="3M" />
                 </div>
+
+                {/* Sentiment bar */}
+                {inst.sentiment && inst.sentiment.total_articles > 0 && (
+                  <div className="mb-3">
+                    <SentimentGauge score={inst.sentiment.score} size="sm" showLabel={false} />
+                  </div>
+                )}
 
                 {/* Daily summary */}
                 {dailyBias?.summary && (
@@ -223,6 +247,11 @@ function ExpandedContent({
 
   return (
     <div>
+      {/* TradingView compact chart */}
+      <div className="mb-4">
+        <TradingViewWidget instrument={code} height={300} compact />
+      </div>
+
       {/* Timeframe tabs */}
       <div className="flex items-center gap-0 border-b border-gray-200 mb-4 sm:mb-6 overflow-x-auto">
         {tfKeys.map((key) => {

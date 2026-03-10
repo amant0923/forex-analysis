@@ -1,5 +1,6 @@
 import { getDb } from "./db";
-import type { Instrument, Article, ArticleAnalysis, Bias, InstrumentWithBias, EconomicEvent } from "@/types";
+import type { Instrument, Article, ArticleAnalysis, Bias, InstrumentWithBias, InstrumentQuote, EconomicEvent } from "@/types";
+import { getInstrumentSentiment } from "./sentiment";
 
 export async function getInstruments(): Promise<Instrument[]> {
   const sql = getDb();
@@ -23,8 +24,27 @@ export async function getLatestBiases(instrument: string): Promise<Record<string
   return result;
 }
 
+export async function getInstrumentQuotes(): Promise<Record<string, InstrumentQuote>> {
+  const sql = getDb();
+  const rows = await sql`SELECT * FROM instrument_quotes`;
+  const map: Record<string, InstrumentQuote> = {};
+  for (const row of rows) {
+    map[row.instrument as string] = {
+      instrument: row.instrument as string,
+      price: Number(row.price),
+      change: Number(row.change),
+      change_pct: Number(row.change_pct),
+      day_high: Number(row.day_high),
+      day_low: Number(row.day_low),
+      updated_at: row.updated_at as string,
+    };
+  }
+  return map;
+}
+
 export async function getInstrumentsWithBiases(): Promise<InstrumentWithBias[]> {
   const instruments = await getInstruments();
+  const quotes = await getInstrumentQuotes();
   const results: InstrumentWithBias[] = [];
 
   for (const inst of instruments) {
@@ -58,6 +78,8 @@ export async function getInstrumentsWithBiases(): Promise<InstrumentWithBias[]> 
             mechanism: latestRows[0].mechanism ?? null,
           }
         : null,
+      quote: quotes[inst.code] ?? null,
+      sentiment: await getInstrumentSentiment(inst.code),
     });
   }
   return results;

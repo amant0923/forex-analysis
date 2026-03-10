@@ -66,6 +66,32 @@ export const CURRENCY_INSTRUMENTS: Record<string, string[]> = {
   GBP: ["GBPUSD"],
 };
 
+export interface InstrumentQuote {
+  instrument: string;
+  price: number;
+  change: number;
+  change_pct: number;
+  day_high: number;
+  day_low: number;
+  updated_at: string;
+}
+
+export interface InstrumentSentiment {
+  instrument: string;
+  score: number;
+  bullish_count: number;
+  bearish_count: number;
+  neutral_count: number;
+  total_articles: number;
+}
+
+export interface MarketSentiment {
+  score: number;
+  label: "Extreme Fear" | "Fear" | "Neutral" | "Greed" | "Extreme Greed";
+  instruments: InstrumentSentiment[];
+  driver_summary: string;
+}
+
 export interface InstrumentWithBias extends Instrument {
   biases: Record<string, Bias | null>;
   article_count: number;
@@ -76,4 +102,6 @@ export interface InstrumentWithBias extends Instrument {
     impact_direction: "bullish" | "bearish" | "neutral" | null;
     mechanism: string | null;
   } | null;
+  quote: InstrumentQuote | null;
+  sentiment: InstrumentSentiment | null;
 }

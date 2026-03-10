@@ -4,10 +4,14 @@ import {
   getInstruments,
   getLatestBiases,
   getArticlesWithAnalysesForInstrument,
+  getInstrumentQuotes,
 } from "@/lib/queries";
+import { getInstrumentSentiment } from "@/lib/sentiment";
 import { cn } from "@/lib/utils";
 import { InstrumentIcon } from "@/components/instrument-icon";
 import { BiasIndicator } from "@/components/bias-indicator";
+import { SentimentGauge } from "@/components/sentiment-gauge";
+import { TradingViewWidget } from "@/components/tradingview-widget";
 import { ArrowLeft, ExternalLink, Clock, AlertCircle, Newspaper } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +43,12 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
   const inst = instruments.find((i) => i.code === instrumentParam.toUpperCase());
   if (!inst) notFound();
 
-  const biases = await getLatestBiases(inst.code);
+  const [biases, quotes, sentiment] = await Promise.all([
+    getLatestBiases(inst.code),
+    getInstrumentQuotes(),
+    getInstrumentSentiment(inst.code),
+  ]);
+  const quote = quotes[inst.code] ?? null;
   const selectedTf = tf || "daily";
   const selectedBias = biases[selectedTf] ?? null;
 
@@ -64,7 +73,7 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
       {/* Instrument header */}
       <div className="flex items-center gap-3 sm:gap-4 mb-6">
         <InstrumentIcon code={inst.code} size="lg" />
-        <div>
+        <div className="flex-1">
           <div className="flex items-center gap-2">
             <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900">{inst.code}</h1>
             <span className={cn(
@@ -76,6 +85,24 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
           </div>
           <p className="text-sm text-gray-500">{inst.name}</p>
         </div>
+        {quote && (
+          <div className="text-right">
+            <p className="text-xl sm:text-2xl font-bold tabular-nums text-gray-900">
+              {Number(quote.price).toFixed(inst.category === "forex" ? 4 : 2)}
+            </p>
+            <p className={cn(
+              "text-sm font-semibold tabular-nums",
+              Number(quote.change_pct) >= 0 ? "text-green-600" : "text-red-600"
+            )}>
+              {Number(quote.change_pct) >= 0 ? "+" : ""}{Number(quote.change_pct).toFixed(2)}%
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* TradingView chart */}
+      <div className="mb-6">
+        <TradingViewWidget instrument={inst.code} height={500} />
       </div>
 
       {/* Timeframe tabs */}
@@ -138,6 +165,22 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
         <div className="mb-10 py-12 text-center border border-gray-200 rounded-lg">
           <AlertCircle className="h-5 w-5 text-gray-300 mx-auto mb-2" />
           <p className="text-sm text-gray-400">No analysis available for this timeframe yet.</p>
+        </div>
+      )}
+
+      {/* Sentiment Analysis */}
+      {sentiment.total_articles > 0 && (
+        <div className="mb-8 bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+            Sentiment Analysis
+          </h3>
+          <SentimentGauge score={sentiment.score} size="md" />
+          <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+            <span className="text-green-600 font-medium">{sentiment.bullish_count} bullish</span>
+            <span className="text-red-600 font-medium">{sentiment.bearish_count} bearish</span>
+            <span>{sentiment.neutral_count} neutral</span>
+            <span className="text-gray-400">({sentiment.total_articles} articles)</span>
+          </div>
         </div>
       )}
 

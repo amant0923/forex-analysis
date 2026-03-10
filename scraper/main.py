@@ -15,6 +15,7 @@ from scraper.analyzer import Analyzer
 from scraper.article_analyzer import ArticleAnalyzer
 from scraper.database import Database
 from scraper.economic_calendar import EconomicCalendarScraper, store_events
+from scraper.fmp_quotes import FmpQuoteFetcher, store_quotes
 
 INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"]
 TIMEFRAME_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
@@ -152,6 +153,21 @@ def run():
             store_events(db, cal_events)
     except Exception as e:
         print(f"  Warning: Economic calendar scrape failed: {e}")
+
+    # Step 5: Live Quotes
+    print("\nStep 5: Fetching live quotes...")
+    fmp_key = os.getenv("FMP_API_KEY")
+    if fmp_key:
+        try:
+            fmp = FmpQuoteFetcher(api_key=fmp_key)
+            quotes = fmp.fetch_all_quotes()
+            print(f"  Fetched {len(quotes)} quotes")
+            if quotes:
+                store_quotes(db, quotes)
+        except Exception as e:
+            print(f"  Warning: FMP quote fetch failed: {e}")
+    else:
+        print("  Skipped — FMP_API_KEY not set")
 
     db.close()
     print(f"\nPipeline complete!")
