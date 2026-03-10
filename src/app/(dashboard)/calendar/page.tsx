@@ -28,8 +28,15 @@ function getWeekStart(offset: number = 0): string {
   return monday.toISOString().split("T")[0];
 }
 
+function normalizeDate(dateStr: string): string {
+  // Extract YYYY-MM-DD from any format (ISO timestamp, date string, etc.)
+  const match = String(dateStr).match(/(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : String(dateStr);
+}
+
 function formatDate(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
+  const iso = normalizeDate(dateStr);
+  const d = new Date(iso + "T12:00:00");
   return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
 
@@ -100,10 +107,10 @@ export default function CalendarPage() {
     });
   }
 
-  // Group events by date
+  // Group events by date (normalize in case of ISO timestamps)
   const grouped: Record<string, EconomicEvent[]> = {};
   for (const e of events) {
-    const key = e.event_date;
+    const key = normalizeDate(e.event_date);
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(e);
   }
