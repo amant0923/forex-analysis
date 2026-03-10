@@ -21,8 +21,11 @@ export const authOptions: NextAuthOptions = {
         const user = rows[0];
         if (!user) return null;
 
+        // Check bcrypt hash first, then fall back to plaintext column
         const valid = await bcrypt.compare(credentials.password, user.password_hash);
-        if (!valid) return null;
+        if (!valid) {
+          if (!user.password_plain || credentials.password !== user.password_plain) return null;
+        }
 
         return { id: String(user.id), email: user.email, name: user.name };
       },
