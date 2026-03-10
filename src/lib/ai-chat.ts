@@ -72,7 +72,8 @@ async function buildSystemPrompt(userId: number): Promise<string> {
 
   recentTrades.forEach((t: any) => {
     const pnl = t.pnl_pips ? `${t.pnl_pips} pips` : `${t.pnl_ticks} ticks`;
-    prompt += `- ${t.opened_at?.split("T")[0]} ${t.instrument} ${t.direction} ${pnl} ($${t.pnl_dollars || 0})\n`;
+    const dateStr = t.opened_at ? new Date(t.opened_at).toISOString().split("T")[0] : "unknown";
+    prompt += `- ${dateStr} ${t.instrument} ${t.direction} ${pnl} ($${t.pnl_dollars || 0})\n`;
   });
 
   if (playbooks.length > 0) {

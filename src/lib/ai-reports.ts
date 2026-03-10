@@ -54,8 +54,8 @@ export async function generateBasicReport(userId: number, type: "weekly" | "mont
     avg_rr: Number(stats.avg_rr),
     best_trade: Number(stats.best_trade),
     worst_trade: Number(stats.worst_trade),
-    by_instrument: instrumentRows,
-    daily_pnl: dayRows,
+    by_instrument: instrumentRows.map((r: any) => ({ ...r, pnl: Number(r.pnl) })),
+    daily_pnl: dayRows.map((r: any) => ({ ...r, pnl: Number(r.pnl) })),
   };
 }
 
@@ -80,9 +80,10 @@ export async function generateAIReport(userId: number, type: "weekly" | "monthly
     return { ...basicReport, type: "ai" as const, ai_insights: null };
   }
 
-  const tradeSummary = trades.map((t: any) =>
-    `${t.opened_at?.split("T")[0]} ${t.instrument} ${t.direction} Entry:${t.entry_price} Exit:${t.exit_price} P&L:$${t.pnl_dollars} R:R:${t.rr_ratio || "N/A"} Session:${t.session || "N/A"} EmotionBefore:${t.emotion_before || "N/A"} EmotionAfter:${t.emotion_after || "N/A"} Playbook:${t.playbook_name || "none"} Score:${t.rule_adherence_score || "N/A"}`
-  ).join("\n");
+  const tradeSummary = trades.map((t: any) => {
+    const dateStr = t.opened_at ? new Date(t.opened_at).toISOString().split("T")[0] : "unknown";
+    return `${dateStr} ${t.instrument} ${t.direction} Entry:${t.entry_price} Exit:${t.exit_price} P&L:$${t.pnl_dollars} R:R:${t.rr_ratio || "N/A"} Session:${t.session || "N/A"} EmotionBefore:${t.emotion_before || "N/A"} EmotionAfter:${t.emotion_after || "N/A"} Playbook:${t.playbook_name || "none"} Score:${t.rule_adherence_score || "N/A"}`;
+  }).join("\n");
 
   const prompt = `Analyze this trader's ${type} performance and provide insights.
 

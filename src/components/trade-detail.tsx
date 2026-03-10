@@ -32,6 +32,13 @@ import { isForex } from "@/lib/pnl-calc";
 import { AiReviewPanel } from "@/components/ai-review-panel";
 import type { TradeWithDetails } from "@/types";
 
+/** Safely convert Postgres decimal (returned as string) to number */
+function toNum(v: unknown): number | null {
+  if (v == null) return null;
+  const n = typeof v === "string" ? parseFloat(v) : Number(v);
+  return isNaN(n) ? null : n;
+}
+
 interface TradeDetailProps {
   trade: TradeWithDetails;
   tier: string;
@@ -54,8 +61,18 @@ const emotionAfterEmoji: Record<string, string> = {
   neutral: "😐",
 };
 
-function formatPrice(price: number, instrument: string) {
-  return isForex(instrument) ? price.toFixed(5) : price.toFixed(2);
+function formatPrice(price: number | string | null | undefined, instrument: string) {
+  if (price == null) return "—";
+  const num = typeof price === "string" ? parseFloat(price) : price;
+  if (isNaN(num)) return "—";
+  if (isForex(instrument)) {
+    // Forex: show up to 5 decimals, trim trailing zeros but keep min 2
+    const full = num.toFixed(5);
+    const trimmed = full.replace(/0+$/, "");
+    const decLen = (trimmed.split(".")[1] || "").length;
+    return decLen < 2 ? num.toFixed(2) : trimmed;
+  }
+  return num.toFixed(2);
 }
 
 function formatDate(dateStr: string) {
@@ -74,8 +91,13 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const isProfitable = (trade.pnl_dollars ?? 0) > 0;
-  const isLoss = (trade.pnl_dollars ?? 0) < 0;
+  const pnlDollars = toNum(trade.pnl_dollars);
+  const pnlPips = toNum(trade.pnl_pips);
+  const pnlTicks = toNum(trade.pnl_ticks);
+  const rrRatio = toNum(trade.rr_ratio);
+  const acctImpact = toNum(trade.account_pct_impact);
+  const isProfitable = (pnlDollars ?? 0) > 0;
+  const isLoss = (pnlDollars ?? 0) < 0;
   const forex = isForex(trade.instrument);
 
   async function handleDelete() {
@@ -184,7 +206,7 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
       </div>
 
       {/* P&L Summary */}
-      {trade.pnl_dollars !== null && (
+      {pnlDollars !== null && (
         <Card className={cn("mb-6", isProfitable ? "ring-green-200" : isLoss ? "ring-red-200" : "")}>
           <CardContent>
             <div className="flex items-center gap-2 mb-3">
@@ -207,11 +229,11 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
                   )}
                 >
                   {forex
-                    ? trade.pnl_pips != null
-                      ? (trade.pnl_pips > 0 ? "+" : "") + trade.pnl_pips.toFixed(1)
+                    ? pnlPips !== null
+                      ? (pnlPips > 0 ? "+" : "") + pnlPips.toFixed(1)
                       : "—"
-                    : trade.pnl_ticks != null
-                      ? (trade.pnl_ticks > 0 ? "+" : "") + trade.pnl_ticks.toFixed(1)
+                    : pnlTicks !== null
+                      ? (pnlTicks > 0 ? "+" : "") + pnlTicks.toFixed(1)
                       : "—"}
                 </p>
               </div>
@@ -223,13 +245,13 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
                     isProfitable ? "text-green-600" : isLoss ? "text-red-600" : "text-gray-900"
                   )}
                 >
-                  {trade.pnl_dollars > 0 ? "+" : ""}${trade.pnl_dollars.toFixed(2)}
+                  {pnlDollars > 0 ? "+" : ""}${pnlDollars.toFixed(2)}
                 </p>
               </div>
               <div>
                 <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">R:R Ratio</p>
                 <p className="text-xl font-mono font-bold text-gray-900">
-                  {trade.rr_ratio != null ? trade.rr_ratio.toFixed(2) : "—"}
+                  {rrRatio !== null ? rrRatio.toFixed(2) : "—"}
                 </p>
               </div>
               <div>
@@ -240,10 +262,8 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
                     isProfitable ? "text-green-600" : isLoss ? "text-red-600" : "text-gray-900"
                   )}
                 >
-                  {trade.account_pct_impact != null
-                    ? (trade.account_pct_impact > 0 ? "+" : "") +
-                      trade.account_pct_impact.toFixed(2) +
-                      "%"
+                  {acctImpact !== null
+                    ? (acctImpact > 0 ? "+" : "") + acctImpact.toFixed(2) + "%"
                     : "—"}
                 </p>
               </div>

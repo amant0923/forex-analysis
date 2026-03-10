@@ -38,7 +38,7 @@ async function gatherContext(trade: Trade, tier: UserTier): Promise<AnalysisCont
   }
 
   if (tier !== "free" && trade.opened_at) {
-    const tradeDate = trade.opened_at.split("T")[0];
+    const tradeDate = new Date(String(trade.opened_at)).toISOString().split("T")[0];
     const events = await sql`
       SELECT event_name, currency, impact, actual, forecast
       FROM economic_events

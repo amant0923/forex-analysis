@@ -13,6 +13,10 @@ import type {
 
 // --- Trading Accounts ---
 
+function castAccountDecimals(row: any): TradingAccount {
+  return { ...row, account_size: Number(row.account_size) };
+}
+
 export async function getAccounts(userId: number): Promise<TradingAccount[]> {
   const sql = getDb();
   const rows = await sql`
@@ -20,7 +24,7 @@ export async function getAccounts(userId: number): Promise<TradingAccount[]> {
     WHERE user_id = ${userId}
     ORDER BY created_at DESC
   `;
-  return rows as TradingAccount[];
+  return rows.map(castAccountDecimals);
 }
 
 export async function getAccount(id: number, userId: number): Promise<TradingAccount | null> {
@@ -29,7 +33,7 @@ export async function getAccount(id: number, userId: number): Promise<TradingAcc
     SELECT * FROM trading_accounts
     WHERE id = ${id} AND user_id = ${userId}
   `;
-  return rows.length > 0 ? (rows[0] as TradingAccount) : null;
+  return rows.length > 0 ? castAccountDecimals(rows[0]) : null;
 }
 
 export async function createAccount(
@@ -42,7 +46,7 @@ export async function createAccount(
     VALUES (${userId}, ${data.name}, ${data.broker || null}, ${data.account_size}, ${data.currency || "USD"}, ${data.leverage || null})
     RETURNING *
   `;
-  return rows[0] as TradingAccount;
+  return castAccountDecimals(rows[0]);
 }
 
 export async function updateAccount(
@@ -62,7 +66,7 @@ export async function updateAccount(
     WHERE id = ${id} AND user_id = ${userId}
     RETURNING *
   `;
-  return rows.length > 0 ? (rows[0] as TradingAccount) : null;
+  return rows.length > 0 ? castAccountDecimals(rows[0]) : null;
 }
 
 export async function deleteAccount(id: number, userId: number): Promise<boolean> {
@@ -85,10 +89,18 @@ export async function getPlaybooks(userId: number): Promise<Playbook[]> {
   return rows as Playbook[];
 }
 
-export async function getPlaybookWithRules(id: number, userId: number): Promise<PlaybookWithRules | null> {
+export async function getPlaybookWithRules(id: number, userId: number): Promise<(PlaybookWithRules & { trade_count: number; win_rate: number; total_pnl: number; avg_rr: number }) | null> {
   const sql = getDb();
   const pbRows = await sql`
-    SELECT * FROM playbooks WHERE id = ${id} AND user_id = ${userId}
+    SELECT p.*,
+      COUNT(t.id)::int as trade_count,
+      COUNT(CASE WHEN t.pnl_dollars > 0 THEN 1 END)::int as wins,
+      COALESCE(SUM(t.pnl_dollars), 0)::decimal as total_pnl,
+      COALESCE(AVG(CASE WHEN t.rr_ratio IS NOT NULL THEN t.rr_ratio END), 0)::decimal as avg_rr
+    FROM playbooks p
+    LEFT JOIN trades t ON t.playbook_id = p.id
+    WHERE p.id = ${id} AND p.user_id = ${userId}
+    GROUP BY p.id
   `;
   if (pbRows.length === 0) return null;
 
@@ -96,8 +108,13 @@ export async function getPlaybookWithRules(id: number, userId: number): Promise<
     SELECT * FROM playbook_rules WHERE playbook_id = ${id} ORDER BY sort_order
   `;
 
+  const r = pbRows[0] as any;
   return {
-    ...(pbRows[0] as Playbook),
+    ...(r as Playbook),
+    trade_count: r.trade_count,
+    win_rate: r.trade_count > 0 ? (r.wins / r.trade_count) * 100 : 0,
+    total_pnl: Number(r.total_pnl),
+    avg_rr: Number(r.avg_rr),
     rules: ruleRows as PlaybookRule[],
   };
 }
@@ -182,7 +199,12 @@ export async function getPlaybooksWithStats(userId: number) {
     GROUP BY p.id
     ORDER BY p.created_at DESC
   `;
-  return rows;
+  return rows.map((r: any) => ({
+    ...r,
+    total_pnl: Number(r.total_pnl),
+    avg_rr: Number(r.avg_rr),
+    win_rate: r.trade_count > 0 ? (r.wins / r.trade_count) * 100 : 0,
+  }));
 }
 
 // --- Trades ---
@@ -215,7 +237,25 @@ export async function getTrades(
     LIMIT ${options.limit || 50}
     OFFSET ${options.offset || 0}
   `;
-  return rows as Trade[];
+  return rows.map(castTradeDecimals) as Trade[];
+}
+
+/** Neon returns DECIMAL columns as strings — cast them to numbers */
+function castTradeDecimals(row: any) {
+  return {
+    ...row,
+    entry_price: row.entry_price != null ? Number(row.entry_price) : null,
+    exit_price: row.exit_price != null ? Number(row.exit_price) : null,
+    stop_loss: row.stop_loss != null ? Number(row.stop_loss) : null,
+    take_profit: row.take_profit != null ? Number(row.take_profit) : null,
+    lot_size: row.lot_size != null ? Number(row.lot_size) : null,
+    pnl_pips: row.pnl_pips != null ? Number(row.pnl_pips) : null,
+    pnl_ticks: row.pnl_ticks != null ? Number(row.pnl_ticks) : null,
+    pnl_dollars: row.pnl_dollars != null ? Number(row.pnl_dollars) : null,
+    rr_ratio: row.rr_ratio != null ? Number(row.rr_ratio) : null,
+    account_pct_impact: row.account_pct_impact != null ? Number(row.account_pct_impact) : null,
+    account_size: row.account_size != null ? Number(row.account_size) : null,
+  };
 }
 
 export async function getTradeWithDetails(id: number, userId: number): Promise<TradeWithDetails | null> {
@@ -239,12 +279,12 @@ export async function getTradeWithDetails(id: number, userId: number): Promise<T
   `;
 
   return {
-    ...(tradeRows[0] as Trade),
+    ...castTradeDecimals(tradeRows[0]),
     playbook_name: (tradeRows[0] as any).playbook_name ?? null,
     account_name: (tradeRows[0] as any).account_name ?? null,
     screenshots: screenshots as TradeScreenshot[],
     ai_review: reviewRows.length > 0 ? (reviewRows[0] as TradeAiReview) : null,
-  };
+  } as TradeWithDetails;
 }
 
 export async function createTrade(userId: number, data: Partial<Trade>): Promise<Trade> {
@@ -272,7 +312,7 @@ export async function createTrade(userId: number, data: Partial<Trade>): Promise
       ${data.notes || null}
     ) RETURNING *
   `;
-  return rows[0] as Trade;
+  return castTradeDecimals(rows[0]) as Trade;
 }
 
 export async function updateTrade(id: number, userId: number, data: Partial<Trade>): Promise<Trade | null> {
@@ -294,7 +334,7 @@ export async function updateTrade(id: number, userId: number, data: Partial<Trad
     WHERE id = ${id} AND user_id = ${userId}
     RETURNING *
   `;
-  return rows.length > 0 ? (rows[0] as Trade) : null;
+  return rows.length > 0 ? (castTradeDecimals(rows[0]) as Trade) : null;
 }
 
 export async function deleteTrade(id: number, userId: number): Promise<boolean> {
