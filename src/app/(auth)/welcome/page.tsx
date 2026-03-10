@@ -43,7 +43,7 @@ export default function WelcomePage() {
             ForexPulse
           </h1>
           <p className="mt-3 text-sm text-white/40 tracking-[0.2em] uppercase font-light">
-            Fundamental Analysis Platform
+            Fundamental Analysis
           </p>
         </div>
 
