@@ -6,14 +6,15 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
 
   if (!token) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", request.url);
-    return NextResponse.redirect(loginUrl);
+    // Unauthenticated: redirect to welcome splash instead of login
+    const welcomeUrl = new URL("/welcome", request.url);
+    welcomeUrl.searchParams.set("callbackUrl", request.url);
+    return NextResponse.redirect(welcomeUrl);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!login|register|api/auth|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!welcome|login|register|api/auth|_next/static|_next/image|favicon.ico).*)"],
 };
