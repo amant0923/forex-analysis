@@ -255,7 +255,7 @@ export function JournalTable() {
                               : "bg-red-500/20 text-red-400"
                           )}
                         >
-                          {trade.direction}
+                          {trade.direction.charAt(0).toUpperCase() + trade.direction.slice(1)}
                         </Badge>
                       </td>
                       <td className="py-3 px-4 text-right font-mono text-xs text-white/80">

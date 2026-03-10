@@ -277,7 +277,7 @@ function ArticleAnalysisCard({ article, instrument }: { article: any; instrument
               article.impact_direction === "bearish" ? "bg-red-500/15 text-red-400" :
               "bg-white/[0.04] text-white/40"
             )}>
-              {article.impact_direction}
+              {article.impact_direction.charAt(0).toUpperCase() + article.impact_direction.slice(1)}
             </div>
             {article.confidence && (
               <div className={cn(
@@ -286,7 +286,7 @@ function ArticleAnalysisCard({ article, instrument }: { article: any; instrument
                 article.confidence === "medium" ? "bg-yellow-500/15 text-yellow-400" :
                 "bg-white/[0.04] text-white/40"
               )}>
-                {article.confidence} confidence
+                {article.confidence.charAt(0).toUpperCase() + article.confidence.slice(1)} confidence
               </div>
             )}
           </div>

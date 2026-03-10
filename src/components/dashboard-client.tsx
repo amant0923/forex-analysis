@@ -358,7 +358,7 @@ function ExpandedContent({
                         article.confidence === "medium" ? "bg-yellow-500/15 text-yellow-400" :
                         "bg-white/[0.04] text-white/40"
                       )}>
-                        {article.confidence}
+                        {article.confidence.charAt(0).toUpperCase() + article.confidence.slice(1)}
                       </span>
                     )}
                     {article.source && (
@@ -374,7 +374,7 @@ function ExpandedContent({
                       article.confidence === "medium" ? "bg-yellow-50 text-yellow-700" :
                       "bg-white/[0.04] text-white/40"
                     )}>
-                      {article.confidence}
+                      {article.confidence.charAt(0).toUpperCase() + article.confidence.slice(1)}
                     </span>
                   )}
                   {article.source && (

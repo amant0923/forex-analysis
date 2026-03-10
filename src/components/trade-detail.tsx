@@ -144,7 +144,7 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
               ) : (
                 <ArrowDownRight className="h-3 w-3" />
               )}
-              {trade.direction}
+              {trade.direction.charAt(0).toUpperCase() + trade.direction.slice(1)}
             </span>
           </div>
           <div className="flex items-center gap-3 text-xs text-white/40">
@@ -328,12 +328,12 @@ export function TradeDetail({ trade, tier }: TradeDetailProps) {
             </Badge>
           )}
           {trade.emotion_before && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs capitalize">
               {emotionBeforeEmoji[trade.emotion_before] || ""} Before: {trade.emotion_before}
             </Badge>
           )}
           {trade.emotion_after && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs capitalize">
               {emotionAfterEmoji[trade.emotion_after] || ""} After: {trade.emotion_after}
             </Badge>
           )}
