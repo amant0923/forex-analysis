@@ -16,7 +16,7 @@ export default function WelcomePage() {
       const res = await fetch("/api/auth/session");
       const session = await res.json();
       if (session?.user) {
-        window.location.href = "/";
+        window.location.href = "/journal";
       } else {
         window.location.href = "/login";
       }
