@@ -5,7 +5,7 @@ import { useEffect, useRef, memo } from "react";
 const TV_SYMBOL_MAP: Record<string, string> = {
   EURUSD: "FX:EURUSD",
   GBPUSD: "FX:GBPUSD",
-  DXY: "TVC:DXY",
+  DXY: "AMEX:UUP",
   US30: "AMEX:DIA",
   NAS100: "NASDAQ:QQQ",
   SP500: "AMEX:SPY",
@@ -13,6 +13,7 @@ const TV_SYMBOL_MAP: Record<string, string> = {
 };
 
 const TV_PROXY_LABEL: Record<string, string> = {
+  DXY: "UUP ETF (US Dollar proxy)",
   US30: "DIA ETF (Dow Jones proxy)",
   NAS100: "QQQ ETF (Nasdaq 100 proxy)",
   SP500: "SPY ETF (S&P 500 proxy)",
