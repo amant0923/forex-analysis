@@ -5,7 +5,7 @@ import { useEffect, useRef, memo } from "react";
 const TV_SYMBOL_MAP: Record<string, string> = {
   EURUSD: "FX:EURUSD",
   GBPUSD: "FX:GBPUSD",
-  DXY: "AMEX:UUP",
+  DXY: "CAPITALCOM:DXY",
   US30: "AMEX:DIA",
   NAS100: "NASDAQ:QQQ",
   SP500: "AMEX:SPY",
@@ -13,7 +13,7 @@ const TV_SYMBOL_MAP: Record<string, string> = {
 };
 
 const TV_PROXY_LABEL: Record<string, string> = {
-  DXY: "UUP ETF (US Dollar proxy)",
+  DXY: "DXY (Capital.com)",
   US30: "DIA ETF (Dow Jones proxy)",
   NAS100: "QQQ ETF (Nasdaq 100 proxy)",
   SP500: "SPY ETF (S&P 500 proxy)",
@@ -44,7 +44,7 @@ function TradingViewWidgetInner({ instrument, height = 500, compact = false }: T
       symbol: TV_SYMBOL_MAP[instrument] ?? instrument,
       interval: compact ? "60" : "D",
       timezone: "Etc/UTC",
-      theme: "light",
+      theme: "dark",
       style: "1",
       locale: "en",
       hide_top_toolbar: compact,

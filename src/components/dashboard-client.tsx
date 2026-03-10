@@ -8,6 +8,7 @@ import { Newspaper, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SentimentGauge } from "@/components/sentiment-gauge";
 import { TradingViewWidget } from "@/components/tradingview-widget";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import type { InstrumentWithBias, Bias } from "@/types";
 
 interface DashboardClientProps {
@@ -87,10 +88,17 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
             <div
               key={inst.code}
               className={cn(
-                "bg-white/[0.06] rounded-lg border transition-all duration-300",
-                isExpanded ? "border-[#2563eb] sm:col-span-2 shadow-sm" : "border-white/10"
+                "relative rounded-[1.25rem]",
+                isExpanded && "sm:col-span-2"
               )}
             >
+              <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+              <div
+                className={cn(
+                  "bg-white/[0.06] rounded-[1.25rem] border backdrop-blur-xl transition-all duration-300",
+                  isExpanded ? "border-[#2563eb] shadow-sm" : "border-white/10"
+                )}
+              >
               {/* Compact card — always visible */}
               <button
                 onClick={() => toggleExpand(inst.code)}
@@ -104,7 +112,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
                         <h3 className="font-serif text-lg font-bold text-white">{inst.code}</h3>
                         <span className={cn(
                           "text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded",
-                          inst.category === "forex" ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"
+                          inst.category === "forex" ? "bg-blue-500/15 text-blue-400" : "bg-purple-500/15 text-purple-400"
                         )}>
                           {inst.category}
                         </span>
@@ -208,6 +216,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
                   )}
                 </div>
               )}
+              </div>
             </div>
           );
         })}
@@ -345,8 +354,8 @@ function ExpandedContent({
                     {article.confidence && (
                       <span className={cn(
                         "text-[10px] font-medium px-1.5 py-0.5 rounded",
-                        article.confidence === "high" ? "bg-green-50 text-green-700" :
-                        article.confidence === "medium" ? "bg-yellow-50 text-yellow-700" :
+                        article.confidence === "high" ? "bg-green-500/15 text-green-400" :
+                        article.confidence === "medium" ? "bg-yellow-500/15 text-yellow-400" :
                         "bg-white/[0.04] text-white/40"
                       )}>
                         {article.confidence}

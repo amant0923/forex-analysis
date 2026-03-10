@@ -78,7 +78,7 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
             <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white">{inst.code}</h1>
             <span className={cn(
               "text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded",
-              inst.category === "forex" ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"
+              inst.category === "forex" ? "bg-blue-500/15 text-blue-400" : "bg-purple-500/15 text-purple-400"
             )}>
               {inst.category}
             </span>
@@ -273,8 +273,8 @@ function ArticleAnalysisCard({ article, instrument }: { article: any; instrument
             </h4>
             <div className={cn(
               "text-[10px] font-semibold px-2 py-0.5 rounded",
-              article.impact_direction === "bullish" ? "bg-green-50 text-green-700" :
-              article.impact_direction === "bearish" ? "bg-red-50 text-red-700" :
+              article.impact_direction === "bullish" ? "bg-green-500/15 text-green-400" :
+              article.impact_direction === "bearish" ? "bg-red-500/15 text-red-400" :
               "bg-white/[0.04] text-white/40"
             )}>
               {article.impact_direction}
@@ -282,8 +282,8 @@ function ArticleAnalysisCard({ article, instrument }: { article: any; instrument
             {article.confidence && (
               <div className={cn(
                 "text-[10px] font-medium px-2 py-0.5 rounded",
-                article.confidence === "high" ? "bg-blue-50 text-blue-700" :
-                article.confidence === "medium" ? "bg-yellow-50 text-yellow-700" :
+                article.confidence === "high" ? "bg-blue-500/15 text-blue-400" :
+                article.confidence === "medium" ? "bg-yellow-500/15 text-yellow-400" :
                 "bg-white/[0.04] text-white/40"
               )}>
                 {article.confidence} confidence
