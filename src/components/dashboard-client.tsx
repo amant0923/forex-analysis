@@ -59,14 +59,14 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
       </div>
 
       {/* Market summary strip */}
-      <div className="mb-8 flex items-center gap-6 border-y border-gray-200 py-3">
+      <div className="mb-6 sm:mb-8 flex items-center gap-3 sm:gap-6 border-y border-gray-200 py-3 overflow-x-auto">
         {instruments.map((inst) => {
           const dominant = getDominantBias(inst.biases);
           return (
             <button
               key={inst.code}
               onClick={() => toggleExpand(inst.code)}
-              className="flex items-center gap-2 text-sm cursor-pointer hover:opacity-70 transition-opacity"
+              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm cursor-pointer hover:opacity-70 transition-opacity shrink-0"
             >
               <span className="font-semibold text-gray-700">{inst.code}</span>
               <BiasDirectionDot direction={dominant} />
@@ -92,7 +92,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
               {/* Compact card — always visible */}
               <button
                 onClick={() => toggleExpand(inst.code)}
-                className="w-full text-left p-5 cursor-pointer"
+                className="w-full text-left p-4 sm:p-5 cursor-pointer"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -169,7 +169,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
 
               {/* Expanded section */}
               {isExpanded && (
-                <div className="border-t border-gray-200 p-5 expand-transition">
+                <div className="border-t border-gray-200 p-4 sm:p-5 expand-transition">
                   {loading ? (
                     <ExpandedSkeleton />
                   ) : expandedData ? (
@@ -224,7 +224,7 @@ function ExpandedContent({
   return (
     <div>
       {/* Timeframe tabs */}
-      <div className="flex items-center gap-0 border-b border-gray-200 mb-6">
+      <div className="flex items-center gap-0 border-b border-gray-200 mb-4 sm:mb-6 overflow-x-auto">
         {tfKeys.map((key) => {
           const isSelected = key === selectedTf;
           const dir = data.biases?.[key]?.direction ?? "neutral";
@@ -234,7 +234,7 @@ function ExpandedContent({
               key={key}
               onClick={(e) => { e.stopPropagation(); onTfChange(key); }}
               className={cn(
-                "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors cursor-pointer",
+                "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer whitespace-nowrap",
                 isSelected
                   ? "border-[#1e3a5f] text-[#1e3a5f]"
                   : "border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300"
@@ -298,22 +298,37 @@ function ExpandedContent({
               <Link
                 key={article.id}
                 href={`/articles/${article.id}`}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50/80 transition-colors cursor-pointer"
+                className="flex items-start sm:items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-3 hover:bg-gray-50/80 transition-colors cursor-pointer"
               >
                 {article.impact_direction && (
                   <div className={cn(
-                    "h-2 w-2 rounded-full shrink-0",
+                    "h-2 w-2 rounded-full shrink-0 mt-1.5 sm:mt-0",
                     article.impact_direction === "bullish" ? "bg-green-700" :
                     article.impact_direction === "bearish" ? "bg-red-800" : "bg-gray-400"
                   )} />
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{article.title}</p>
+                  <p className="text-[13px] sm:text-sm font-medium text-gray-900 line-clamp-2 sm:truncate">{article.title}</p>
                   {article.mechanism && (
-                    <p className="text-xs text-gray-500 mt-0.5 truncate">{article.mechanism}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{article.mechanism}</p>
                   )}
+                  <div className="flex items-center gap-2 mt-1 sm:hidden">
+                    {article.confidence && (
+                      <span className={cn(
+                        "text-[10px] font-medium px-1.5 py-0.5 rounded",
+                        article.confidence === "high" ? "bg-green-50 text-green-700" :
+                        article.confidence === "medium" ? "bg-yellow-50 text-yellow-700" :
+                        "bg-gray-50 text-gray-500"
+                      )}>
+                        {article.confidence}
+                      </span>
+                    )}
+                    {article.source && (
+                      <span className="text-[10px] text-gray-400">{article.source}</span>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="hidden sm:flex items-center gap-2 shrink-0">
                   {article.confidence && (
                     <span className={cn(
                       "text-[10px] font-medium px-1.5 py-0.5 rounded",

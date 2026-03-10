@@ -62,11 +62,11 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
       </Link>
 
       {/* Instrument header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-3 sm:gap-4 mb-6">
         <InstrumentIcon code={inst.code} size="lg" />
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-serif text-3xl font-bold text-gray-900">{inst.code}</h1>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900">{inst.code}</h1>
             <span className={cn(
               "text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded",
               inst.category === "forex" ? "bg-blue-50 text-blue-600" : "bg-purple-50 text-purple-600"
@@ -79,7 +79,7 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
       </div>
 
       {/* Timeframe tabs */}
-      <div className="flex items-center gap-0 border-b border-gray-200 mb-8">
+      <div className="flex items-center gap-0 border-b border-gray-200 mb-6 sm:mb-8 overflow-x-auto">
         {Object.entries(tfLabels).map(([key, label]) => {
           const isSelected = key === selectedTf;
           const dir = biases[key]?.direction ?? "neutral";
@@ -89,7 +89,7 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
               key={key}
               href={`/${inst.code}?tf=${key}`}
               className={cn(
-                "flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors cursor-pointer",
+                "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors cursor-pointer whitespace-nowrap",
                 isSelected
                   ? "border-[#1e3a5f] text-[#1e3a5f]"
                   : "border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-300"
@@ -104,7 +104,7 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
 
       {/* Bias analysis panel */}
       {selectedBias ? (
-        <div className="mb-10 bg-white rounded-lg border border-gray-200 p-6">
+        <div className="mb-8 sm:mb-10 bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
           <div className="flex items-center gap-3 mb-4">
             <BiasIndicator direction={biasDir} size="md" />
             <span className="text-xs text-gray-400">
@@ -171,11 +171,11 @@ function ArticleAnalysisCard({ article, instrument }: { article: any; instrument
 
   return (
     <div className={cn(
-      "bg-white rounded-lg border p-6",
+      "bg-white rounded-lg border p-4 sm:p-6",
       isHighConfidence ? "border-[#2563eb]/30" : "border-gray-200"
     )}>
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-4">
+      <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4">
         <div className="flex-1 min-w-0">
           <Link
             href={`/articles/${article.id}`}

@@ -133,7 +133,7 @@ export default async function ArticlePage({ params }: PageProps) {
                 return (
                   <div key={analysis.id} className="border border-gray-200 rounded-lg overflow-hidden">
                     {/* Instrument header */}
-                    <div className="flex items-center justify-between bg-gray-50 px-5 py-3 border-b border-gray-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 bg-gray-50 px-4 sm:px-5 py-3 border-b border-gray-200">
                       <Link
                         href={`/${analysis.instrument}`}
                         className="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity"
@@ -143,14 +143,14 @@ export default async function ArticlePage({ params }: PageProps) {
                           {analysis.instrument}
                         </span>
                       </Link>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <div className="flex items-center gap-1.5">
                           <DirectionIcon className={cn("h-4 w-4", dirColor)} />
-                          <span className={cn("text-sm font-bold uppercase", dirColor)}>
+                          <span className={cn("text-xs sm:text-sm font-bold uppercase", dirColor)}>
                             {analysis.impact_direction}
                           </span>
                         </div>
-                        <div className={cn("flex items-center gap-1 rounded border px-2 py-0.5 text-[11px] font-medium", conf.bg, conf.border, conf.color)}>
+                        <div className={cn("flex items-center gap-1 rounded border px-2 py-0.5 text-[10px] sm:text-[11px] font-medium", conf.bg, conf.border, conf.color)}>
                           <Shield className="h-3 w-3" />
                           {conf.label}
                         </div>
@@ -158,7 +158,7 @@ export default async function ArticlePage({ params }: PageProps) {
                     </div>
 
                     {/* Structured chain */}
-                    <div className="px-5 py-4 space-y-3">
+                    <div className="px-4 sm:px-5 py-4 space-y-3">
                       <div>
                         <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                           Event
@@ -188,7 +188,7 @@ export default async function ArticlePage({ params }: PageProps) {
                     </div>
 
                     {/* Analyst commentary */}
-                    <div className="border-t border-gray-200 bg-gray-50/50 px-5 py-4">
+                    <div className="border-t border-gray-200 bg-gray-50/50 px-4 sm:px-5 py-4">
                       <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                         Analyst Commentary
                       </span>
