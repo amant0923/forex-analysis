@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { InstrumentIcon } from "./instrument-icon";
-import { Menu, X, Calendar } from "lucide-react";
+import { Menu, X, Calendar, BookOpen } from "lucide-react";
 import type { Instrument } from "@/types";
 
 interface TopNavProps {
@@ -69,6 +69,37 @@ export function TopNav({ instruments }: TopNavProps) {
           >
             Calendar
           </Link>
+
+          <div className="hidden sm:block h-4 w-px bg-gray-600" />
+
+          {/* Journal section */}
+          <nav className="hidden sm:flex items-center gap-0.5 overflow-x-auto">
+            {[
+              { href: "/journal", label: "Journal" },
+              { href: "/journal/add", label: "Log Trade" },
+              { href: "/playbooks", label: "Playbooks" },
+              { href: "/journal/accounts", label: "Accounts" },
+              { href: "/journal/chat", label: "AI Chat" },
+              { href: "/journal/reports", label: "Reports" },
+            ].map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded text-[13px] font-medium whitespace-nowrap transition-colors duration-150 cursor-pointer",
+                    isActive
+                      ? "bg-white/10 text-white"
+                      : "text-gray-400 hover:text-white hover:bg-white/5",
+                  )}
+                >
+                  {link.href === "/journal" && <BookOpen className="h-3.5 w-3.5" />}
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
         <span className="hidden md:block text-xs text-gray-500 font-medium shrink-0">
@@ -124,6 +155,30 @@ export function TopNav({ instruments }: TopNavProps) {
             <Calendar className="h-4 w-4" />
             <span>Economic Calendar</span>
           </Link>
+          <div className="h-px bg-gray-700 my-2" />
+          {[
+            { href: "/journal", label: "Journal" },
+            { href: "/journal/add", label: "Log Trade" },
+            { href: "/playbooks", label: "Playbooks" },
+            { href: "/journal/accounts", label: "Accounts" },
+            { href: "/journal/chat", label: "AI Chat" },
+            { href: "/journal/reports", label: "Reports" },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                pathname === link.href
+                  ? "bg-white/10 text-white"
+                  : "text-gray-400 hover:text-white hover:bg-white/5",
+              )}
+            >
+              {link.href === "/journal" && <BookOpen className="h-4 w-4" />}
+              <span>{link.label}</span>
+            </Link>
+          ))}
         </nav>
       )}
     </header>
