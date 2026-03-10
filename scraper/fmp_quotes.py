@@ -1,23 +1,26 @@
-"""Fetch live quotes from Financial Modeling Prep API."""
+"""Fetch live quotes from FMP Stable API + Yahoo Finance fallback."""
 
 import urllib.request
 import json
 
-FMP_BASE = "https://financialmodelingprep.com/api/v3"
+FMP_STABLE = "https://financialmodelingprep.com/stable"
 
-# FMP symbols for our instruments
-FMP_FOREX_PAIRS = {
+# Instruments available on FMP Starter plan (one-at-a-time)
+FMP_SYMBOLS = {
     "EURUSD": "EURUSD",
     "GBPUSD": "GBPUSD",
+    "US30": "%5EDJI",
+    "SP500": "%5EGSPC",
 }
 
-FMP_INDEX_SYMBOLS = {
+# Instruments that need Yahoo Finance (not on FMP Starter)
+YAHOO_SYMBOLS = {
     "DXY": "DX-Y.NYB",
-    "US30": "^DJI",
-    "NAS100": "^NDX",
-    "SP500": "^GSPC",
-    "GER40": "^GDAXI",
+    "NAS100": "%5ENDX",
+    "GER40": "%5EGDAXI",
 }
+
+YAHOO_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1d&interval=1d"
 
 
 class FmpQuoteFetcher:
@@ -27,60 +30,69 @@ class FmpQuoteFetcher:
     def fetch_all_quotes(self) -> list[dict]:
         """Fetch quotes for all 7 instruments."""
         quotes = []
-        quotes.extend(self._fetch_forex_quotes())
-        quotes.extend(self._fetch_index_quotes())
+        for instrument, symbol in FMP_SYMBOLS.items():
+            q = self._fetch_fmp_quote(instrument, symbol)
+            if q:
+                quotes.append(q)
+        for instrument, symbol in YAHOO_SYMBOLS.items():
+            q = self._fetch_yahoo_quote(instrument, symbol)
+            if q:
+                quotes.append(q)
         return quotes
 
-    def _fetch_forex_quotes(self) -> list[dict]:
-        """Fetch forex quotes via FMP forex quote endpoint."""
-        results = []
-        for instrument, symbol in FMP_FOREX_PAIRS.items():
-            url = f"{FMP_BASE}/fx/{symbol}?apikey={self.api_key}"
-            data = self._get_json(url)
-            if data and len(data) > 0:
-                q = data[0]
-                results.append({
-                    "instrument": instrument,
-                    "price": q.get("bid") or q.get("ask") or 0,
-                    "change": q.get("changes", 0),
-                    "change_pct": q.get("changesPercentage", 0),
-                    "day_high": q.get("dayHigh", 0),
-                    "day_low": q.get("dayLow", 0),
-                })
-        return results
-
-    def _fetch_index_quotes(self) -> list[dict]:
-        """Fetch index quotes via FMP stock quote endpoint."""
-        symbols = ",".join(FMP_INDEX_SYMBOLS.values())
-        url = f"{FMP_BASE}/quote/{symbols}?apikey={self.api_key}"
+    def _fetch_fmp_quote(self, instrument: str, symbol: str) -> dict | None:
+        """Fetch single quote from FMP stable API."""
+        url = f"{FMP_STABLE}/quote?symbol={symbol}&apikey={self.api_key}"
         data = self._get_json(url)
-        if not data:
-            return []
+        if not data or len(data) == 0:
+            return None
+        q = data[0]
+        return {
+            "instrument": instrument,
+            "price": q.get("price", 0),
+            "change": q.get("change", 0),
+            "change_pct": q.get("changePercentage", 0),
+            "day_high": q.get("dayHigh", 0),
+            "day_low": q.get("dayLow", 0),
+        }
 
-        # Build reverse lookup
-        symbol_to_instrument = {v: k for k, v in FMP_INDEX_SYMBOLS.items()}
-        results = []
-        for q in data:
-            instrument = symbol_to_instrument.get(q.get("symbol"))
-            if instrument:
-                results.append({
-                    "instrument": instrument,
-                    "price": q.get("price", 0),
-                    "change": q.get("change", 0),
-                    "change_pct": q.get("changesPercentage", 0),
-                    "day_high": q.get("dayHigh", 0),
-                    "day_low": q.get("dayLow", 0),
-                })
-        return results
+    def _fetch_yahoo_quote(self, instrument: str, symbol: str) -> dict | None:
+        """Fetch quote from Yahoo Finance as fallback."""
+        url = YAHOO_URL.format(symbol=symbol)
+        try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+            })
+            resp = urllib.request.urlopen(req, timeout=10)
+            data = json.loads(resp.read().decode("utf-8"))
+            result = data.get("chart", {}).get("result", [])
+            if not result:
+                return None
+            meta = result[0].get("meta", {})
+            price = meta.get("regularMarketPrice", 0)
+            prev_close = meta.get("previousClose") or meta.get("chartPreviousClose", 0)
+            change = price - prev_close if prev_close else 0
+            change_pct = (change / prev_close * 100) if prev_close else 0
+            return {
+                "instrument": instrument,
+                "price": price,
+                "change": round(change, 4),
+                "change_pct": round(change_pct, 4),
+                "day_high": meta.get("regularMarketDayHigh", 0),
+                "day_low": meta.get("regularMarketDayLow", 0),
+            }
+        except Exception as e:
+            print(f"[Yahoo] Failed to fetch {instrument}: {e}")
+            return None
 
     def _get_json(self, url: str):
         """Fetch URL and return parsed JSON."""
         try:
-            req = urllib.request.Request(url)
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
             resp = urllib.request.urlopen(req, timeout=10)
             return json.loads(resp.read().decode("utf-8"))
         except Exception as e:
-            print(f"[FMP] Failed to fetch {url}: {e}")
+            print(f"[FMP] Failed to fetch {url.split('apikey=')[0]}: {e}")
             return None
 
 
