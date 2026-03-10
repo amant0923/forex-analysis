@@ -105,3 +105,125 @@ export interface InstrumentWithBias extends Instrument {
   quote: InstrumentQuote | null;
   sentiment: InstrumentSentiment | null;
 }
+
+// Trading Journal Types
+
+export interface TradingAccount {
+  id: number;
+  user_id: number;
+  name: string;
+  broker: string | null;
+  account_size: number;
+  currency: string;
+  leverage: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Playbook {
+  id: number;
+  user_id: number;
+  name: string;
+  description: string | null;
+  instrument: string | null;
+  timeframe: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PlaybookRule {
+  id: number;
+  playbook_id: number;
+  category: "entry" | "exit" | "risk";
+  rule_text: string;
+  sort_order: number;
+}
+
+export interface PlaybookWithRules extends Playbook {
+  rules: PlaybookRule[];
+}
+
+export interface Trade {
+  id: number;
+  user_id: number;
+  account_id: number;
+  playbook_id: number | null;
+  instrument: string;
+  direction: "buy" | "sell";
+  entry_price: number;
+  exit_price: number | null;
+  stop_loss: number | null;
+  take_profit: number | null;
+  lot_size: number;
+  opened_at: string;
+  closed_at: string | null;
+  pnl_pips: number | null;
+  pnl_ticks: number | null;
+  pnl_dollars: number | null;
+  rr_ratio: number | null;
+  account_pct_impact: number | null;
+  session: "london" | "new_york" | "asia" | "overlap" | null;
+  timeframe_traded: string | null;
+  emotion_before: "confident" | "calm" | "anxious" | "FOMO" | "revenge" | "uncertain" | null;
+  emotion_after: "satisfied" | "frustrated" | "relieved" | "regretful" | "neutral" | null;
+  rule_adherence_score: number | null;
+  rule_adherence_details: { rule_id: number; followed: boolean }[] | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TradeScreenshot {
+  id: number;
+  trade_id: number;
+  url: string;
+  label: "entry" | "exit" | "setup" | "other" | null;
+  uploaded_at: string;
+}
+
+export interface TradeAiReview {
+  id: number;
+  trade_id: number;
+  verdict: "good" | "acceptable" | "poor";
+  bias_alignment: "with" | "against" | "neutral";
+  bias_alignment_explanation: string | null;
+  rule_adherence_review: string | null;
+  risk_assessment: string | null;
+  timing_analysis: string | null;
+  psychology_flag: string | null;
+  suggestions: string[];
+  bias_snapshot: Record<string, unknown> | null;
+  events_snapshot: Record<string, unknown> | null;
+  generated_at: string;
+}
+
+export interface TradeWithDetails extends Trade {
+  screenshots: TradeScreenshot[];
+  ai_review: TradeAiReview | null;
+  playbook_name: string | null;
+  account_name: string | null;
+}
+
+export interface JournalStats {
+  total_trades: number;
+  win_rate: number;
+  avg_rr: number;
+  pnl_today: number;
+  pnl_week: number;
+  pnl_month: number;
+}
+
+export type UserTier = "free" | "essential" | "premium";
+
+export interface TierLimits {
+  max_trades_per_day: number | null;
+  max_playbooks: number | null;
+  max_screenshots_per_trade: number;
+  max_accounts: number | null;
+  max_ai_analyses_per_day: number | null;
+  history_days: number | null;
+  has_chat: boolean;
+  has_weekly_report: boolean;
+  has_monthly_report: boolean;
+  has_csv_export: boolean;
+}
