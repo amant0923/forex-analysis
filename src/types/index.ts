@@ -44,6 +44,28 @@ export interface Bias {
   generated_at: string;
 }
 
+export interface EconomicEvent {
+  id: number;
+  event_name: string;
+  country: string;
+  currency: string;
+  event_date: string;
+  event_time: string;
+  impact: "high" | "medium" | "low";
+  actual: string | null;
+  forecast: string | null;
+  previous: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Maps currency to affected instruments
+export const CURRENCY_INSTRUMENTS: Record<string, string[]> = {
+  USD: ["DXY", "US30", "NAS100", "SP500"],
+  EUR: ["EURUSD", "GER40"],
+  GBP: ["GBPUSD"],
+};
+
 export interface InstrumentWithBias extends Instrument {
   biases: Record<string, Bias | null>;
   article_count: number;

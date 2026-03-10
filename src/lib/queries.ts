@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import type { Instrument, Article, ArticleAnalysis, Bias, InstrumentWithBias } from "@/types";
+import type { Instrument, Article, ArticleAnalysis, Bias, InstrumentWithBias, EconomicEvent } from "@/types";
 
 export async function getInstruments(): Promise<Instrument[]> {
   const sql = getDb();
@@ -130,4 +130,76 @@ export async function getArticlesWithAnalysesForInstrument(
     ORDER BY a.published_at DESC
   `;
   return rows as any;
+}
+
+export async function getUpcomingEconomicEvents(limit: number = 7): Promise<EconomicEvent[]> {
+  const sql = getDb();
+  const rows = await sql`
+    SELECT * FROM economic_events
+    WHERE event_date >= CURRENT_DATE
+    ORDER BY event_date ASC, event_time ASC
+    LIMIT ${limit}
+  `;
+  return rows as EconomicEvent[];
+}
+
+export async function getEconomicEventsByWeek(
+  startDate: string,
+  currencies?: string[],
+  impacts?: string[]
+): Promise<EconomicEvent[]> {
+  const sql = getDb();
+
+  if (currencies && currencies.length > 0 && impacts && impacts.length > 0) {
+    const rows = await sql`
+      SELECT * FROM economic_events
+      WHERE event_date >= ${startDate}::date
+        AND event_date < ${startDate}::date + INTERVAL '7 days'
+        AND currency = ANY(${currencies})
+        AND impact = ANY(${impacts})
+      ORDER BY event_date ASC, event_time ASC
+    `;
+    return rows as EconomicEvent[];
+  }
+
+  if (currencies && currencies.length > 0) {
+    const rows = await sql`
+      SELECT * FROM economic_events
+      WHERE event_date >= ${startDate}::date
+        AND event_date < ${startDate}::date + INTERVAL '7 days'
+        AND currency = ANY(${currencies})
+      ORDER BY event_date ASC, event_time ASC
+    `;
+    return rows as EconomicEvent[];
+  }
+
+  if (impacts && impacts.length > 0) {
+    const rows = await sql`
+      SELECT * FROM economic_events
+      WHERE event_date >= ${startDate}::date
+        AND event_date < ${startDate}::date + INTERVAL '7 days'
+        AND impact = ANY(${impacts})
+      ORDER BY event_date ASC, event_time ASC
+    `;
+    return rows as EconomicEvent[];
+  }
+
+  const rows = await sql`
+    SELECT * FROM economic_events
+    WHERE event_date >= ${startDate}::date
+      AND event_date < ${startDate}::date + INTERVAL '7 days'
+    ORDER BY event_date ASC, event_time ASC
+  `;
+  return rows as EconomicEvent[];
+}
+
+export async function getRecentEconomicEvents(days: number = 1): Promise<EconomicEvent[]> {
+  const sql = getDb();
+  const rows = await sql`
+    SELECT * FROM economic_events
+    WHERE event_date >= CURRENT_DATE - INTERVAL '1 day' * ${days}
+      AND event_date <= CURRENT_DATE + INTERVAL '1 day'
+    ORDER BY event_date ASC, event_time ASC
+  `;
+  return rows as EconomicEvent[];
 }

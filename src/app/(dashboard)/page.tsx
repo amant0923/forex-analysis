@@ -1,10 +1,19 @@
-import { getInstrumentsWithBiases } from "@/lib/queries";
+import { getInstrumentsWithBiases, getUpcomingEconomicEvents } from "@/lib/queries";
 import { DashboardClient } from "@/components/dashboard-client";
+import { UpcomingEvents } from "@/components/upcoming-events";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const instruments = await getInstrumentsWithBiases();
+  const [instruments, upcomingEvents] = await Promise.all([
+    getInstrumentsWithBiases(),
+    getUpcomingEconomicEvents(7),
+  ]);
 
-  return <DashboardClient instruments={instruments} />;
+  return (
+    <>
+      <UpcomingEvents events={upcomingEvents} />
+      <DashboardClient instruments={instruments} />
+    </>
+  );
 }

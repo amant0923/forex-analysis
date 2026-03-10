@@ -14,6 +14,7 @@ from scraper.rss_scraper import RssScraper
 from scraper.analyzer import Analyzer
 from scraper.article_analyzer import ArticleAnalyzer
 from scraper.database import Database
+from scraper.economic_calendar import EconomicCalendarScraper, store_events
 
 INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"]
 TIMEFRAME_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
@@ -140,6 +141,17 @@ def run():
         m = bias.get("1month", {}).get("direction", "?").upper()
         q = bias.get("3month", {}).get("direction", "?").upper()
         print(f"    Daily: {d} | 1W: {w} | 1M: {m} | 3M: {q}")
+
+    # Step 4: Economic Calendar
+    print("\nStep 4: Scraping economic calendar...")
+    try:
+        cal_scraper = EconomicCalendarScraper()
+        cal_events = cal_scraper.fetch_current_and_next_week()
+        print(f"  Found {len(cal_events)} economic events")
+        if cal_events:
+            store_events(db, cal_events)
+    except Exception as e:
+        print(f"  Warning: Economic calendar scrape failed: {e}")
 
     db.close()
     print(f"\nPipeline complete!")

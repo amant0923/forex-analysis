@@ -51,6 +51,20 @@ export function TopNav({ instruments }: TopNavProps) {
               );
             })}
           </nav>
+
+          <div className="hidden sm:block h-4 w-px bg-gray-600" />
+
+          <Link
+            href="/calendar"
+            className={cn(
+              "hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded text-[13px] font-medium whitespace-nowrap transition-colors duration-150 cursor-pointer",
+              pathname === "/calendar"
+                ? "bg-white/10 text-white"
+                : "text-gray-400 hover:text-white hover:bg-white/5",
+            )}
+          >
+            Calendar
+          </Link>
         </div>
 
         <span className="hidden md:block text-xs text-gray-500 font-medium">
