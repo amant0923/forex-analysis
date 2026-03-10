@@ -50,9 +50,9 @@ export default function ChatPage() {
               AI Chat Assistant is a Premium feature. Upgrade to get personalized
               trading insights from your trade history.
             </p>
-            <Button asChild className="mt-2">
-              <Link href="/settings/billing">Upgrade to Premium</Link>
-            </Button>
+            <Link href="/settings/billing">
+              <Button className="mt-2">Upgrade to Premium</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
