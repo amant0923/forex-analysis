@@ -4,15 +4,18 @@ import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const token = await getToken({ req: request });
 
-  // Root path always redirects to welcome splash (for ALL users, even logged in)
+  // Root path: logged-in users go to dashboard, others go to welcome splash
   if (pathname === "/") {
-    return NextResponse.redirect(new URL("/welcome", request.url));
+    if (!token) {
+      return NextResponse.redirect(new URL("/welcome", request.url));
+    }
+    // Authenticated users see the dashboard
+    return NextResponse.next();
   }
 
   // All other protected routes require auth
-  const token = await getToken({ req: request });
-
   if (!token) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", request.url);

@@ -16,7 +16,7 @@ export default function WelcomePage() {
       const res = await fetch("/api/auth/session");
       const session = await res.json();
       if (session?.user) {
-        window.location.href = "/journal";
+        window.location.href = "/";
       } else {
         window.location.href = "/login";
       }
@@ -36,9 +36,9 @@ export default function WelcomePage() {
       <div className="absolute inset-0 bg-gradient-to-t from-[#09090b]/80 via-transparent to-[#09090b]/40 pointer-events-none" />
 
       {/* Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+      <div className="absolute inset-0 flex flex-col items-center z-10 pt-[12vh] sm:pt-[15vh]">
         {/* Brand — always visible with fade in */}
-        <div className="text-center mb-12 animate-[fadeSlideIn_2s_ease-out_forwards]">
+        <div className="text-center mb-16 animate-[fadeSlideIn_2s_ease-out_forwards]">
           <h1 className="font-serif text-5xl sm:text-6xl font-bold text-white tracking-tight drop-shadow-[0_0_40px_rgba(255,255,255,0.15)]">
             ForexPulse
           </h1>

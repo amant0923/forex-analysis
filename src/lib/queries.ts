@@ -154,6 +154,30 @@ export async function getArticlesWithAnalysesForInstrument(
   return rows as any;
 }
 
+export async function getRecentArticlesAll(
+  days: number = 7,
+  limit: number = 30
+): Promise<(Article & { instruments: string[]; analyses: { instrument: string; impact_direction: string; confidence: string }[] })[]> {
+  const sql = getDb();
+  const rows = await sql`
+    SELECT a.*,
+      COALESCE(
+        (SELECT array_agg(DISTINCT ai2.instrument ORDER BY ai2.instrument) FROM article_instruments ai2 WHERE ai2.article_id = a.id),
+        ARRAY[]::text[]
+      ) as instruments,
+      COALESCE(
+        (SELECT json_agg(json_build_object('instrument', aa.instrument, 'impact_direction', aa.impact_direction, 'confidence', aa.confidence))
+         FROM article_analyses aa WHERE aa.article_id = a.id),
+        '[]'::json
+      ) as analyses
+    FROM articles a
+    WHERE a.published_at >= NOW() - INTERVAL '1 day' * ${days}
+    ORDER BY a.published_at DESC
+    LIMIT ${limit}
+  `;
+  return rows as any;
+}
+
 export async function getUpcomingEconomicEvents(limit: number = 7): Promise<EconomicEvent[]> {
   const sql = getDb();
   const rows = await sql`
