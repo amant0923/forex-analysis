@@ -326,7 +326,7 @@ function ArticleCard({ article }: { article: RecentArticle }) {
           {mainAnalysis && (
             <div className="flex items-center gap-1">
               <DirectionIcon className={cn("h-3.5 w-3.5", dirColor)} />
-              <span className={cn("text-[11px] font-semibold uppercase", dirColor)}>
+              <span className={cn("text-[11px] font-semibold capitalize", dirColor)}>
                 {mainAnalysis.impact_direction}
               </span>
             </div>
@@ -342,7 +342,7 @@ function ArticleCard({ article }: { article: RecentArticle }) {
                     : "bg-white/[0.04] text-white/40"
               )}
             >
-              {mainAnalysis.confidence}
+              {mainAnalysis.confidence.charAt(0).toUpperCase() + mainAnalysis.confidence.slice(1)}
             </span>
           )}
           {/* Show per-instrument impacts if multiple */}

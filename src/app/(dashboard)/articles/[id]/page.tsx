@@ -146,7 +146,7 @@ export default async function ArticlePage({ params }: PageProps) {
                       <div className="flex items-center gap-2 sm:gap-3">
                         <div className="flex items-center gap-1.5">
                           <DirectionIcon className={cn("h-4 w-4", dirColor)} />
-                          <span className={cn("text-xs sm:text-sm font-bold uppercase", dirColor)}>
+                          <span className={cn("text-xs sm:text-sm font-bold capitalize", dirColor)}>
                             {analysis.impact_direction}
                           </span>
                         </div>
