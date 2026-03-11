@@ -13,6 +13,12 @@ DIRECTION_EMOJI = {
     "neutral": "⚪",
 }
 
+CONFIDENCE_EMOJI = {
+    "high": "🔴",
+    "medium": "🟡",
+    "low": "🔵",
+}
+
 
 class TelegramReporter:
     def __init__(self, database, bot_token: str):
@@ -24,18 +30,18 @@ class TelegramReporter:
     def get_connected_users(self) -> list[dict]:
         """Get all users with telegram connected and instruments selected."""
         cur = self.db.execute(
-            """SELECT id, telegram_chat_id, telegram_instruments
+            """SELECT id, telegram_chat_id, telegram_instruments, telegram_confidence_filter
                FROM users
                WHERE telegram_chat_id IS NOT NULL
                  AND array_length(telegram_instruments, 1) > 0"""
         )
         return [dict(row) for row in cur.fetchall()]
 
-    def get_todays_data(self, instrument: str) -> dict:
-        """Get today's bias and articles for an instrument."""
+    def get_instrument_data(self, instrument: str, confidence_filter: list[str]) -> dict:
+        """Get bias and today's articles for an instrument, with confidence filtering."""
         # Get latest daily bias
         cur = self.db.execute(
-            """SELECT direction, summary, key_drivers
+            """SELECT direction, summary
                FROM biases
                WHERE instrument = %s AND timeframe = 'daily'
                ORDER BY generated_at DESC LIMIT 1""",
@@ -44,73 +50,99 @@ class TelegramReporter:
         bias_row = cur.fetchone()
         bias = dict(bias_row) if bias_row else None
 
-        # Get today's articles with analyses
+        # Get today's articles matching confidence filter
         cur = self.db.execute(
-            """SELECT a.id, a.title, aa.impact_direction, aa.confidence
+            """SELECT DISTINCT a.id, a.title, a.published_at, aa.impact_direction, aa.confidence
                FROM articles a
                JOIN article_instruments ai ON a.id = ai.article_id
                LEFT JOIN article_analyses aa ON a.id = aa.article_id AND aa.instrument = %s
                WHERE ai.instrument = %s
                  AND a.published_at >= CURRENT_DATE
+                 AND (aa.confidence IS NULL OR aa.confidence = ANY(%s))
                ORDER BY a.published_at DESC""",
-            (instrument, instrument),
+            (instrument, instrument, confidence_filter),
         )
         articles = [dict(row) for row in cur.fetchall()]
+        is_fallback = False
 
-        return {"bias": bias, "articles": articles}
+        # If no articles today, get the single most recent one
+        if not articles:
+            cur = self.db.execute(
+                """SELECT DISTINCT a.id, a.title, a.published_at, aa.impact_direction, aa.confidence
+                   FROM articles a
+                   JOIN article_instruments ai ON a.id = ai.article_id
+                   LEFT JOIN article_analyses aa ON a.id = aa.article_id AND aa.instrument = %s
+                   WHERE ai.instrument = %s
+                   ORDER BY a.published_at DESC
+                   LIMIT 1""",
+                (instrument, instrument),
+            )
+            articles = [dict(row) for row in cur.fetchall()]
+            is_fallback = True
+
+        return {"bias": bias, "articles": articles, "is_fallback": is_fallback}
 
     def build_instrument_block(self, instrument: str, data: dict) -> str:
         """Build the report text for one instrument."""
         bias = data["bias"]
         articles = data["articles"]
-
-        if not bias and not articles:
-            return f"⚪ <b>{instrument}</b> — No update today"
+        is_fallback = data.get("is_fallback", False)
 
         direction = bias["direction"] if bias else "neutral"
         emoji = DIRECTION_EMOJI.get(direction, "⚪")
         direction_label = direction.capitalize()
 
-        lines = [f"{emoji} <b>{instrument}</b> — {direction_label} (1D)"]
+        lines = [f"{emoji} <b>{instrument}</b> — {direction_label}"]
 
-        # Add summary from bias
+        # Bias summary
         if bias and bias.get("summary"):
             summary = bias["summary"]
-            if len(summary) > 120:
-                summary = summary[:117] + "..."
-            lines.append(summary)
+            if len(summary) > 150:
+                summary = summary[:147] + "..."
+            lines.append(f"<i>{summary}</i>")
 
-        # Add all headlines
+        # Articles
         if articles:
             lines.append("")
-            lines.append("Headlines:")
+            if is_fallback:
+                lines.append("📰 <b>Latest:</b>")
+            else:
+                lines.append(f"📰 <b>Today ({len(articles)}):</b>")
+
             for article in articles:
                 a_dir = article.get("impact_direction")
                 a_conf = article.get("confidence")
-                a_emoji = DIRECTION_EMOJI.get(a_dir, "—") if a_dir else "—"
-                conf_label = a_conf.capitalize() if a_conf else ""
+                dir_icon = DIRECTION_EMOJI.get(a_dir, "") if a_dir else ""
+                conf_icon = CONFIDENCE_EMOJI.get(a_conf, "") if a_conf else ""
                 title = article["title"]
-                if len(title) > 80:
-                    title = title[:77] + "..."
-                badge = f" {a_emoji} {conf_label}" if a_dir else ""
-                lines.append(f'→ "{title}"{badge}')
-
-        lines.append(f"🔗 {self.site_url}/{instrument}")
+                if len(title) > 75:
+                    title = title[:72] + "..."
+                badges = " ".join(filter(None, [dir_icon, conf_icon]))
+                lines.append(f"  {badges + ' ' if badges else ''}{title}")
+        else:
+            lines.append("\n<i>No recent articles</i>")
 
         return "\n".join(lines)
 
-    def build_report(self, instruments: list[str]) -> list[str]:
+    def build_report(self, instruments: list[str], confidence_filter: list[str]) -> list[str]:
         """Build full report, splitting into multiple messages if needed."""
-        today = datetime.utcnow().strftime("%b %d")
-        header = f"📊 <b>Tradeora Daily</b> — {today}\n"
+        today = datetime.utcnow().strftime("%a, %b %d")
+
+        # Filter label
+        if len(confidence_filter) == 3:
+            filter_label = "All"
+        else:
+            filter_label = ", ".join(c.capitalize() for c in confidence_filter)
+
+        header = f"📊 <b>Tradeora Daily</b> — {today}\n📋 Filter: {filter_label} impact\n"
 
         blocks = []
         for inst in instruments:
-            data = self.get_todays_data(inst)
+            data = self.get_instrument_data(inst, confidence_filter)
             block = self.build_instrument_block(inst, data)
             blocks.append(block)
 
-        footer = f"\n🔗 {self.site_url}"
+        footer = f"\n🔗 <b>Full analysis:</b> {self.site_url}"
 
         # Try to fit everything in one message
         separator = "\n\n━━━━━━━━━━━━━━━\n\n"
@@ -128,6 +160,8 @@ class TelegramReporter:
                 msg = block
             if i == len(blocks) - 1:
                 msg += "\n" + footer
+            if len(msg) > MAX_MESSAGE_LENGTH:
+                msg = msg[: MAX_MESSAGE_LENGTH - 3] + "..."
             messages.append(msg)
 
         return messages
@@ -164,12 +198,13 @@ class TelegramReporter:
         for user in users:
             chat_id = user["telegram_chat_id"]
             instruments = user["telegram_instruments"]
+            confidence_filter = user.get("telegram_confidence_filter") or ["high", "medium", "low"]
 
             if not instruments:
                 continue
 
             print(f"  Sending to user {user['id']} ({len(instruments)} instruments)...")
-            messages = self.build_report(instruments)
+            messages = self.build_report(instruments, confidence_filter)
 
             all_sent = True
             for msg in messages:

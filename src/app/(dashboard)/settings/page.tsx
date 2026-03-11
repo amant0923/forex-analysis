@@ -11,13 +11,21 @@ import {
   Loader2,
   Unlink,
   Send,
+  Filter,
 } from "lucide-react";
 
 const ALL_INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"];
 
+const CONFIDENCE_LEVELS = [
+  { value: "high", label: "High Impact", color: "text-red-400", bg: "bg-red-500/15 border-red-500/20", activeBg: "bg-red-500/20 border-red-500/30" },
+  { value: "medium", label: "Medium Impact", color: "text-yellow-400", bg: "bg-yellow-500/15 border-yellow-500/20", activeBg: "bg-yellow-500/20 border-yellow-500/30" },
+  { value: "low", label: "Low Impact", color: "text-blue-400", bg: "bg-blue-500/15 border-blue-500/20", activeBg: "bg-blue-500/20 border-blue-500/30" },
+];
+
 export default function SettingsPage() {
   const [connected, setConnected] = useState(false);
   const [instruments, setInstruments] = useState<string[]>([]);
+  const [confidenceFilter, setConfidenceFilter] = useState<string[]>(["high", "medium", "low"]);
   const [linkCode, setLinkCode] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
@@ -34,6 +42,7 @@ export default function SettingsPage() {
       .then((data) => {
         setConnected(data.connected);
         setInstruments(data.instruments || []);
+        setConfidenceFilter(data.confidenceFilter || ["high", "medium", "low"]);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -70,6 +79,7 @@ export default function SettingsPage() {
     await fetch("/api/settings/telegram", { method: "DELETE" });
     setConnected(false);
     setInstruments([]);
+    setConfidenceFilter(["high", "medium", "low"]);
     setLinkCode(null);
   }
 
@@ -82,6 +92,20 @@ export default function SettingsPage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ instruments: next }),
+    });
+  }
+
+  async function toggleConfidence(level: string) {
+    const next = confidenceFilter.includes(level)
+      ? confidenceFilter.filter((c) => c !== level)
+      : [...confidenceFilter, level];
+    // Must have at least one selected
+    if (next.length === 0) return;
+    setConfidenceFilter(next);
+    await fetch("/api/settings/telegram", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ confidenceFilter: next }),
     });
   }
 
@@ -126,7 +150,7 @@ export default function SettingsPage() {
           </p>
 
           {connected ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <button
                 onClick={async () => {
                   setSendingTest(true);
@@ -191,7 +215,7 @@ export default function SettingsPage() {
 
       {/* Instrument Selection */}
       {connected && (
-        <div className="bg-white/[0.06] rounded-[1.25rem] border border-white/10 backdrop-blur-xl p-6">
+        <div className="bg-white/[0.06] rounded-[1.25rem] border border-white/10 backdrop-blur-xl p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-2">Daily Report Instruments</h2>
           <p className="text-sm text-white/40 mb-5">
             Select which instruments to include in your daily Telegram report.
@@ -224,6 +248,40 @@ export default function SettingsPage() {
               Select at least one instrument to receive daily reports.
             </p>
           )}
+        </div>
+      )}
+
+      {/* Confidence Filter */}
+      {connected && (
+        <div className="bg-white/[0.06] rounded-[1.25rem] border border-white/10 backdrop-blur-xl p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <Filter className="h-5 w-5 text-white/60" />
+            <h2 className="text-lg font-semibold text-white">News Impact Filter</h2>
+          </div>
+          <p className="text-sm text-white/40 mb-5">
+            Choose which impact levels to include in your reports. Select multiple.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-2">
+            {CONFIDENCE_LEVELS.map((level) => {
+              const selected = confidenceFilter.includes(level.value);
+              return (
+                <button
+                  key={level.value}
+                  onClick={() => toggleConfidence(level.value)}
+                  className={cn(
+                    "flex items-center justify-center gap-2 px-4 py-3 rounded-xl border transition-all cursor-pointer flex-1",
+                    selected
+                      ? level.activeBg + " " + level.color
+                      : "bg-white/[0.03] border-white/[0.06] text-white/40 hover:bg-white/[0.06] hover:text-white/60"
+                  )}
+                >
+                  <span className="text-sm font-medium">{level.label}</span>
+                  {selected && <Check className="h-4 w-4" />}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
