@@ -30,6 +30,6 @@ export const config = {
     // Match root path explicitly
     "/",
     // Match all other paths except public routes
-    "/((?!welcome|login|register|api/auth|_next/static|_next/image|favicon.ico).*)",
+    "/((?!welcome|login|register|api/auth|api/telegram|_next/static|_next/image|favicon.ico).*)",
   ],
 };
