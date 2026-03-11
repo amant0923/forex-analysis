@@ -10,6 +10,7 @@ import {
   Copy,
   Loader2,
   Unlink,
+  Send,
 } from "lucide-react";
 
 const ALL_INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"];
@@ -23,6 +24,8 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
+  const [testSent, setTestSent] = useState(false);
 
   // Load current state
   useEffect(() => {
@@ -123,13 +126,33 @@ export default function SettingsPage() {
           </p>
 
           {connected ? (
-            <button
-              onClick={disconnect}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-colors cursor-pointer"
-            >
-              <Unlink className="h-4 w-4" />
-              Disconnect Telegram
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={async () => {
+                  setSendingTest(true);
+                  setTestSent(false);
+                  try {
+                    const res = await fetch("/api/telegram/test-report", { method: "POST" });
+                    if (res.ok) setTestSent(true);
+                  } catch {} finally {
+                    setSendingTest(false);
+                    setTimeout(() => setTestSent(false), 3000);
+                  }
+                }}
+                disabled={sendingTest || instruments.length === 0}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#2AABEE] hover:bg-[#229ED9] transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {sendingTest ? <Loader2 className="h-4 w-4 animate-spin" /> : testSent ? <Check className="h-4 w-4" /> : <Send className="h-4 w-4" />}
+                {sendingTest ? "Sending..." : testSent ? "Sent!" : "Send Test Report"}
+              </button>
+              <button
+                onClick={disconnect}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-colors cursor-pointer"
+              >
+                <Unlink className="h-4 w-4" />
+                Disconnect
+              </button>
+            </div>
           ) : linkCode ? (
             <div>
               <p className="text-sm text-white/60 mb-3">
