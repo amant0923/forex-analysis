@@ -16,6 +16,7 @@ from scraper.article_analyzer import ArticleAnalyzer
 from scraper.database import Database
 from scraper.economic_calendar import EconomicCalendarScraper, store_events
 from scraper.fmp_quotes import FmpQuoteFetcher, store_quotes
+from scraper.telegram_reporter import TelegramReporter
 
 INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"]
 TIMEFRAME_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
@@ -168,6 +169,18 @@ def run():
             print(f"  Warning: FMP quote fetch failed: {e}")
     else:
         print("  Skipped — FMP_API_KEY not set")
+
+    # Step 6: Send Telegram reports
+    print("\nStep 6: Sending Telegram daily reports...")
+    telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
+    if telegram_token:
+        try:
+            reporter = TelegramReporter(db, telegram_token)
+            reporter.send_reports()
+        except Exception as e:
+            print(f"  Warning: Telegram reports failed: {e}")
+    else:
+        print("  Skipped — TELEGRAM_BOT_TOKEN not set")
 
     db.close()
     print(f"\nPipeline complete!")

@@ -1,0 +1,208 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { InstrumentIcon } from "@/components/instrument-icon";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
+import {
+  MessageCircle,
+  Check,
+  Copy,
+  Loader2,
+  Unlink,
+} from "lucide-react";
+
+const ALL_INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"];
+
+export default function SettingsPage() {
+  const [connected, setConnected] = useState(false);
+  const [instruments, setInstruments] = useState<string[]>([]);
+  const [linkCode, setLinkCode] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Load current state
+  useEffect(() => {
+    fetch("/api/settings/telegram")
+      .then((r) => r.json())
+      .then((data) => {
+        setConnected(data.connected);
+        setInstruments(data.instruments || []);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Countdown timer for link code
+  useEffect(() => {
+    if (!expiresAt) return;
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
+      setCountdown(remaining);
+      if (remaining <= 0) {
+        setLinkCode(null);
+        setExpiresAt(null);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+
+  async function generateCode() {
+    setGenerating(true);
+    try {
+      const res = await fetch("/api/telegram/generate-code", { method: "POST" });
+      const data = await res.json();
+      setLinkCode(data.code);
+      setExpiresAt(data.expires_at);
+    } catch {
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  async function disconnect() {
+    await fetch("/api/settings/telegram", { method: "DELETE" });
+    setConnected(false);
+    setInstruments([]);
+    setLinkCode(null);
+  }
+
+  async function toggleInstrument(code: string) {
+    const next = instruments.includes(code)
+      ? instruments.filter((i) => i !== code)
+      : [...instruments, code];
+    setInstruments(next);
+    await fetch("/api/settings/telegram", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ instruments: next }),
+    });
+  }
+
+  function copyCode() {
+    if (linkCode) {
+      navigator.clipboard.writeText(linkCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-5 w-5 animate-spin text-white/30" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl">
+      <h1 className="font-serif text-2xl font-bold text-white mb-2">Settings</h1>
+      <p className="text-sm text-white/40 mb-8">Manage your account and notifications</p>
+
+      {/* Telegram Connection */}
+      <div className="relative rounded-[1.25rem] mb-6">
+        <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
+        <div className="bg-white/[0.06] rounded-[1.25rem] border border-white/10 backdrop-blur-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <MessageCircle className="h-5 w-5 text-[#2AABEE]" />
+            <h2 className="text-lg font-semibold text-white">Telegram</h2>
+            {connected && (
+              <span className="flex items-center gap-1 text-xs font-medium text-green-400 bg-green-500/15 px-2 py-0.5 rounded-full">
+                <Check className="h-3 w-3" />
+                Connected
+              </span>
+            )}
+          </div>
+
+          <p className="text-sm text-white/40 mb-5">
+            Connect your Telegram to receive daily market reports with headlines and bias analysis for your selected instruments.
+          </p>
+
+          {connected ? (
+            <button
+              onClick={disconnect}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-colors cursor-pointer"
+            >
+              <Unlink className="h-4 w-4" />
+              Disconnect Telegram
+            </button>
+          ) : linkCode ? (
+            <div>
+              <p className="text-sm text-white/60 mb-3">
+                Send this code to <span className="font-semibold text-white">@ForexPulseBot</span> on Telegram:
+              </p>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="bg-white/[0.08] border border-white/15 rounded-lg px-5 py-3">
+                  <span className="text-2xl font-mono font-bold tracking-[0.3em] text-white">
+                    {linkCode}
+                  </span>
+                </div>
+                <button
+                  onClick={copyCode}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-white/60 bg-white/[0.06] hover:bg-white/[0.1] transition-colors cursor-pointer"
+                >
+                  {copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
+                  {copied ? "Copied" : "Copy"}
+                </button>
+              </div>
+              <p className="text-xs text-white/30">
+                Code expires in {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, "0")}
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={generateCode}
+              disabled={generating}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#2AABEE] hover:bg-[#229ED9] transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
+              Connect Telegram
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Instrument Selection */}
+      {connected && (
+        <div className="bg-white/[0.06] rounded-[1.25rem] border border-white/10 backdrop-blur-xl p-6">
+          <h2 className="text-lg font-semibold text-white mb-2">Daily Report Instruments</h2>
+          <p className="text-sm text-white/40 mb-5">
+            Select which instruments to include in your daily Telegram report.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {ALL_INSTRUMENTS.map((code) => {
+              const selected = instruments.includes(code);
+              return (
+                <button
+                  key={code}
+                  onClick={() => toggleInstrument(code)}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer",
+                    selected
+                      ? "bg-white/[0.1] border-white/20 text-white"
+                      : "bg-white/[0.03] border-white/[0.06] text-white/40 hover:bg-white/[0.06] hover:text-white/60"
+                  )}
+                >
+                  <InstrumentIcon code={code} size="sm" />
+                  <span className="text-sm font-medium flex-1 text-left">{code}</span>
+                  {selected && <Check className="h-4 w-4 text-green-400" />}
+                </button>
+              );
+            })}
+          </div>
+
+          {instruments.length === 0 && (
+            <p className="text-xs text-white/30 mt-3">
+              Select at least one instrument to receive daily reports.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

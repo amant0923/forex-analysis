@@ -20,6 +20,7 @@ import {
   BarChart3,
   ChevronDown,
   Home,
+  Settings,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import type { Instrument } from "@/types";
@@ -210,6 +211,18 @@ export function TopNav({ instruments }: TopNavProps) {
 
         {/* Right side */}
         <div className="hidden sm:flex items-center gap-2 shrink-0 ml-2">
+          <Link
+            href="/settings"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+              pathname === "/settings"
+                ? "text-white bg-white/10"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <Settings className="h-4 w-4" />
+            Settings
+          </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
@@ -313,6 +326,19 @@ export function TopNav({ instruments }: TopNavProps) {
           })}
 
           <div className="h-px bg-white/10 my-2" />
+          <Link
+            href="/settings"
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+              pathname === "/settings"
+                ? "bg-white/10 text-white"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <Settings className="h-4 w-4" />
+            <span>Settings</span>
+          </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer w-full"
