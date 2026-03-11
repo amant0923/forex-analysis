@@ -125,7 +125,7 @@ class TelegramReporter:
         else:
             filter_label = ", ".join(c.capitalize() for c in confidence_filter)
 
-        header = f"📊 <b>Tradeora Daily</b> — {today}\n📋 Filter: {filter_label} impact\n"
+        header = f"📊 <b>Tradeora Daily</b> — {today}\n📋 Filter: {filter_label} impact\n🟢 Bullish  🔴 Bearish  ⚪ Neutral\n"
 
         blocks = []
         for inst in instruments:

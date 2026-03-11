@@ -139,7 +139,7 @@ export async function POST() {
     ? "All"
     : confidenceFilter.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).join(", ");
 
-  const header = `📊 <b>Tradeora Daily</b> — ${today}\n📋 Filter: ${filterLabel} impact\n`;
+  const header = `📊 <b>Tradeora Daily</b> — ${today}\n📋 Filter: ${filterLabel} impact\n🟢 Bullish  🔴 Bearish  ⚪ Neutral\n`;
   const footer = `\n🔗 <b>Full analysis:</b> ${SITE_URL}`;
   const separator = "\n\n━━━━━━━━━━━━━━━\n\n";
 
