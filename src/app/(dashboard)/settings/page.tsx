@@ -48,6 +48,25 @@ export default function SettingsPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Poll for connection while code is shown
+  useEffect(() => {
+    if (!linkCode || connected) return;
+    const poll = setInterval(async () => {
+      try {
+        const res = await fetch("/api/settings/telegram");
+        const data = await res.json();
+        if (data.connected) {
+          setConnected(true);
+          setInstruments(data.instruments || []);
+          setConfidenceFilter(data.confidenceFilter || ["high", "medium", "low"]);
+          setLinkCode(null);
+          setExpiresAt(null);
+        }
+      } catch {}
+    }, 3000);
+    return () => clearInterval(poll);
+  }, [linkCode, connected]);
+
   // Countdown timer for link code
   useEffect(() => {
     if (!expiresAt) return;
