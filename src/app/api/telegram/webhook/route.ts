@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     `;
 
     if (rows.length === 0) {
-      await sendTelegramMessage(chatId, "Invalid or expired code. Please generate a new one from ForexPulse settings.");
+      await sendTelegramMessage(chatId, "Invalid or expired code. Please generate a new one from Tradeora settings.");
       return NextResponse.json({ ok: true });
     }
 
@@ -52,17 +52,17 @@ export async function POST(request: NextRequest) {
 
     await sendTelegramMessage(
       chatId,
-      "✅ <b>Connected!</b>\n\nYour Telegram is now linked to ForexPulse. Go to Settings to select which instruments you want in your daily report."
+      "✅ <b>Connected!</b>\n\nYour Telegram is now linked to Tradeora. Go to Settings to select which instruments you want in your daily report."
     );
   } else if (text === "/START" || text === "/HELP") {
     await sendTelegramMessage(
       chatId,
-      "👋 <b>ForexPulse Bot</b>\n\nTo connect your account:\n1. Go to ForexPulse → Settings\n2. Click \"Connect Telegram\"\n3. Send the 6-digit code here\n\nYou'll receive daily market reports for your selected instruments."
+      "👋 <b>Tradeora Bot</b>\n\nTo connect your account:\n1. Go to Tradeora → Settings\n2. Click \"Connect Telegram\"\n3. Send the 6-digit code here\n\nYou'll receive daily market reports for your selected instruments."
     );
   } else {
     await sendTelegramMessage(
       chatId,
-      "Send your 6-digit link code from ForexPulse settings, or type /help for instructions."
+      "Send your 6-digit link code from Tradeora settings, or type /help for instructions."
     );
   }
 

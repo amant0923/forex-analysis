@@ -13,7 +13,7 @@ export default function LoginPage() {
 
       <div className="relative z-10 w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="font-serif text-2xl font-bold text-white">ForexPulse</h1>
+          <h1 className="font-serif text-2xl font-bold text-white">Tradeora</h1>
           <p className="mt-1 text-sm text-white/40">Sign in to your account</p>
         </div>
 

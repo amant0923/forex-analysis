@@ -54,7 +54,7 @@ export function TopNav({ instruments }: TopNavProps) {
         {/* Logo */}
         <Link href="/" className="shrink-0 cursor-pointer">
           <span className="font-serif text-lg font-bold tracking-tight text-white">
-            ForexPulse
+            Tradeora
           </span>
         </Link>
 

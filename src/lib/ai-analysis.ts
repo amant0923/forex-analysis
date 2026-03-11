@@ -77,7 +77,7 @@ function buildPrompt(ctx: AnalysisContext): string {
   }
 
   if (ctx.bias_data?.length) {
-    prompt += `\n\n## ForexPulse Fundamental Bias (at time of trade)\n`;
+    prompt += `\n\n## Tradeora Fundamental Bias (at time of trade)\n`;
     ctx.bias_data.forEach((b) => {
       prompt += `- ${b.timeframe}: ${b.direction} — ${b.summary}\n`;
     });

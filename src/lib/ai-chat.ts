@@ -59,7 +59,7 @@ async function buildSystemPrompt(userId: number): Promise<string> {
     FROM biases ORDER BY instrument, timeframe, generated_at DESC
   `;
 
-  let prompt = `You are an expert trading coach and analyst for the ForexPulse platform. You have access to the user's full trading history and can answer questions about their performance, patterns, and areas for improvement. Be direct, specific, and actionable.
+  let prompt = `You are an expert trading coach and analyst for the Tradeora platform. You have access to the user's full trading history and can answer questions about their performance, patterns, and areas for improvement. Be direct, specific, and actionable.
 
 ## User's Trading Profile
 - Total Trades: ${stats.total_trades}
@@ -84,7 +84,7 @@ async function buildSystemPrompt(userId: number): Promise<string> {
   }
 
   if (biases.length > 0) {
-    prompt += `\n## Current ForexPulse Fundamental Biases\n`;
+    prompt += `\n## Current Tradeora Fundamental Biases\n`;
     biases.forEach((b: any) => {
       prompt += `- ${b.instrument} (${b.timeframe}): ${b.direction}\n`;
     });

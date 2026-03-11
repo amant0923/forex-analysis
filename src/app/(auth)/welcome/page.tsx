@@ -40,7 +40,7 @@ export default function WelcomePage() {
         {/* Brand — always visible with fade in */}
         <div className="text-center mb-16 animate-[fadeSlideIn_2s_ease-out_forwards]">
           <h1 className="font-serif text-5xl sm:text-6xl font-bold text-white tracking-tight drop-shadow-[0_0_40px_rgba(255,255,255,0.15)]">
-            ForexPulse
+            Tradeora
           </h1>
           <p className="mt-3 text-sm text-white/40 tracking-[0.2em] uppercase font-light">
             Fundamental Analysis

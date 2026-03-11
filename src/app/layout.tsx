@@ -20,7 +20,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ForexPulse — Fundamental Analysis",
+  title: "Tradeora — Fundamental Analysis",
   description: "AI-powered fundamental bias across forex and index instruments",
 };
 

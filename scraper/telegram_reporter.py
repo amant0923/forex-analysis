@@ -19,7 +19,7 @@ class TelegramReporter:
         self.db = database
         self.bot_token = bot_token
         self.api_url = TELEGRAM_API.format(token=bot_token)
-        self.site_url = os.getenv("SITE_URL", "forexpulse.com")
+        self.site_url = os.getenv("SITE_URL", "tradeora.com")
 
     def get_connected_users(self) -> list[dict]:
         """Get all users with telegram connected and instruments selected."""
@@ -102,7 +102,7 @@ class TelegramReporter:
     def build_report(self, instruments: list[str]) -> list[str]:
         """Build full report, splitting into multiple messages if needed."""
         today = datetime.utcnow().strftime("%b %d")
-        header = f"📊 <b>ForexPulse Daily</b> — {today}\n"
+        header = f"📊 <b>Tradeora Daily</b> — {today}\n"
 
         blocks = []
         for inst in instruments:

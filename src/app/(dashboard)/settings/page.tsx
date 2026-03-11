@@ -133,7 +133,7 @@ export default function SettingsPage() {
           ) : linkCode ? (
             <div>
               <p className="text-sm text-white/60 mb-3">
-                Send this code to <span className="font-semibold text-white">@ForexPulseBot</span> on Telegram:
+                Send this code to <span className="font-semibold text-white">@TradeoraBot</span> on Telegram:
               </p>
               <div className="flex items-center gap-3 mb-3">
                 <div className="bg-white/[0.08] border border-white/15 rounded-lg px-5 py-3">
