@@ -11,11 +11,6 @@ const DIRECTION_EMOJI: Record<string, string> = {
   neutral: "⚪",
 };
 
-const CONFIDENCE_EMOJI: Record<string, string> = {
-  high: "🔴",
-  medium: "🟡",
-  low: "🔵",
-};
 
 async function sendTelegramMessage(chatId: string, text: string) {
   const res = await fetch(
@@ -109,11 +104,14 @@ export async function POST() {
     // Header line
     const lines: string[] = [`${emoji} <b>${instrument}</b> — ${dirLabel}`];
 
-    // Bias summary
+    // Bias summary (skip "Insufficient data" type summaries)
     if (bias?.summary) {
       let summary = bias.summary as string;
-      if (summary.length > 150) summary = summary.slice(0, 147) + "...";
-      lines.push(`<i>${summary}</i>`);
+      const lower = summary.toLowerCase();
+      if (!lower.includes("insufficient data") && !lower.includes("no data")) {
+        if (summary.length > 150) summary = summary.slice(0, 147) + "...";
+        lines.push(`<i>${summary}</i>`);
+      }
     }
 
     // Articles
@@ -125,14 +123,9 @@ export async function POST() {
         lines.push(`📰 <b>Today (${articles.length}):</b>`);
       }
       for (const article of articles) {
-        const aDir = article.impact_direction as string | null;
-        const aConf = article.confidence as string | null;
-        const dirIcon = aDir ? (DIRECTION_EMOJI[aDir] || "") : "";
-        const confIcon = aConf ? (CONFIDENCE_EMOJI[aConf] || "") : "";
         let title = article.title as string;
         if (title.length > 75) title = title.slice(0, 72) + "...";
-        const badges = [dirIcon, confIcon].filter(Boolean).join(" ");
-        lines.push(`  ${badges ? badges + " " : ""}${title}`);
+        lines.push(`  • ${title}`);
       }
     } else {
       lines.push("\n<i>No recent articles</i>");

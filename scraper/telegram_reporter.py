@@ -13,12 +13,6 @@ DIRECTION_EMOJI = {
     "neutral": "⚪",
 }
 
-CONFIDENCE_EMOJI = {
-    "high": "🔴",
-    "medium": "🟡",
-    "low": "🔵",
-}
-
 
 class TelegramReporter:
     def __init__(self, database, bot_token: str):
@@ -94,12 +88,14 @@ class TelegramReporter:
 
         lines = [f"{emoji} <b>{instrument}</b> — {direction_label}"]
 
-        # Bias summary
+        # Bias summary (skip "Insufficient data" type summaries)
         if bias and bias.get("summary"):
             summary = bias["summary"]
-            if len(summary) > 150:
-                summary = summary[:147] + "..."
-            lines.append(f"<i>{summary}</i>")
+            lower = summary.lower()
+            if "insufficient data" not in lower and "no data" not in lower:
+                if len(summary) > 150:
+                    summary = summary[:147] + "..."
+                lines.append(f"<i>{summary}</i>")
 
         # Articles
         if articles:
@@ -110,15 +106,10 @@ class TelegramReporter:
                 lines.append(f"📰 <b>Today ({len(articles)}):</b>")
 
             for article in articles:
-                a_dir = article.get("impact_direction")
-                a_conf = article.get("confidence")
-                dir_icon = DIRECTION_EMOJI.get(a_dir, "") if a_dir else ""
-                conf_icon = CONFIDENCE_EMOJI.get(a_conf, "") if a_conf else ""
                 title = article["title"]
                 if len(title) > 75:
                     title = title[:72] + "..."
-                badges = " ".join(filter(None, [dir_icon, conf_icon]))
-                lines.append(f"  {badges + ' ' if badges else ''}{title}")
+                lines.append(f"  • {title}")
         else:
             lines.append("\n<i>No recent articles</i>")
 
