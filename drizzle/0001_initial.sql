@@ -48,7 +48,13 @@ INSERT INTO instruments (code, name, category) VALUES
   ('GER40', 'Germany 40 (DAX)', 'index'),
   ('US30', 'Dow Jones Industrial Average', 'index'),
   ('NAS100', 'Nasdaq 100', 'index'),
-  ('SP500', 'S&P 500', 'index')
+  ('SP500', 'S&P 500', 'index'),
+  ('USDJPY', 'US Dollar / Japanese Yen', 'forex'),
+  ('EURJPY', 'Euro / Japanese Yen', 'forex'),
+  ('GBPJPY', 'British Pound / Japanese Yen', 'forex'),
+  ('EURGBP', 'Euro / British Pound', 'forex'),
+  ('XAUUSD', 'Gold / US Dollar', 'commodity'),
+  ('XAGUSD', 'Silver / US Dollar', 'commodity')
 ON CONFLICT (code) DO NOTHING;
 
 -- Indexes

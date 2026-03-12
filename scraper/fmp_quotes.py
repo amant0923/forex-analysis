@@ -9,6 +9,10 @@ FMP_STABLE = "https://financialmodelingprep.com/stable"
 FMP_SYMBOLS = {
     "EURUSD": "EURUSD",
     "GBPUSD": "GBPUSD",
+    "USDJPY": "USDJPY",
+    "EURJPY": "EURJPY",
+    "GBPJPY": "GBPJPY",
+    "EURGBP": "EURGBP",
     "US30": "%5EDJI",
     "SP500": "%5EGSPC",
 }
@@ -18,6 +22,8 @@ YAHOO_SYMBOLS = {
     "DXY": "DX-Y.NYB",
     "NAS100": "%5ENDX",
     "GER40": "%5EGDAXI",
+    "XAUUSD": "GC%3DF",
+    "XAGUSD": "SI%3DF",
 }
 
 YAHOO_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1d&interval=1d"

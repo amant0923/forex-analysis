@@ -19,6 +19,12 @@ const instrumentConfig: Record<
   US30: { type: "flags", flags: ["us"] },
   NAS100: { type: "flags", flags: ["us"] },
   SP500: { type: "flags", flags: ["us"] },
+  USDJPY: { type: "flags", flags: ["us", "jp"] },
+  EURJPY: { type: "flags", flags: ["eu", "jp"] },
+  GBPJPY: { type: "flags", flags: ["gb", "jp"] },
+  EURGBP: { type: "flags", flags: ["eu", "gb"] },
+  XAUUSD: { type: "flags", flags: ["us"] },
+  XAGUSD: { type: "flags", flags: ["us"] },
 };
 
 export function InstrumentIcon({

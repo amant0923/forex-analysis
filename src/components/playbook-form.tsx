@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Plus, X } from "lucide-react";
 
-const INSTRUMENTS = ["Any", "DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"];
+const INSTRUMENTS = ["Any", "DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"];
 const TIMEFRAMES = ["Any", "M1", "M5", "M15", "H1", "H4", "D1"];
 const RULE_CATEGORIES = ["entry", "exit", "risk"] as const;
 

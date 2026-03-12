@@ -5,7 +5,7 @@ import urllib.request
 from datetime import datetime, date, timedelta
 
 FOREXFACTORY_URL = "https://www.forexfactory.com/calendar?week={}"
-TARGET_CURRENCIES = {"USD", "EUR", "GBP"}
+TARGET_CURRENCIES = {"USD", "EUR", "GBP", "JPY"}
 
 IMPACT_MAP = {
     "red": "high",
@@ -16,15 +16,17 @@ IMPACT_MAP = {
 
 # Map currencies to instruments
 CURRENCY_INSTRUMENTS = {
-    "USD": ["DXY", "US30", "NAS100", "SP500"],
-    "EUR": ["EURUSD", "GER40"],
-    "GBP": ["GBPUSD"],
+    "USD": ["DXY", "USDJPY", "XAUUSD", "XAGUSD", "US30", "NAS100", "SP500"],
+    "EUR": ["EURUSD", "EURJPY", "EURGBP", "GER40"],
+    "GBP": ["GBPUSD", "GBPJPY", "EURGBP"],
+    "JPY": ["USDJPY", "EURJPY", "GBPJPY"],
 }
 
 CURRENCY_COUNTRY = {
     "USD": "US",
     "EUR": "EU",
     "GBP": "GB",
+    "JPY": "JP",
 }
 
 

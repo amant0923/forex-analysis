@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Plus, Download, Loader2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 import type { Trade, Playbook } from "@/types";
 
-const INSTRUMENTS = ["EURUSD", "GBPUSD", "DXY", "GER40", "US30", "NAS100", "SP500"];
+const INSTRUMENTS = ["EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "DXY", "GER40", "US30", "NAS100", "SP500"];
 const DIRECTIONS = ["all", "buy", "sell"] as const;
 const PAGE_SIZE = 50;
 

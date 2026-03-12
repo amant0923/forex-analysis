@@ -1,13 +1,19 @@
-const FOREX_INSTRUMENTS = ["EURUSD", "GBPUSD"];
-const CFD_INSTRUMENTS = ["DXY", "GER40", "US30", "NAS100", "SP500"];
+const FOREX_INSTRUMENTS = ["EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP"];
+const CFD_INSTRUMENTS = ["DXY", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"];
 
 const PIP_SIZE: Record<string, number> = {
   EURUSD: 0.0001,
   GBPUSD: 0.0001,
+  USDJPY: 0.01,
+  EURJPY: 0.01,
+  GBPJPY: 0.01,
+  EURGBP: 0.0001,
 };
 
 const TICK_SIZE: Record<string, number> = {
   DXY: 0.01,
+  XAUUSD: 0.01,
+  XAGUSD: 0.001,
   GER40: 1,
   US30: 1,
   NAS100: 0.25,

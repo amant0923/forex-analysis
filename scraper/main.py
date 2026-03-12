@@ -18,7 +18,7 @@ from scraper.economic_calendar import EconomicCalendarScraper, store_events
 from scraper.fmp_quotes import FmpQuoteFetcher, store_quotes
 from scraper.telegram_reporter import TelegramReporter
 
-INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"]
+INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"]
 TIMEFRAME_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
 
 

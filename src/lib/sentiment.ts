@@ -57,7 +57,7 @@ export async function getInstrumentSentiment(instrument: string, days: number = 
 }
 
 export async function getMarketSentiment(days: number = 7): Promise<MarketSentiment> {
-  const instruments = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"];
+  const instruments = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"];
   const sentiments: InstrumentSentiment[] = [];
 
   for (const inst of instruments) {

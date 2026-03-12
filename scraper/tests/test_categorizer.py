@@ -56,3 +56,35 @@ def test_fed_news_maps_to_dxy():
         "FOMC minutes reveal divided committee on rate path."
     )
     assert "DXY" in instruments
+
+
+def test_boj_news_maps_to_usdjpy():
+    instruments = categorize_article(
+        "Bank of Japan holds rates amid yen weakness",
+        "BOJ maintains ultra-loose monetary policy."
+    )
+    assert "USDJPY" in instruments
+
+
+def test_gold_news_maps_to_xauusd():
+    instruments = categorize_article(
+        "Gold price surges to record high",
+        "Bullion demand rises on safe haven flows."
+    )
+    assert "XAUUSD" in instruments
+
+
+def test_silver_news_maps_to_xagusd():
+    instruments = categorize_article(
+        "Silver price rallies on industrial demand",
+        "Silver futures climb 3% in today's session."
+    )
+    assert "XAGUSD" in instruments
+
+
+def test_eurgbp_news_maps_correctly():
+    instruments = categorize_article(
+        "EURGBP drops as euro weakens against sterling",
+        "Euro pound cross falls below key support."
+    )
+    assert "EURGBP" in instruments

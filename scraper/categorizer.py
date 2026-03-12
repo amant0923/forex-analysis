@@ -30,6 +30,29 @@ INSTRUMENT_KEYWORDS: dict[str, list[str]] = {
         "sp500", "s&p 500", "s&p500", "spx", "spy",
         "us stocks", "wall street", "us equity",
     ],
+    "USDJPY": [
+        "usdjpy", "usd/jpy", "dollar yen", "bank of japan", "boj",
+        "japanese yen", "japan gdp", "japan inflation", "japan cpi",
+        "ueda", "yen weakness", "yen strength",
+    ],
+    "EURJPY": [
+        "eurjpy", "eur/jpy", "euro yen",
+    ],
+    "GBPJPY": [
+        "gbpjpy", "gbp/jpy", "pound yen",
+    ],
+    "EURGBP": [
+        "eurgbp", "eur/gbp", "euro pound", "euro sterling",
+    ],
+    "XAUUSD": [
+        "xauusd", "xau/usd", "gold price", "gold spot", "gold futures",
+        "gold rally", "gold drops", "gold surges", "gold falls",
+        "bullion", "safe haven gold", "gold demand",
+    ],
+    "XAGUSD": [
+        "xagusd", "xag/usd", "silver price", "silver spot", "silver futures",
+        "silver rally", "silver drops", "silver surges", "silver falls",
+    ],
 }
 
 

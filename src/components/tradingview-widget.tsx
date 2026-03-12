@@ -10,6 +10,12 @@ const TV_SYMBOL_MAP: Record<string, string> = {
   NAS100: "NASDAQ:QQQ",
   SP500: "AMEX:SPY",
   GER40: "XETR:DAX",
+  USDJPY: "FX:USDJPY",
+  EURJPY: "FX:EURJPY",
+  GBPJPY: "FX:GBPJPY",
+  EURGBP: "FX:EURGBP",
+  XAUUSD: "TVC:GOLD",
+  XAGUSD: "TVC:SILVER",
 };
 
 const TV_PROXY_LABEL: Record<string, string> = {

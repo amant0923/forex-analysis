@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react";
 import { calculatePnl, calculateRR, isForex } from "@/lib/pnl-calc";
 import type { Playbook, PlaybookRule, TradingAccount } from "@/types";
 
-const INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"];
+const INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"];
 const SESSIONS = ["london", "new_york", "asia", "overlap"] as const;
 const TIMEFRAMES = ["M1", "M5", "M15", "H1", "H4", "D1"] as const;
 const EMOTIONS_BEFORE = ["confident", "calm", "anxious", "FOMO", "revenge", "uncertain"] as const;

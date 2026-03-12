@@ -14,7 +14,7 @@ import {
   Filter,
 } from "lucide-react";
 
-const ALL_INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "GER40", "US30", "NAS100", "SP500"];
+const ALL_INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"];
 
 const CONFIDENCE_LEVELS = [
   { value: "high", label: "High Impact", color: "text-red-400", bg: "bg-red-500/15 border-red-500/20", activeBg: "bg-red-500/20 border-red-500/30" },
