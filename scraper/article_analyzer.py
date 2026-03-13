@@ -67,7 +67,7 @@ class ArticleAnalyzer:
             return []
 
         articles_text = "\n\n---\n\n".join(
-            f"[ARTICLE ID={a['id']}]\nTitle: {a['title']}\nSource: {a.get('source', 'Unknown')}\nDate: {str(a.get('published_at', ''))[:10]}\nContent:\n{str(a.get('content', ''))[:1500]}"
+            f"[ARTICLE ID={a['id']}]\nTitle: {a['title']}\nSource: {a.get('source', 'Unknown')}\nDate: {str(a.get('published_at', ''))[:10]}\nContent:\n{str(a.get('content', ''))[:800]}"
             for a in articles
         )
 
