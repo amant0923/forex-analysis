@@ -11,6 +11,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env.local"))
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 from scraper.rss_scraper import RssScraper
+from scraper.reddit_scraper import RedditScraper
 from scraper.analyzer import Analyzer
 from scraper.article_analyzer import ArticleAnalyzer
 from scraper.database import Database
@@ -41,10 +42,22 @@ def run():
     rss = RssScraper()
     analyzer = Analyzer(api_key=anthropic_key)
 
-    # Step 1: Scrape
+    # Step 1: Scrape RSS
     print("Step 1: Scraping RSS feeds...")
     articles = rss.scrape()
-    print(f"  Found {len(articles)} relevant articles")
+    print(f"  Found {len(articles)} articles from RSS")
+
+    # Step 1b: Scrape Reddit
+    print("\nStep 1b: Scraping Reddit...")
+    try:
+        reddit = RedditScraper()
+        reddit_articles = reddit.scrape()
+        articles.extend(reddit_articles)
+        print(f"  Found {len(reddit_articles)} articles from Reddit")
+    except Exception as e:
+        print(f"  Warning: Reddit scrape failed: {e}")
+
+    print(f"  Total: {len(articles)} relevant articles")
 
     # Step 2: Store
     print("\nStep 2: Storing articles...")

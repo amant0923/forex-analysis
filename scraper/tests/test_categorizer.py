@@ -88,3 +88,52 @@ def test_eurgbp_news_maps_correctly():
         "Euro pound cross falls below key support."
     )
     assert "EURGBP" in instruments
+
+
+# Thematic keyword tests
+
+def test_safe_haven_maps_to_gold_and_yen():
+    instruments = categorize_article(
+        "Markets tumble as investors seek safe haven",
+        "Flight to safety drives demand for traditional havens."
+    )
+    assert "XAUUSD" in instruments
+    assert "USDJPY" in instruments
+
+
+def test_risk_off_maps_to_gold_and_yen():
+    instruments = categorize_article(
+        "Risk-off sentiment dominates global markets",
+        "Traders reduce exposure amid uncertainty."
+    )
+    assert "XAUUSD" in instruments
+    assert "USDJPY" in instruments
+
+
+def test_carry_trade_maps_to_jpy_pairs():
+    instruments = categorize_article(
+        "Carry trade unwind hits markets",
+        "Yield differential narrowing causes yen appreciation."
+    )
+    assert "USDJPY" in instruments
+    assert "EURJPY" in instruments
+    assert "GBPJPY" in instruments
+
+
+def test_precious_metals_maps_to_gold_and_silver():
+    instruments = categorize_article(
+        "Precious metals rally on inflation fears",
+        "Gold and silver both see strong inflows."
+    )
+    assert "XAUUSD" in instruments
+    assert "XAGUSD" in instruments
+
+
+def test_rate_hike_maps_to_major_pairs():
+    instruments = categorize_article(
+        "Central banks signal more rate hike ahead",
+        "Monetary policy tightening continues."
+    )
+    assert "DXY" in instruments
+    assert "EURUSD" in instruments
+    assert "USDJPY" in instruments

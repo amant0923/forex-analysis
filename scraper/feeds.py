@@ -3,6 +3,19 @@ RSS_FEEDS = [
     "https://www.fxstreet.com/rss/news",
     "https://www.fxstreet.com/rss/analysis",
     "https://investinglive.com/feed",
+    "https://www.dailyfx.com/feeds/market-news",
+    "https://www.forexlive.com/feed",
+
+    # Gold & Commodities
+    "https://www.kitco.com/rss/gold.xml",
+    "https://www.kitco.com/rss/silver.xml",
+    "https://www.mining.com/feed/",
+    "https://oilprice.com/rss/main",
+
+    # Japan / Asia
+    "https://asia.nikkei.com/rss/feed/nar",
+    "https://www.japantimes.co.jp/feed/",
+    "https://feeds.bbci.co.uk/news/world/asia/rss.xml",
 
     # Central banks
     "https://www.federalreserve.gov/feeds/press_monetary.xml",
@@ -26,6 +39,10 @@ RSS_FEEDS = [
     "https://apnews.com/world-news.rss",
     "https://www.theguardian.com/uk/business/rss",
     "https://www.theguardian.com/business/economics/rss",
+
+    # Reuters / Bloomberg alternatives
+    "https://www.marketwatch.com/rss/topstories",
+    "https://www.marketwatch.com/rss/marketpulse",
 
     # Government data
     "https://www.bls.gov/feed/bls_latest.rss",
