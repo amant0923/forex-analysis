@@ -6,13 +6,24 @@ from typing import Optional
 
 class Database:
     def __init__(self, database_url: str):
-        self.conn = psycopg2.connect(database_url, cursor_factory=RealDictCursor)
+        self.database_url = database_url
+        self._connect()
+
+    def _connect(self):
+        self.conn = psycopg2.connect(self.database_url, cursor_factory=RealDictCursor)
         self.conn.autocommit = True
 
     def execute(self, query: str, params: tuple = ()):
-        cur = self.conn.cursor()
-        cur.execute(query, params)
-        return cur
+        try:
+            cur = self.conn.cursor()
+            cur.execute(query, params)
+            return cur
+        except (psycopg2.OperationalError, psycopg2.InterfaceError):
+            # Reconnect on dropped connections (common with Neon free tier)
+            self._connect()
+            cur = self.conn.cursor()
+            cur.execute(query, params)
+            return cur
 
     def insert_article(
         self,
