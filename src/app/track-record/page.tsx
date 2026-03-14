@@ -1,5 +1,6 @@
 import { getTrackRecordStats } from "@/lib/queries";
 import type { TrackRecordStats, BiasOutcome } from "@/types";
+import { BrokerCTA } from "@/components/broker-cta";
 
 const TIMEFRAME_LABELS: Record<string, string> = {
   daily: "Daily",
@@ -222,6 +223,9 @@ export default async function TrackRecordPage() {
           </div>
         </section>
       )}
+
+      {/* Broker CTA */}
+      <BrokerCTA />
 
       {/* Disclaimer */}
       <section className="border-t border-white/[0.06] pt-6 pb-8">

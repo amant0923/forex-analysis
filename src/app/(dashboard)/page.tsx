@@ -7,6 +7,7 @@ import { getMarketSentiment } from "@/lib/sentiment";
 import { UpcomingEvents } from "@/components/upcoming-events";
 import { MarketSentiment } from "@/components/market-sentiment";
 import { HomeFeed } from "@/components/home-feed";
+import { BrokerPartners } from "@/components/broker-partners";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function DashboardPage() {
         instruments={instruments}
         articles={recentArticles}
       />
+      <BrokerPartners />
     </>
   );
 }
