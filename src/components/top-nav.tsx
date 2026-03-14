@@ -76,6 +76,20 @@ export function TopNav({ instruments }: TopNavProps) {
             Home
           </Link>
 
+          {/* Track Record */}
+          <Link
+            href="/track-record"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+              pathname === "/track-record"
+                ? "text-white bg-white/10"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <TrendingUp className="h-4 w-4" />
+            Track Record
+          </Link>
+
           {/* News Dropdown */}
           <div className="relative group/news">
             <button
@@ -259,6 +273,20 @@ export function TopNav({ instruments }: TopNavProps) {
           >
             <Home className="h-4 w-4" />
             <span>Home</span>
+          </Link>
+
+          <Link
+            href="/track-record"
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+              pathname === "/track-record"
+                ? "bg-white/10 text-white"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <TrendingUp className="h-4 w-4" />
+            <span>Track Record</span>
           </Link>
 
           <div className="h-px bg-white/10 my-2" />

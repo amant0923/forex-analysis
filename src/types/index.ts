@@ -214,6 +214,47 @@ export interface JournalStats {
   pnl_month: number;
 }
 
+export interface BiasOutcome {
+  id: number;
+  bias_id: number;
+  instrument: string;
+  timeframe: "daily" | "1week" | "1month" | "3month";
+  predicted_direction: "bullish" | "bearish" | "neutral";
+  open_price: number;
+  close_price: number | null;
+  price_change_pct: number | null;
+  actual_direction: "bullish" | "bearish" | "neutral" | null;
+  is_correct: boolean | null;
+  generated_at: string;
+  settles_at: string;
+  settled_at: string | null;
+}
+
+export interface TrackRecordStats {
+  overall: {
+    total: number;
+    correct: number;
+    accuracy: number;
+    current_streak: number;
+    streak_type: "win" | "loss" | null;
+    first_prediction: string | null;
+  };
+  by_timeframe: {
+    timeframe: string;
+    total: number;
+    correct: number;
+    accuracy: number;
+  }[];
+  by_instrument: {
+    instrument: string;
+    total: number;
+    correct: number;
+    accuracy: number;
+  }[];
+  recent: BiasOutcome[];
+  pending: BiasOutcome[];
+}
+
 export type UserTier = "free" | "essential" | "premium";
 
 export interface TierLimits {

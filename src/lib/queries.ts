@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import type { Instrument, Article, ArticleAnalysis, Bias, InstrumentWithBias, InstrumentQuote, EconomicEvent } from "@/types";
+import type { Instrument, Article, ArticleAnalysis, Bias, InstrumentWithBias, InstrumentQuote, EconomicEvent, TrackRecordStats, BiasOutcome } from "@/types";
 import { getInstrumentSentiment } from "./sentiment";
 
 export async function getInstruments(): Promise<Instrument[]> {
@@ -248,4 +248,115 @@ export async function getRecentEconomicEvents(days: number = 1): Promise<Economi
     ORDER BY event_date ASC, event_time ASC
   `;
   return rows as EconomicEvent[];
+}
+
+export async function getTrackRecordStats(): Promise<TrackRecordStats> {
+  const sql = getDb();
+
+  // Overall stats
+  const overallRows = await sql`
+    SELECT
+      COUNT(*) FILTER (WHERE is_correct IS NOT NULL) as total,
+      COUNT(*) FILTER (WHERE is_correct = true) as correct,
+      MIN(generated_at) FILTER (WHERE is_correct IS NOT NULL) as first_prediction
+    FROM bias_outcomes
+  `;
+  const total = Number(overallRows[0].total);
+  const correct = Number(overallRows[0].correct);
+
+  // Current streak
+  const streakRows = await sql`
+    SELECT is_correct FROM bias_outcomes
+    WHERE is_correct IS NOT NULL
+    ORDER BY settled_at DESC
+  `;
+  let current_streak = 0;
+  let streak_type: "win" | "loss" | null = null;
+  if (streakRows.length > 0) {
+    streak_type = streakRows[0].is_correct ? "win" : "loss";
+    for (const row of streakRows) {
+      if (row.is_correct === (streak_type === "win")) {
+        current_streak++;
+      } else {
+        break;
+      }
+    }
+  }
+
+  // By timeframe
+  const tfRows = await sql`
+    SELECT timeframe,
+      COUNT(*) FILTER (WHERE is_correct IS NOT NULL) as total,
+      COUNT(*) FILTER (WHERE is_correct = true) as correct
+    FROM bias_outcomes
+    GROUP BY timeframe
+    ORDER BY
+      CASE timeframe
+        WHEN 'daily' THEN 1
+        WHEN '1week' THEN 2
+        WHEN '1month' THEN 3
+        WHEN '3month' THEN 4
+      END
+  `;
+
+  // By instrument
+  const instRows = await sql`
+    SELECT instrument,
+      COUNT(*) FILTER (WHERE is_correct IS NOT NULL) as total,
+      COUNT(*) FILTER (WHERE is_correct = true) as correct
+    FROM bias_outcomes
+    GROUP BY instrument
+    ORDER BY instrument
+  `;
+
+  // Recent settled (last 50)
+  const recentRows = await sql`
+    SELECT * FROM bias_outcomes
+    WHERE is_correct IS NOT NULL
+    ORDER BY settled_at DESC
+    LIMIT 50
+  `;
+
+  // Pending
+  const pendingRows = await sql`
+    SELECT * FROM bias_outcomes
+    WHERE settled_at IS NULL
+    ORDER BY settles_at ASC
+    LIMIT 30
+  `;
+
+  return {
+    overall: {
+      total,
+      correct,
+      accuracy: total > 0 ? Math.round((correct / total) * 1000) / 10 : 0,
+      current_streak,
+      streak_type,
+      first_prediction: overallRows[0].first_prediction as string | null,
+    },
+    by_timeframe: tfRows.map((r: any) => ({
+      timeframe: r.timeframe,
+      total: Number(r.total),
+      correct: Number(r.correct),
+      accuracy: Number(r.total) > 0 ? Math.round((Number(r.correct) / Number(r.total)) * 1000) / 10 : 0,
+    })),
+    by_instrument: instRows.map((r: any) => ({
+      instrument: r.instrument,
+      total: Number(r.total),
+      correct: Number(r.correct),
+      accuracy: Number(r.total) > 0 ? Math.round((Number(r.correct) / Number(r.total)) * 1000) / 10 : 0,
+    })),
+    recent: recentRows.map((r: any) => ({
+      ...r,
+      open_price: Number(r.open_price),
+      close_price: r.close_price ? Number(r.close_price) : null,
+      price_change_pct: r.price_change_pct ? Number(r.price_change_pct) : null,
+    })) as BiasOutcome[],
+    pending: pendingRows.map((r: any) => ({
+      ...r,
+      open_price: Number(r.open_price),
+      close_price: r.close_price ? Number(r.close_price) : null,
+      price_change_pct: r.price_change_pct ? Number(r.price_change_pct) : null,
+    })) as BiasOutcome[],
+  };
 }
