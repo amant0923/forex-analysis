@@ -72,12 +72,33 @@ class Database:
         supporting_articles: list[dict],
         generated_at: str,
     ):
-        self.execute(
+        cur = self.execute(
             """INSERT INTO biases (instrument, timeframe, direction, summary, key_drivers, supporting_articles, generated_at)
-               VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+               VALUES (%s, %s, %s, %s, %s, %s, %s)
+               RETURNING id""",
             (instrument, timeframe, direction, summary,
              json.dumps(key_drivers), json.dumps(supporting_articles), generated_at),
         )
+        row = cur.fetchone()
+        return row["id"] if row else None
+
+    def insert_bias_outcome(self, bias_id, instrument, timeframe, predicted_direction, open_price, generated_at, settles_at):
+        """Insert a pending bias outcome when a new bias is generated."""
+        self.execute(
+            """INSERT INTO bias_outcomes (bias_id, instrument, timeframe, predicted_direction, open_price, generated_at, settles_at)
+               VALUES (%s, %s, %s, %s, %s, %s, %s)
+               ON CONFLICT (bias_id) DO NOTHING""",
+            (bias_id, instrument, timeframe, predicted_direction, open_price, generated_at, settles_at),
+        )
+
+    def get_instrument_price(self, instrument):
+        """Get the latest price for an instrument from instrument_quotes."""
+        cur = self.execute(
+            "SELECT price FROM instrument_quotes WHERE instrument = %s",
+            (instrument,),
+        )
+        row = cur.fetchone()
+        return float(row["price"]) if row else None
 
     def update_article_summary(self, article_id: int, summary: str):
         self.execute(

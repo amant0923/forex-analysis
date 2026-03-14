@@ -3,7 +3,7 @@
 
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 # Load .env from project root
@@ -21,6 +21,7 @@ from scraper.telegram_reporter import TelegramReporter
 
 INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"]
 TIMEFRAME_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
+TIMEFRAME_SETTLE_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
 
 
 def run():
@@ -141,7 +142,7 @@ def run():
         bias = analyzer.analyze(instrument, articles_for_inst)
 
         for timeframe, result in bias.items():
-            db.insert_bias(
+            bias_id = db.insert_bias(
                 instrument=instrument,
                 timeframe=timeframe,
                 direction=result["direction"],
@@ -150,6 +151,20 @@ def run():
                 supporting_articles=result.get("supporting_articles", []),
                 generated_at=now,
             )
+            if bias_id:
+                price = db.get_instrument_price(instrument)
+                if price:
+                    settle_days = TIMEFRAME_SETTLE_DAYS.get(timeframe, 7)
+                    settles_at = (datetime.utcnow() + timedelta(days=settle_days)).isoformat()
+                    db.insert_bias_outcome(
+                        bias_id=bias_id,
+                        instrument=instrument,
+                        timeframe=timeframe,
+                        predicted_direction=result["direction"],
+                        open_price=price,
+                        generated_at=now,
+                        settles_at=settles_at,
+                    )
 
         d = bias.get("daily", {}).get("direction", "?").upper()
         w = bias.get("1week", {}).get("direction", "?").upper()
