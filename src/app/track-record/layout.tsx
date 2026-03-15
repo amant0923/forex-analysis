@@ -17,7 +17,7 @@ export default function TrackRecordLayout({ children }: { children: React.ReactN
       </div>
       {/* Header */}
       <header className="sticky top-0 z-50 w-full bg-black/40 backdrop-blur-xl border-b border-white/[0.06]">
-        <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-10">
+        <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between px-4 sm:px-6 lg:px-10">
           <Link href="/" className="shrink-0">
             <span className="font-serif text-lg font-bold tracking-tight text-white">Tradeora</span>
           </Link>
@@ -40,7 +40,7 @@ export default function TrackRecordLayout({ children }: { children: React.ReactN
       </header>
       {/* Content */}
       <div className="relative z-10">
-        <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10">{children}</main>
+        <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10">{children}</main>
       </div>
     </div>
   );
