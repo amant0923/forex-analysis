@@ -90,7 +90,7 @@ export function HomeFeed({ instruments, articles }: HomeFeedProps) {
         {/* ─── Main column: News feed ─── */}
         <div>
           {/* Instrument filter strip */}
-          <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1">
+          <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
             <button
               onClick={() => setFilter("all")}
               className={cn(

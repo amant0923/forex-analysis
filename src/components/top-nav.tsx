@@ -127,42 +127,88 @@ export function TopNav({ instruments }: TopNavProps) {
 
             {/* Dropdown */}
             <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover/news:opacity-100 group-hover/news:visible transition-all duration-200 z-50">
-              <div className="bg-black/80 backdrop-blur-2xl border border-white/[0.1] rounded-2xl p-3 shadow-[0_16px_64px_rgba(0,0,0,0.5)] min-w-[320px]">
-                {/* Instruments grid */}
-                <p className="text-[10px] uppercase tracking-wider text-white/30 font-semibold px-2 mb-2">
-                  Instruments
-                </p>
-                <div className="grid grid-cols-2 gap-1 mb-2">
-                  {instruments.map((inst) => {
-                    const isActive = pathname === `/${inst.code}`;
-                    return (
-                      <Link
-                        key={inst.code}
-                        href={`/${inst.code}`}
-                        style={
-                          { "--gradient-from": "#606060", "--gradient-to": "#ffffff" } as React.CSSProperties
-                        }
-                        className={cn(
-                          "relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer group/item overflow-hidden",
-                          isActive
-                            ? "bg-white/10 text-white"
-                            : "text-gray-400 hover:text-white"
-                        )}
-                      >
-                        {/* Gradient bg on hover */}
-                        <span className="absolute inset-0 rounded-xl bg-[linear-gradient(135deg,var(--gradient-from),var(--gradient-to))] opacity-0 transition-opacity duration-300 group-hover/item:opacity-[0.12]" />
-                        {/* Glow */}
-                        <span className="absolute inset-x-2 bottom-0 h-[60%] rounded-xl bg-[linear-gradient(135deg,var(--gradient-from),var(--gradient-to))] blur-[12px] opacity-0 -z-10 transition-opacity duration-300 group-hover/item:opacity-20" />
-                        <span className="relative z-10 shrink-0">
-                          <InstrumentIcon code={inst.code} size="sm" />
-                        </span>
-                        <span className="relative z-10 flex flex-col">
-                          <span className="text-[13px] font-semibold">{inst.code}</span>
-                          <span className="text-[10px] text-white/30 group-hover/item:text-white/50 transition-colors">{inst.name}</span>
-                        </span>
-                      </Link>
-                    );
-                  })}
+              <div className="bg-black/80 backdrop-blur-2xl border border-white/[0.1] rounded-2xl p-4 shadow-[0_16px_64px_rgba(0,0,0,0.5)] min-w-[520px]">
+                {/* Categorized instruments */}
+                <div className="grid grid-cols-3 gap-4 mb-3">
+                  {/* Forex Majors */}
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-white/30 font-semibold px-1 mb-1.5">Forex</p>
+                    <div className="space-y-0.5">
+                      {instruments.filter(i => ["DXY","EURUSD","GBPUSD","USDJPY","EURJPY","GBPJPY","EURGBP","AUDUSD","USDCAD","NZDUSD","USDCHF"].includes(i.code)).map((inst) => {
+                        const isActive = pathname === `/${inst.code}`;
+                        return (
+                          <Link key={inst.code} href={`/${inst.code}`}
+                            className={cn(
+                              "flex items-center gap-2 px-2 py-1.5 rounded-lg text-[13px] font-medium transition-all cursor-pointer",
+                              isActive ? "bg-white/10 text-white" : "text-gray-400 hover:text-white hover:bg-white/[0.06]"
+                            )}
+                          >
+                            <InstrumentIcon code={inst.code} size="sm" />
+                            <span>{inst.code}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Indices */}
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-white/30 font-semibold px-1 mb-1.5">Indices</p>
+                    <div className="space-y-0.5">
+                      {instruments.filter(i => ["US30","NAS100","SP500","GER40"].includes(i.code)).map((inst) => {
+                        const isActive = pathname === `/${inst.code}`;
+                        return (
+                          <Link key={inst.code} href={`/${inst.code}`}
+                            className={cn(
+                              "flex items-center gap-2 px-2 py-1.5 rounded-lg text-[13px] font-medium transition-all cursor-pointer",
+                              isActive ? "bg-white/10 text-white" : "text-gray-400 hover:text-white hover:bg-white/[0.06]"
+                            )}
+                          >
+                            <InstrumentIcon code={inst.code} size="sm" />
+                            <span>{inst.code}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+
+                    {/* Commodities */}
+                    <p className="text-[10px] uppercase tracking-wider text-white/30 font-semibold px-1 mb-1.5 mt-3">Commodities</p>
+                    <div className="space-y-0.5">
+                      {instruments.filter(i => ["XAUUSD","XAGUSD","USOIL"].includes(i.code)).map((inst) => {
+                        const isActive = pathname === `/${inst.code}`;
+                        return (
+                          <Link key={inst.code} href={`/${inst.code}`}
+                            className={cn(
+                              "flex items-center gap-2 px-2 py-1.5 rounded-lg text-[13px] font-medium transition-all cursor-pointer",
+                              isActive ? "bg-white/10 text-white" : "text-gray-400 hover:text-white hover:bg-white/[0.06]"
+                            )}
+                          >
+                            <InstrumentIcon code={inst.code} size="sm" />
+                            <span>{inst.code}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+
+                    {/* Crypto */}
+                    <p className="text-[10px] uppercase tracking-wider text-white/30 font-semibold px-1 mb-1.5 mt-3">Crypto</p>
+                    <div className="space-y-0.5">
+                      {instruments.filter(i => ["BTCUSD","ETHUSD"].includes(i.code)).map((inst) => {
+                        const isActive = pathname === `/${inst.code}`;
+                        return (
+                          <Link key={inst.code} href={`/${inst.code}`}
+                            className={cn(
+                              "flex items-center gap-2 px-2 py-1.5 rounded-lg text-[13px] font-medium transition-all cursor-pointer",
+                              isActive ? "bg-white/10 text-white" : "text-gray-400 hover:text-white hover:bg-white/[0.06]"
+                            )}
+                          >
+                            <InstrumentIcon code={inst.code} size="sm" />
+                            <span>{inst.code}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Calendar & History */}

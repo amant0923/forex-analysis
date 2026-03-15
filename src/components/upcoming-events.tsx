@@ -7,6 +7,11 @@ const COUNTRY_FLAGS: Record<string, string> = {
   US: "🇺🇸",
   EU: "🇪🇺",
   GB: "🇬🇧",
+  JP: "🇯🇵",
+  AU: "🇦🇺",
+  CA: "🇨🇦",
+  NZ: "🇳🇿",
+  CH: "🇨🇭",
 };
 
 const IMPACT_COLORS: Record<string, string> = {
@@ -94,12 +99,17 @@ export function UpcomingEvents({ events }: { events: EconomicEvent[] }) {
                 </div>
               )}
               {instruments.length > 0 && (
-                <div className="flex gap-1 mt-1.5">
-                  {instruments.map((inst) => (
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                  {instruments.slice(0, 4).map((inst) => (
                     <span key={inst} className="text-[9px] bg-white/[0.06] text-white/40 px-1 py-0.5 rounded">
                       {inst}
                     </span>
                   ))}
+                  {instruments.length > 4 && (
+                    <span className="text-[9px] text-white/25 px-1 py-0.5">
+                      +{instruments.length - 4}
+                    </span>
+                  )}
                 </div>
               )}
             </div>
