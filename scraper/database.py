@@ -35,6 +35,9 @@ class Database:
         instruments: list[str],
     ) -> Optional[int]:
         try:
+            # PostgreSQL cannot store NUL bytes in text columns
+            title = title.replace("\x00", "") if title else title
+            content = content.replace("\x00", "") if content else content
             cur = self.execute(
                 """INSERT INTO articles (title, content, url, source, published_at)
                    VALUES (%s, %s, %s, %s, %s) RETURNING id""",
