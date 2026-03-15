@@ -5,6 +5,7 @@ interface BiasIndicatorProps {
   direction: "bullish" | "bearish" | "neutral" | null;
   label?: string;
   size?: "sm" | "md";
+  confidence?: number | null;
 }
 
 const dirConfig = {
@@ -34,7 +35,13 @@ const dirConfig = {
   },
 };
 
-export function BiasIndicator({ direction, label, size = "sm" }: BiasIndicatorProps) {
+function confidenceColor(confidence: number): string {
+  if (confidence >= 70) return "text-green-400/70";
+  if (confidence >= 40) return "text-yellow-400/70";
+  return "text-red-400/70";
+}
+
+export function BiasIndicator({ direction, label, size = "sm", confidence }: BiasIndicatorProps) {
   const dir = direction ?? "neutral";
   const c = dirConfig[dir];
   const Icon = c.icon;
@@ -49,6 +56,11 @@ export function BiasIndicator({ direction, label, size = "sm" }: BiasIndicatorPr
         )}
         <div className={cn("h-2 w-2 rounded-full", c.dotColor)} />
         <span className={cn("text-xs font-semibold", c.textColor)}>{c.text}</span>
+        {confidence != null && confidence > 0 && (
+          <span className={cn("text-[10px] font-mono", confidenceColor(confidence))}>
+            {confidence}%
+          </span>
+        )}
       </div>
     );
   }
@@ -57,6 +69,11 @@ export function BiasIndicator({ direction, label, size = "sm" }: BiasIndicatorPr
     <div className={cn("flex items-center gap-2 rounded border px-3 py-1.5", c.bgColor, c.borderColor)}>
       <Icon className={cn("h-3.5 w-3.5", c.textColor)} />
       <span className={cn("text-sm font-semibold", c.textColor)}>{c.text}</span>
+      {confidence != null && confidence > 0 && (
+        <span className={cn("text-xs font-mono ml-1", confidenceColor(confidence))} title="AI confidence score">
+          {confidence}%
+        </span>
+      )}
       {label && <span className="text-xs text-white/30 ml-1">{label}</span>}
     </div>
   );

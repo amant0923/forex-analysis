@@ -76,14 +76,16 @@ class Database:
         generated_at: str,
         model_provider: str = None,
         model_name: str = None,
+        confidence: int = None,
+        confidence_rationale: str = None,
     ):
         cur = self.execute(
-            """INSERT INTO biases (instrument, timeframe, direction, summary, key_drivers, supporting_articles, generated_at, model_provider, model_name)
-               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """INSERT INTO biases (instrument, timeframe, direction, summary, key_drivers, supporting_articles, generated_at, model_provider, model_name, confidence, confidence_rationale)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                RETURNING id""",
             (instrument, timeframe, direction, summary,
              json.dumps(key_drivers), json.dumps(supporting_articles), generated_at,
-             model_provider, model_name),
+             model_provider, model_name, confidence, confidence_rationale),
         )
         row = cur.fetchone()
         return row["id"] if row else None
@@ -156,6 +158,31 @@ class Database:
             (days,),
         )
         return [dict(row) for row in cur.fetchall()]
+
+    def get_instrument_track_record(self, instrument: str) -> dict:
+        """Get historical accuracy stats per timeframe for an instrument.
+
+        Returns: {timeframe: {total, correct, accuracy}} for timeframes with data.
+        """
+        cur = self.execute(
+            """SELECT timeframe,
+                      COUNT(*) as total,
+                      COUNT(*) FILTER (WHERE is_correct = TRUE) as correct
+               FROM bias_outcomes
+               WHERE instrument = %s AND settled_at IS NOT NULL
+               GROUP BY timeframe""",
+            (instrument,),
+        )
+        result = {}
+        for row in cur.fetchall():
+            total = row["total"]
+            correct = row["correct"]
+            result[row["timeframe"]] = {
+                "total": total,
+                "correct": correct,
+                "accuracy": round((correct / total) * 100, 1) if total > 0 else 0,
+            }
+        return result
 
     def close(self):
         self.conn.close()

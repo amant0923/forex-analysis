@@ -144,9 +144,57 @@ def run():
 
         print(f"    Analyzed {len(results)} articles")
 
-    # Step 3: Analyze
-    print("\nStep 3: Generating AI bias analysis...")
+    # Step 3: Economic Calendar (moved before bias analysis so events are available)
+    print("\nStep 3: Scraping economic calendar...")
+    all_economic_events = []
+    try:
+        cal_scraper = EconomicCalendarScraper()
+        all_economic_events = cal_scraper.fetch_current_and_next_week()
+        print(f"  Found {len(all_economic_events)} economic events")
+        if all_economic_events:
+            store_events(db, all_economic_events)
+    except Exception as e:
+        print(f"  Warning: Economic calendar scrape failed: {e}")
+
+    # Step 4: Live Quotes (moved before bias analysis so price context is available)
+    print("\nStep 4: Fetching live quotes...")
+    all_quotes = {}
+    fmp_key = os.getenv("FMP_API_KEY")
+    if fmp_key:
+        try:
+            fmp = FmpQuoteFetcher(api_key=fmp_key)
+            quotes = fmp.fetch_all_quotes()
+            print(f"  Fetched {len(quotes)} quotes")
+            if quotes:
+                store_quotes(db, quotes)
+                for q in quotes:
+                    all_quotes[q["instrument"]] = q
+        except Exception as e:
+            print(f"  Warning: FMP quote fetch failed: {e}")
+    else:
+        print("  Skipped — FMP_API_KEY not set")
+
+    # Step 5: Generate AI bias analysis (with full context from steps 3-4)
+    print("\nStep 5: Generating AI bias analysis (with economic events, price context, track record)...")
     now = datetime.utcnow().isoformat()
+
+    # Pre-load track record stats per instrument
+    print("  Loading historical accuracy data...")
+    track_records = {}
+    for instrument in INSTRUMENTS:
+        track_records[instrument] = db.get_instrument_track_record(instrument)
+
+    # Build economic events index by instrument
+    from scraper.economic_calendar import CURRENCY_INSTRUMENTS as ECON_CURRENCY_MAP
+    econ_by_instrument = {inst: [] for inst in INSTRUMENTS}
+    for ev in all_economic_events:
+        currency = ev.get("currency", "")
+        for inst in ECON_CURRENCY_MAP.get(currency, []):
+            if inst in econ_by_instrument:
+                econ_by_instrument[inst].append(ev)
+
+    # Track biases as they're generated for cross-instrument consistency
+    generated_biases = {}
 
     for instrument in INSTRUMENTS:
         print(f"\n  Analyzing {instrument}...")
@@ -157,9 +205,30 @@ def run():
             print(f"    Skipping — no articles")
             continue
 
-        bias, bias_provider, bias_model = analyzer.analyze(instrument, articles_for_inst)
+        # Get price context for this instrument
+        price_data = all_quotes.get(instrument)
+
+        # Get economic events for this instrument
+        instrument_events = econ_by_instrument.get(instrument, [])
+
+        # Get track record for this instrument
+        instrument_track_record = track_records.get(instrument)
+
+        bias, bias_provider, bias_model = analyzer.analyze(
+            instrument=instrument,
+            articles=articles_for_inst,
+            economic_events=instrument_events,
+            price_data=price_data,
+            track_record=instrument_track_record,
+            other_biases=generated_biases,
+        )
+
+        # Store biases for cross-instrument consistency in next iterations
+        generated_biases[instrument] = {}
 
         for timeframe, result in bias.items():
+            generated_biases[instrument][timeframe] = result.get("direction", "neutral")
+
             bias_id = db.insert_bias(
                 instrument=instrument,
                 timeframe=timeframe,
@@ -170,6 +239,8 @@ def run():
                 generated_at=now,
                 model_provider=bias_provider,
                 model_name=bias_model,
+                confidence=result.get("confidence"),
+                confidence_rationale=result.get("confidence_rationale"),
             )
             if bias_id:
                 price = db.get_instrument_price(instrument)
@@ -190,33 +261,9 @@ def run():
         w = bias.get("1week", {}).get("direction", "?").upper()
         m = bias.get("1month", {}).get("direction", "?").upper()
         q = bias.get("3month", {}).get("direction", "?").upper()
-        print(f"    Daily: {d} | 1W: {w} | 1M: {m} | 3M: {q}")
-
-    # Step 4: Economic Calendar
-    print("\nStep 4: Scraping economic calendar...")
-    try:
-        cal_scraper = EconomicCalendarScraper()
-        cal_events = cal_scraper.fetch_current_and_next_week()
-        print(f"  Found {len(cal_events)} economic events")
-        if cal_events:
-            store_events(db, cal_events)
-    except Exception as e:
-        print(f"  Warning: Economic calendar scrape failed: {e}")
-
-    # Step 5: Live Quotes
-    print("\nStep 5: Fetching live quotes...")
-    fmp_key = os.getenv("FMP_API_KEY")
-    if fmp_key:
-        try:
-            fmp = FmpQuoteFetcher(api_key=fmp_key)
-            quotes = fmp.fetch_all_quotes()
-            print(f"  Fetched {len(quotes)} quotes")
-            if quotes:
-                store_quotes(db, quotes)
-        except Exception as e:
-            print(f"  Warning: FMP quote fetch failed: {e}")
-    else:
-        print("  Skipped — FMP_API_KEY not set")
+        dc = bias.get("daily", {}).get("confidence", "?")
+        wc = bias.get("1week", {}).get("confidence", "?")
+        print(f"    Daily: {d} ({dc}%) | 1W: {w} ({wc}%) | 1M: {m} | 3M: {q}")
 
     # Step 6: Send Telegram reports
     print("\nStep 6: Sending Telegram daily reports...")

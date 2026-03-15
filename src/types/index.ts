@@ -41,6 +41,8 @@ export interface Bias {
   summary: string | null;
   key_drivers: string[] | null;
   supporting_articles: { article_id: number; relevance: string }[] | null;
+  confidence: number | null;
+  confidence_rationale: string | null;
   generated_at: string;
 }
 

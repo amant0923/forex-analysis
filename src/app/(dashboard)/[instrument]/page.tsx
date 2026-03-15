@@ -133,7 +133,12 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
       {selectedBias ? (
         <div className="mb-8 sm:mb-10 bg-white/[0.06] rounded-lg border border-white/10 p-4 sm:p-6">
           <div className="flex items-center gap-3 mb-4">
-            <BiasIndicator direction={biasDir} size="md" />
+            <BiasIndicator direction={biasDir} size="md" confidence={selectedBias.confidence} />
+            {selectedBias.confidence_rationale && (
+              <span className="text-[11px] text-white/40 italic max-w-sm truncate" title={selectedBias.confidence_rationale}>
+                {selectedBias.confidence_rationale}
+              </span>
+            )}
             <span className="text-xs text-white/30">
               Generated {new Date(selectedBias.generated_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </span>

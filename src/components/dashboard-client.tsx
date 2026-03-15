@@ -143,10 +143,10 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
 
                 {/* Bias strip */}
                 <div className="flex items-center gap-4 mb-3">
-                  <BiasIndicator direction={inst.biases?.daily?.direction ?? null} label="1D" />
-                  <BiasIndicator direction={inst.biases?.["1week"]?.direction ?? null} label="1W" />
-                  <BiasIndicator direction={inst.biases?.["1month"]?.direction ?? null} label="1M" />
-                  <BiasIndicator direction={inst.biases?.["3month"]?.direction ?? null} label="3M" />
+                  <BiasIndicator direction={inst.biases?.daily?.direction ?? null} label="1D" confidence={inst.biases?.daily?.confidence} />
+                  <BiasIndicator direction={inst.biases?.["1week"]?.direction ?? null} label="1W" confidence={inst.biases?.["1week"]?.confidence} />
+                  <BiasIndicator direction={inst.biases?.["1month"]?.direction ?? null} label="1M" confidence={inst.biases?.["1month"]?.confidence} />
+                  <BiasIndicator direction={inst.biases?.["3month"]?.direction ?? null} label="3M" confidence={inst.biases?.["3month"]?.confidence} />
                 </div>
 
                 {/* Sentiment bar */}
@@ -289,7 +289,12 @@ function ExpandedContent({
       {bias ? (
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-3">
-            <BiasIndicator direction={bias.direction} size="md" />
+            <BiasIndicator direction={bias.direction} size="md" confidence={bias.confidence} />
+            {bias.confidence_rationale && (
+              <span className="text-[11px] text-white/30 italic max-w-xs truncate" title={bias.confidence_rationale}>
+                {bias.confidence_rationale}
+              </span>
+            )}
             {bias.generated_at && (
               <span className="text-xs text-white/30">
                 {new Date(bias.generated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
