@@ -56,7 +56,7 @@ export function UpcomingEvents({ events }: { events: EconomicEvent[] }) {
           View Full Calendar
         </Link>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-1">
+      <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
         {events.map((event) => {
           const past = isEventPast(event);
           const result = past ? actualVsForecast(event) : null;

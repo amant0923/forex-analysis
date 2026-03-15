@@ -84,14 +84,14 @@ function InstrumentCard({ instrument, index }: { instrument: InstrumentWithBias;
       {/* Accent bar */}
       <div className={cn("h-[3px] opacity-80", accentColor)} />
 
-      <div className="p-6">
+      <div className="p-3 sm:p-4 lg:p-5">
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div className="flex items-center gap-3.5">
             <InstrumentIcon code={instrument.code} size="lg" />
             <div>
               <div className="flex items-baseline gap-2.5">
-                <span className="text-[22px] font-bold tracking-tight text-white">
+                <span className="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-white">
                   {instrument.code}
                 </span>
                 <span className="font-mono text-[10px] font-semibold text-white/30 bg-white/[0.04] px-2 py-0.5 rounded tracking-widest uppercase">
@@ -153,16 +153,16 @@ export function Dashboard({ instruments }: DashboardProps) {
     <div>
       {/* Page title */}
       <div className="mb-2">
-        <h1 className="text-[36px] font-bold tracking-tight text-white">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white">
           Market Overview
         </h1>
-        <p className="mt-1 text-[15px] text-white/40">
+        <p className="mt-1 text-xs sm:text-sm text-white/40">
           AI-powered fundamental bias across forex and index instruments
         </p>
       </div>
 
       {/* Stats bar + filter */}
-      <div className="flex items-center gap-5 mt-8 mb-8 flex-wrap">
+      <div className="flex items-center gap-3 sm:gap-5 mt-4 sm:mt-6 lg:mt-8 mb-4 sm:mb-6 lg:mb-8 flex-wrap">
         {/* Bearish count */}
         <div className="flex items-center gap-2 rounded-xl border border-red-500/10 bg-red-500/[0.05] px-4 py-2.5">
           <span className="font-mono text-xl font-bold text-red-400">{bearishCount}</span>
@@ -205,7 +205,7 @@ export function Dashboard({ instruments }: DashboardProps) {
       </div>
 
       {/* Cards grid */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5">
         {filtered.map((inst, i) => (
           <InstrumentCard key={inst.code} instrument={inst} index={i} />
         ))}

@@ -79,14 +79,14 @@ export function HomeFeed({ instruments, articles }: HomeFeedProps) {
   return (
     <div>
       {/* Page title */}
-      <div className="mb-6">
-        <h1 className="font-serif text-2xl font-bold text-white">Dashboard</h1>
-        <p className="mt-1 text-sm text-white/40">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="font-serif text-xl sm:text-2xl font-bold text-white">Dashboard</h1>
+        <p className="mt-1 text-xs sm:text-sm text-white/40">
           Latest news, market bias & journal overview
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-4 sm:gap-6 lg:gap-8">
         {/* ─── Main column: News feed ─── */}
         <div>
           {/* Instrument filter strip */}
@@ -135,7 +135,7 @@ export function HomeFeed({ instruments, articles }: HomeFeedProps) {
         </div>
 
         {/* ─── Sidebar: Journal stats + Instrument biases ─── */}
-        <aside className="space-y-4">
+        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
           {/* Journal quick stats */}
           <div className="relative rounded-[1.25rem]">
             <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
@@ -283,7 +283,7 @@ function ArticleCard({ article }: { article: RecentArticle }) {
   return (
     <Link
       href={`/articles/${article.id}`}
-      className="block bg-white/[0.06] rounded-xl border border-white/10 p-4 hover:bg-white/[0.08] hover:border-white/15 transition-all cursor-pointer group"
+      className="block bg-white/[0.06] rounded-lg sm:rounded-xl border border-white/10 p-3 sm:p-4 hover:bg-white/[0.08] hover:border-white/15 transition-all cursor-pointer group overflow-hidden"
     >
       {/* Top row: instruments + time */}
       <div className="flex items-center justify-between mb-2">
@@ -309,13 +309,13 @@ function ArticleCard({ article }: { article: RecentArticle }) {
       </div>
 
       {/* Title */}
-      <h3 className="text-[15px] font-semibold text-white leading-snug mb-1.5 group-hover:text-white/90 line-clamp-2">
+      <h3 className="text-sm sm:text-[15px] font-semibold text-white leading-snug mb-1.5 group-hover:text-white/90 line-clamp-2">
         {article.title}
       </h3>
 
       {/* Summary */}
       {article.summary && (
-        <p className="text-xs text-white/40 leading-relaxed line-clamp-2 mb-2.5">
+        <p className="text-xs text-white/40 leading-relaxed line-clamp-2 mb-2.5 break-words">
           {article.summary}
         </p>
       )}

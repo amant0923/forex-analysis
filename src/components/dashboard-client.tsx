@@ -79,7 +79,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
       </div>
 
       {/* Instrument cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
         {instruments.map((inst) => {
           const dailyBias = inst.biases?.daily;
           const isExpanded = expandedCode === inst.code;
@@ -89,7 +89,7 @@ export function DashboardClient({ instruments }: DashboardClientProps) {
               key={inst.code}
               className={cn(
                 "relative rounded-[1.25rem]",
-                isExpanded && "sm:col-span-2"
+                isExpanded && "sm:col-span-2 xl:col-span-3"
               )}
             >
               <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
