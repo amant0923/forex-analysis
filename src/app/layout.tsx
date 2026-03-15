@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     title: "Tradeora",
   },
   icons: {
-    apple: "/icons/icon-192.svg",
+    apple: "/icons/apple-touch-icon.png",
   },
   other: {
     "mobile-web-app-capable": "yes",
