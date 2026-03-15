@@ -12,6 +12,7 @@ load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 from scraper.rss_scraper import RssScraper
 from scraper.reddit_scraper import RedditScraper
+from scraper.ai_provider import AIProvider
 from scraper.analyzer import Analyzer
 from scraper.article_analyzer import ArticleAnalyzer
 from scraper.database import Database
@@ -31,17 +32,32 @@ def run():
 
     database_url = os.getenv("DATABASE_URL")
     anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+    openai_key = os.getenv("OPENAI_API_KEY")
+    gemini_key = os.getenv("GEMINI_API_KEY")
 
     if not database_url:
         print("ERROR: DATABASE_URL not set")
         sys.exit(1)
-    if not anthropic_key:
-        print("ERROR: ANTHROPIC_API_KEY not set")
+
+    # Build AI provider with failover chain
+    ai_provider = AIProvider()
+    if anthropic_key:
+        ai_provider.add_anthropic(anthropic_key)
+    if openai_key:
+        ai_provider.add_openai(openai_key)
+    if gemini_key:
+        ai_provider.add_google(gemini_key)
+
+    if not ai_provider._providers:
+        print("ERROR: No AI API keys set (need at least one of ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY)")
         sys.exit(1)
+
+    provider_names = [p[0] for p in ai_provider._providers]
+    print(f"AI providers: {', '.join(provider_names)} (failover order)")
 
     db = Database(database_url)
     rss = RssScraper()
-    analyzer = Analyzer(api_key=anthropic_key)
+    analyzer = Analyzer(provider=ai_provider)
 
     # Step 1: Scrape RSS
     print("Step 1: Scraping RSS feeds...")
@@ -78,7 +94,7 @@ def run():
 
     # Step 2.5: Per-article analysis
     print("\nStep 2.5: Generating per-article AI analysis...")
-    article_analyzer = ArticleAnalyzer(api_key=anthropic_key)
+    article_analyzer = ArticleAnalyzer(provider=ai_provider)
     unanalyzed = db.get_unanalyzed_articles(days=7)
     print(f"  {len(unanalyzed)} articles need analysis")
 
@@ -97,7 +113,7 @@ def run():
             )
             article_instruments[a["id"]] = [row["instrument"] for row in cur.fetchall()]
 
-        results = article_analyzer.analyze_batch(batch, article_instruments)
+        results, art_provider, art_model = article_analyzer.analyze_batch(batch, article_instruments)
 
         for art_result in results:
             aid = art_result.get("id")
@@ -120,6 +136,8 @@ def run():
                         impact_timeframes=impact.get("impact_timeframes", []),
                         confidence=impact.get("confidence", "medium"),
                         commentary=impact["commentary"],
+                        model_provider=art_provider,
+                        model_name=art_model,
                     )
                 except Exception as e:
                     print(f"    Error storing analysis for article {aid}: {e}")
@@ -139,7 +157,7 @@ def run():
             print(f"    Skipping — no articles")
             continue
 
-        bias = analyzer.analyze(instrument, articles_for_inst)
+        bias, bias_provider, bias_model = analyzer.analyze(instrument, articles_for_inst)
 
         for timeframe, result in bias.items():
             bias_id = db.insert_bias(
@@ -150,6 +168,8 @@ def run():
                 key_drivers=result.get("key_drivers", []),
                 supporting_articles=result.get("supporting_articles", []),
                 generated_at=now,
+                model_provider=bias_provider,
+                model_name=bias_model,
             )
             if bias_id:
                 price = db.get_instrument_price(instrument)

@@ -1,5 +1,6 @@
 import json
-import anthropic
+
+from scraper.ai_provider import AIProvider
 
 SYSTEM_PROMPT = """You are a senior forex and CFD research analyst at a top investment bank.
 You produce institutional-quality analysis of news articles for trading professionals.
@@ -49,11 +50,10 @@ Rules:
 
 
 class ArticleAnalyzer:
-    def __init__(self, api_key: str, model: str = "claude-sonnet-4-6"):
-        self.client = anthropic.Anthropic(api_key=api_key)
-        self.model = model
+    def __init__(self, provider: AIProvider):
+        self.provider = provider
 
-    def analyze_batch(self, articles: list[dict], article_instruments: dict[int, list[str]]) -> list[dict]:
+    def analyze_batch(self, articles: list[dict], article_instruments: dict[int, list[str]]) -> tuple[list[dict], str, str]:
         """Analyze a batch of articles (up to 10 at a time).
 
         Args:
@@ -61,10 +61,10 @@ class ArticleAnalyzer:
             article_instruments: mapping of article_id -> list of instrument codes
 
         Returns:
-            list of dicts with id, summary, impacts
+            (list of dicts with id/summary/impacts, model_provider, model_name)
         """
         if not articles:
-            return []
+            return [], None, None
 
         articles_text = "\n\n---\n\n".join(
             f"[ARTICLE ID={a['id']}]\nTitle: {a['title']}\nSource: {a.get('source', 'Unknown')}\nDate: {str(a.get('published_at', ''))[:10]}\nContent:\n{str(a.get('content', ''))[:800]}"
@@ -83,17 +83,13 @@ class ArticleAnalyzer:
         )
 
         try:
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=16000,
+            raw, provider_name, model_name = self.provider.complete(
                 system=SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": prompt}],
+                user=prompt,
+                max_tokens=16000,
             )
-            raw = response.content[0].text.strip()
-            if raw.startswith("```"):
-                raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
             result = json.loads(raw)
-            return result.get("articles", [])
+            return result.get("articles", []), provider_name, model_name
         except (json.JSONDecodeError, Exception) as e:
             print(f"[ArticleAnalyzer] Error: {e}")
-            return []
+            return [], None, None

@@ -13,6 +13,10 @@ const TIER_LIMITS: Record<UserTier, TierLimits> = {
     has_weekly_report: true,
     has_monthly_report: true,
     has_csv_export: true,
+    can_vote_community: false,
+    can_join_leaderboard: false,
+    has_trader_insights: false,
+    has_dna_profile: false,
   },
   essential: {
     max_trades_per_day: null,
@@ -25,6 +29,10 @@ const TIER_LIMITS: Record<UserTier, TierLimits> = {
     has_weekly_report: true,
     has_monthly_report: true,
     has_csv_export: true,
+    can_vote_community: true,
+    can_join_leaderboard: false,
+    has_trader_insights: false,
+    has_dna_profile: false,
   },
   premium: {
     max_trades_per_day: null,
@@ -37,6 +45,10 @@ const TIER_LIMITS: Record<UserTier, TierLimits> = {
     has_weekly_report: true,
     has_monthly_report: true,
     has_csv_export: true,
+    can_vote_community: true,
+    can_join_leaderboard: true,
+    has_trader_insights: true,
+    has_dna_profile: true,
   },
 };
 

@@ -1,5 +1,6 @@
 import json
-import anthropic
+
+from scraper.ai_provider import AIProvider
 
 NEUTRAL_BIAS = {
     "daily":  {"direction": "neutral", "summary": "Insufficient data", "key_drivers": [], "supporting_articles": []},
@@ -44,13 +45,17 @@ Rules:
 
 
 class Analyzer:
-    def __init__(self, api_key: str, model: str = "claude-sonnet-4-6"):
-        self.client = anthropic.Anthropic(api_key=api_key)
-        self.model = model
+    def __init__(self, provider: AIProvider):
+        self.provider = provider
 
-    def analyze(self, instrument: str, articles: list[dict]) -> dict:
+    def analyze(self, instrument: str, articles: list[dict]) -> tuple[dict, str, str]:
+        """Analyze articles for an instrument.
+
+        Returns:
+            (bias_dict, model_provider, model_name)
+        """
         if not articles:
-            return NEUTRAL_BIAS
+            return NEUTRAL_BIAS, None, None
 
         news_text = "\n\n".join(
             f"[ID={a['id']}] [{str(a['published_at'])[:10]}] {a['source']}: {a['title']}\n{str(a.get('content', ''))[:500]}"
@@ -60,17 +65,12 @@ class Analyzer:
         prompt = ANALYSIS_PROMPT.format(instrument=instrument, news_text=news_text)
 
         try:
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=2048,
+            raw, provider_name, model_name = self.provider.complete(
                 system=SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": prompt}],
+                user=prompt,
+                max_tokens=2048,
             )
-            raw = response.content[0].text.strip()
-            # Strip markdown code fences if present
-            if raw.startswith("```"):
-                raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
-            return json.loads(raw)
+            return json.loads(raw), provider_name, model_name
         except (json.JSONDecodeError, Exception) as e:
             print(f"[Analyzer] Error analyzing {instrument}: {e}")
-            return NEUTRAL_BIAS
+            return NEUTRAL_BIAS, None, None

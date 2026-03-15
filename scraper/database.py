@@ -74,13 +74,16 @@ class Database:
         key_drivers: list[str],
         supporting_articles: list[dict],
         generated_at: str,
+        model_provider: str = None,
+        model_name: str = None,
     ):
         cur = self.execute(
-            """INSERT INTO biases (instrument, timeframe, direction, summary, key_drivers, supporting_articles, generated_at)
-               VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """INSERT INTO biases (instrument, timeframe, direction, summary, key_drivers, supporting_articles, generated_at, model_provider, model_name)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                RETURNING id""",
             (instrument, timeframe, direction, summary,
-             json.dumps(key_drivers), json.dumps(supporting_articles), generated_at),
+             json.dumps(key_drivers), json.dumps(supporting_articles), generated_at,
+             model_provider, model_name),
         )
         row = cur.fetchone()
         return row["id"] if row else None
@@ -119,11 +122,13 @@ class Database:
         impact_timeframes: list[str],
         confidence: str,
         commentary: str,
+        model_provider: str = None,
+        model_name: str = None,
     ):
         self.execute(
             """INSERT INTO article_analyses
-               (article_id, instrument, event, mechanism, impact_direction, impact_timeframes, confidence, commentary)
-               VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+               (article_id, instrument, event, mechanism, impact_direction, impact_timeframes, confidence, commentary, model_provider, model_name)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                ON CONFLICT (article_id, instrument) DO UPDATE SET
                  event = EXCLUDED.event,
                  mechanism = EXCLUDED.mechanism,
@@ -131,9 +136,12 @@ class Database:
                  impact_timeframes = EXCLUDED.impact_timeframes,
                  confidence = EXCLUDED.confidence,
                  commentary = EXCLUDED.commentary,
+                 model_provider = EXCLUDED.model_provider,
+                 model_name = EXCLUDED.model_name,
                  generated_at = NOW()""",
             (article_id, instrument, event, mechanism, impact_direction,
-             json.dumps(impact_timeframes), confidence, commentary),
+             json.dumps(impact_timeframes), confidence, commentary,
+             model_provider, model_name),
         )
 
     def get_unanalyzed_articles(self, days: int = 7) -> list[dict]:

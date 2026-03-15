@@ -255,6 +255,24 @@ export interface TrackRecordStats {
   pending: BiasOutcome[];
 }
 
+export interface CommunityBias {
+  instrument: string;
+  bullish: number;
+  bearish: number;
+  neutral: number;
+  total: number;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  display_name: string;
+  total_trades: number;
+  win_rate: number;
+  consistency_score: number | null;
+  avg_rr: number | null;
+  snapshot_date: string;
+}
+
 export type UserTier = "free" | "essential" | "premium";
 
 export interface TierLimits {
@@ -268,4 +286,32 @@ export interface TierLimits {
   has_weekly_report: boolean;
   has_monthly_report: boolean;
   has_csv_export: boolean;
+  can_vote_community: boolean;
+  can_join_leaderboard: boolean;
+  has_trader_insights: boolean;
+  has_dna_profile: boolean;
+}
+
+export interface TraderInsight {
+  title: string;
+  stat: string;
+  description: string;
+  category: 'bias_alignment' | 'session' | 'instrument' | 'emotion' | 'pattern' | 'risk';
+}
+
+export interface DNAProfile {
+  trading_style: string;
+  strengths: string[];
+  blind_spots: string[];
+  bias_alignment_score: number;
+  emotional_patterns: string;
+  session_performance: string;
+  goals: string[];
+}
+
+export interface TraderInsightsResponse {
+  eligible: boolean;
+  trade_count: number;
+  insights: TraderInsight[] | null;
+  generated_at: string | null;
 }

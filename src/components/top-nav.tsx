@@ -21,6 +21,8 @@ import {
   ChevronDown,
   Home,
   Settings,
+  Users,
+  Sparkles,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import type { Instrument } from "@/types";
@@ -36,6 +38,7 @@ const journalLinks = [
   { href: "/journal/accounts", label: "Accounts", icon: Wallet, gradientFrom: "#707070", gradientTo: "#b0b0b0" },
   { href: "/journal/chat", label: "AI Chat", icon: Bot, gradientFrom: "#888888", gradientTo: "#cccccc" },
   { href: "/journal/reports", label: "Reports", icon: BarChart3, gradientFrom: "#999999", gradientTo: "#e8e8e8" },
+  { href: "/journal/insights", label: "Insights", icon: Sparkles, gradientFrom: "#7c3aed", gradientTo: "#a78bfa" },
 ];
 
 export function TopNav({ instruments }: TopNavProps) {
@@ -88,6 +91,20 @@ export function TopNav({ instruments }: TopNavProps) {
           >
             <TrendingUp className="h-4 w-4" />
             Track Record
+          </Link>
+
+          {/* Community */}
+          <Link
+            href="/community"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+              pathname === "/community"
+                ? "text-white bg-white/10"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <Users className="h-4 w-4" />
+            Community
           </Link>
 
           {/* News Dropdown */}
@@ -287,6 +304,20 @@ export function TopNav({ instruments }: TopNavProps) {
           >
             <TrendingUp className="h-4 w-4" />
             <span>Track Record</span>
+          </Link>
+
+          <Link
+            href="/community"
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+              pathname === "/community"
+                ? "bg-white/10 text-white"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            )}
+          >
+            <Users className="h-4 w-4" />
+            <span>Community</span>
           </Link>
 
           <div className="h-px bg-white/10 my-2" />
