@@ -46,4 +46,16 @@ RSS_FEEDS = [
 
     # Government data
     "https://www.bls.gov/feed/bls_latest.rss",
+
+    # Crypto
+    "https://www.coindesk.com/arc/outboundfeeds/rss/",
+    "https://cointelegraph.com/rss",
+    "https://www.theblock.co/rss.xml",
+
+    # Oil & Energy
+    "https://oilprice.com/rss/main",
+
+    # Australia / New Zealand / Canada / Switzerland
+    "https://www.rba.gov.au/rss/rss-cb-media-releases.xml",
+    "https://feeds.bbci.co.uk/news/world/australia/rss.xml",
 ]

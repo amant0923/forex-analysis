@@ -63,6 +63,47 @@ INSTRUMENT_KEYWORDS: dict[str, list[str]] = {
         "silver rally", "silver drops", "silver surges", "silver falls",
         "silver market", "silver trading", "silver demand",
     ],
+    "AUDUSD": [
+        "audusd", "aud/usd", "aussie dollar", "australian dollar",
+        "reserve bank of australia", "rba", "australia gdp",
+        "australia cpi", "australia inflation", "australia employment",
+        "australia jobs", "iron ore", "australia economy",
+    ],
+    "USDCAD": [
+        "usdcad", "usd/cad", "loonie", "canadian dollar",
+        "bank of canada", "boc rate", "canada gdp", "canada cpi",
+        "canada inflation", "canada employment", "canada jobs",
+        "canada economy", "macklem",
+    ],
+    "NZDUSD": [
+        "nzdusd", "nzd/usd", "kiwi dollar", "new zealand dollar",
+        "reserve bank of new zealand", "rbnz", "new zealand gdp",
+        "new zealand cpi", "nz inflation", "nz economy",
+        "dairy prices", "fonterra", "gdt auction",
+    ],
+    "USDCHF": [
+        "usdchf", "usd/chf", "swissie", "swiss franc",
+        "swiss national bank", "snb", "switzerland cpi",
+        "swiss inflation", "swiss economy", "jordan snb",
+    ],
+    "BTCUSD": [
+        "btcusd", "btc/usd", "bitcoin", "btc price", "btc rally",
+        "bitcoin etf", "bitcoin halving", "crypto market",
+        "cryptocurrency", "bitcoin futures", "bitcoin spot",
+        "bitcoin mining", "bitcoin regulation",
+    ],
+    "ETHUSD": [
+        "ethusd", "eth/usd", "ethereum", "eth price", "ether",
+        "ethereum etf", "ethereum upgrade", "defi",
+        "ethereum staking", "eth 2.0", "ethereum network",
+    ],
+    "USOIL": [
+        "usoil", "wti", "crude oil", "oil price", "oil futures",
+        "oil rally", "oil drops", "brent crude", "opec",
+        "opec+", "oil inventory", "eia crude", "oil production",
+        "oil demand", "petroleum", "energy market",
+        "oil supply", "drilling rig", "shale oil",
+    ],
 }
 
 # Thematic keywords that map to multiple instruments at once.
@@ -106,6 +147,35 @@ THEMATIC_KEYWORDS: dict[str, list[str]] = {
     "metals market": ["XAUUSD", "XAGUSD"],
     "gold and silver": ["XAUUSD", "XAGUSD"],
     "industrial metals": ["XAGUSD"],
+
+    # Commodity currencies
+    "commodity prices": ["AUDUSD", "USDCAD", "NZDUSD"],
+    "commodity currencies": ["AUDUSD", "USDCAD", "NZDUSD"],
+
+    # China data affects AUD/NZD
+    "china gdp": ["AUDUSD", "NZDUSD"],
+    "china pmi": ["AUDUSD", "NZDUSD"],
+    "china economy": ["AUDUSD", "NZDUSD"],
+    "china trade": ["AUDUSD", "NZDUSD"],
+
+    # Oil affects CAD
+    "oil prices": ["USDCAD", "USOIL"],
+    "crude oil": ["USDCAD", "USOIL"],
+    "opec meeting": ["USDCAD", "USOIL"],
+    "opec production": ["USDCAD", "USOIL"],
+    "energy prices": ["USOIL"],
+
+    # Crypto themes
+    "crypto regulation": ["BTCUSD", "ETHUSD"],
+    "crypto market": ["BTCUSD", "ETHUSD"],
+    "bitcoin etf": ["BTCUSD"],
+    "crypto crash": ["BTCUSD", "ETHUSD"],
+    "crypto rally": ["BTCUSD", "ETHUSD"],
+    "digital assets": ["BTCUSD", "ETHUSD"],
+    "blockchain": ["BTCUSD", "ETHUSD"],
+
+    # Safe haven includes CHF
+    "swiss franc": ["USDCHF"],
 }
 
 

@@ -31,7 +31,7 @@ export async function PUT(request: NextRequest) {
 
   // Handle instruments update
   if (body.instruments !== undefined) {
-    const validInstruments = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"];
+    const validInstruments = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "AUDUSD", "USDCAD", "NZDUSD", "USDCHF", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500", "BTCUSD", "ETHUSD", "USOIL"];
     const filtered = (body.instruments as string[]).filter((i: string) => validInstruments.includes(i));
     await sql`
       UPDATE users SET telegram_instruments = ${filtered} WHERE id = ${user.id}

@@ -1,5 +1,6 @@
-const FOREX_INSTRUMENTS = ["EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP"];
-const CFD_INSTRUMENTS = ["DXY", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"];
+const FOREX_INSTRUMENTS = ["EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "AUDUSD", "USDCAD", "NZDUSD", "USDCHF"];
+const CFD_INSTRUMENTS = ["DXY", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500", "USOIL"];
+const CRYPTO_INSTRUMENTS = ["BTCUSD", "ETHUSD"];
 
 const PIP_SIZE: Record<string, number> = {
   EURUSD: 0.0001,
@@ -8,6 +9,10 @@ const PIP_SIZE: Record<string, number> = {
   EURJPY: 0.01,
   GBPJPY: 0.01,
   EURGBP: 0.0001,
+  AUDUSD: 0.0001,
+  USDCAD: 0.0001,
+  NZDUSD: 0.0001,
+  USDCHF: 0.0001,
 };
 
 const TICK_SIZE: Record<string, number> = {
@@ -18,6 +23,9 @@ const TICK_SIZE: Record<string, number> = {
   US30: 1,
   NAS100: 0.25,
   SP500: 0.25,
+  USOIL: 0.01,
+  BTCUSD: 1,
+  ETHUSD: 0.01,
 };
 
 export function isForex(instrument: string): boolean {
@@ -25,7 +33,7 @@ export function isForex(instrument: string): boolean {
 }
 
 export function isCFD(instrument: string): boolean {
-  return CFD_INSTRUMENTS.includes(instrument);
+  return CFD_INSTRUMENTS.includes(instrument) || CRYPTO_INSTRUMENTS.includes(instrument);
 }
 
 export function calculatePnl(

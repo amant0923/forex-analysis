@@ -23,9 +23,11 @@ import {
   Settings,
   Users,
   Sparkles,
+  History,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import type { Instrument } from "@/types";
+import { AlertsDropdown } from "./alerts-dropdown";
 
 interface TopNavProps {
   instruments: Instrument[];
@@ -39,6 +41,7 @@ const journalLinks = [
   { href: "/journal/chat", label: "AI Chat", icon: Bot, gradientFrom: "#888888", gradientTo: "#cccccc" },
   { href: "/journal/reports", label: "Reports", icon: BarChart3, gradientFrom: "#999999", gradientTo: "#e8e8e8" },
   { href: "/journal/insights", label: "Insights", icon: Sparkles, gradientFrom: "#7c3aed", gradientTo: "#a78bfa" },
+  { href: "/backtest", label: "Backtest", icon: BarChart3, gradientFrom: "#2563eb", gradientTo: "#60a5fa" },
 ];
 
 export function TopNav({ instruments }: TopNavProps) {
@@ -162,8 +165,25 @@ export function TopNav({ instruments }: TopNavProps) {
                   })}
                 </div>
 
-                {/* Calendar */}
-                <div className="border-t border-white/[0.06] pt-2">
+                {/* Calendar & History */}
+                <div className="border-t border-white/[0.06] pt-2 space-y-1">
+                  <Link
+                    href="/history"
+                    style={
+                      { "--gradient-from": "#606060", "--gradient-to": "#a0a0a0" } as React.CSSProperties
+                    }
+                    className={cn(
+                      "relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer group/item overflow-hidden",
+                      pathname === "/history"
+                        ? "bg-white/10 text-white"
+                        : "text-gray-400 hover:text-white"
+                    )}
+                  >
+                    <span className="absolute inset-0 rounded-xl bg-[linear-gradient(135deg,var(--gradient-from),var(--gradient-to))] opacity-0 transition-opacity duration-300 group-hover/item:opacity-[0.12]" />
+                    <span className="absolute inset-x-2 bottom-0 h-[60%] rounded-xl bg-[linear-gradient(135deg,var(--gradient-from),var(--gradient-to))] blur-[12px] opacity-0 -z-10 transition-opacity duration-300 group-hover/item:opacity-20" />
+                    <History className="h-4 w-4 relative z-10" />
+                    <span className="relative z-10">Historical Trends</span>
+                  </Link>
                   <Link
                     href="/calendar"
                     style={
@@ -242,6 +262,7 @@ export function TopNav({ instruments }: TopNavProps) {
 
         {/* Right side */}
         <div className="hidden sm:flex items-center gap-2 shrink-0 ml-2">
+          <AlertsDropdown />
           <Link
             href="/settings"
             className={cn(

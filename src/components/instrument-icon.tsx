@@ -25,6 +25,13 @@ const instrumentConfig: Record<
   EURGBP: { type: "flags", flags: ["eu", "gb"] },
   XAUUSD: { type: "flags", flags: ["us"] },
   XAGUSD: { type: "flags", flags: ["us"] },
+  AUDUSD: { type: "flags", flags: ["au", "us"] },
+  USDCAD: { type: "flags", flags: ["us", "ca"] },
+  NZDUSD: { type: "flags", flags: ["nz", "us"] },
+  USDCHF: { type: "flags", flags: ["us", "ch"] },
+  BTCUSD: { type: "icon", icon: TrendingUp, bgColor: "bg-orange-500/20", textColor: "text-orange-400" },
+  ETHUSD: { type: "icon", icon: Cpu, bgColor: "bg-indigo-500/20", textColor: "text-indigo-400" },
+  USOIL: { type: "icon", icon: BarChart3, bgColor: "bg-amber-500/20", textColor: "text-amber-400" },
 };
 
 export function InstrumentIcon({

@@ -19,8 +19,11 @@ from scraper.database import Database
 from scraper.economic_calendar import EconomicCalendarScraper, store_events
 from scraper.fmp_quotes import FmpQuoteFetcher, store_quotes
 from scraper.telegram_reporter import TelegramReporter
+from scraper.bias_alerts import detect_bias_changes
+from scraper.email_digest import send_email_digests
+from scraper.translate_biases import translate_recent_biases
 
-INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"]
+INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "AUDUSD", "USDCAD", "NZDUSD", "USDCHF", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500", "BTCUSD", "ETHUSD", "USOIL"]
 TIMEFRAME_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
 TIMEFRAME_SETTLE_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
 
@@ -265,6 +268,13 @@ def run():
         wc = bias.get("1week", {}).get("confidence", "?")
         print(f"    Daily: {d} ({dc}%) | 1W: {w} ({wc}%) | 1M: {m} | 3M: {q}")
 
+    # Step 5.5: Detect bias direction changes
+    print("\nStep 5.5: Detecting bias direction changes...")
+    try:
+        detect_bias_changes(db)
+    except Exception as e:
+        print(f"  Warning: Bias alert detection failed: {e}")
+
     # Step 6: Send Telegram reports
     print("\nStep 6: Sending Telegram daily reports...")
     telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -276,6 +286,20 @@ def run():
             print(f"  Warning: Telegram reports failed: {e}")
     else:
         print("  Skipped — TELEGRAM_BOT_TOKEN not set")
+
+    # Step 6.5: Translate biases to Spanish
+    print("\nStep 6.5: Translating biases to Spanish...")
+    try:
+        translate_recent_biases(db, ai_provider, locale="es", limit=40)
+    except Exception as e:
+        print(f"  Warning: Translation failed: {e}")
+
+    # Step 7: Send email digests
+    print("\nStep 7: Sending email digests...")
+    try:
+        send_email_digests(db)
+    except Exception as e:
+        print(f"  Warning: Email digest failed: {e}")
 
     db.close()
     print(f"\nPipeline complete!")

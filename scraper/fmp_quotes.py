@@ -13,6 +13,10 @@ FMP_SYMBOLS = {
     "EURJPY": "EURJPY",
     "GBPJPY": "GBPJPY",
     "EURGBP": "EURGBP",
+    "AUDUSD": "AUDUSD",
+    "USDCAD": "USDCAD",
+    "NZDUSD": "NZDUSD",
+    "USDCHF": "USDCHF",
     "US30": "%5EDJI",
     "SP500": "%5EGSPC",
 }
@@ -24,6 +28,9 @@ YAHOO_SYMBOLS = {
     "GER40": "%5EGDAXI",
     "XAUUSD": "GC%3DF",
     "XAGUSD": "SI%3DF",
+    "BTCUSD": "BTC-USD",
+    "ETHUSD": "ETH-USD",
+    "USOIL": "CL%3DF",
 }
 
 YAHOO_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1d&interval=1d"

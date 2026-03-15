@@ -25,6 +25,13 @@ INSTRUMENT_CONTEXT = {
     "US30": "Dow Jones Industrial Average — 30 large-cap US stocks. Key drivers: US economic data, Fed policy, earnings season, value/cyclical rotation.",
     "NAS100": "Nasdaq 100 — US tech-heavy index. Key drivers: Fed policy (rate sensitivity), big tech earnings, AI/semiconductor developments, growth expectations.",
     "SP500": "S&P 500 — broad US equity benchmark. Key drivers: Fed policy, US economic data, earnings season, credit conditions, VIX.",
+    "AUDUSD": "Australian Dollar vs US Dollar — a commodity-linked currency. Key drivers: RBA policy, Australian employment/CPI data, iron ore and copper prices, China economic data (Australia's largest trading partner), risk sentiment.",
+    "USDCAD": "US Dollar vs Canadian Dollar — heavily influenced by oil prices. Key drivers: BoC vs Fed policy divergence, crude oil prices (Canada is a major oil exporter), Canadian employment data, US-Canada trade dynamics.",
+    "NZDUSD": "New Zealand Dollar vs US Dollar — a commodity and dairy-linked currency. Key drivers: RBNZ policy, NZ GDP/CPI data, global dairy prices (GDT auctions), China demand, risk appetite. Highly correlated with AUDUSD.",
+    "USDCHF": "US Dollar vs Swiss Franc — a safe-haven pair. Key drivers: SNB policy, Swiss CPI data, risk sentiment (CHF strengthens in risk-off), US-Swiss yield differential. Inversely correlated with EURUSD in most environments.",
+    "BTCUSD": "Bitcoin vs US Dollar — the dominant cryptocurrency. Key drivers: crypto regulation news, institutional adoption (ETF flows), halving cycle, DXY strength (inverse correlation), risk appetite, on-chain metrics, macro liquidity conditions.",
+    "ETHUSD": "Ethereum vs US Dollar — the second-largest cryptocurrency. Key drivers: Ethereum network upgrades, DeFi/NFT activity, staking yields, institutional adoption, correlation with BTC, broader crypto regulation, gas fees and network usage.",
+    "USOIL": "WTI Crude Oil (West Texas Intermediate). Key drivers: OPEC+ production decisions, US crude inventories (EIA weekly report), global demand outlook (China PMIs), geopolitical risk (Middle East), US shale production, strategic petroleum reserve.",
 }
 
 # ── Improvement #7: Cross-instrument consistency groups ───────────────────────
@@ -42,6 +49,13 @@ CROSS_INSTRUMENT_RULES = {
     "US30": "US30 reflects US economic health and risk appetite. Should align with SP500 and generally correlate with NAS100.",
     "NAS100": "NAS100 is rate-sensitive. If Fed is hawkish (DXY bullish), NAS100 should face headwinds. Divergence from US30 suggests tech-specific factors.",
     "SP500": "SP500 is the broadest US equity measure. Should generally align with US30. If SP500 is bearish but USDJPY is bullish, explain the divergence.",
+    "AUDUSD": "AUDUSD is a risk-on commodity currency. Should generally align with equity index direction and inverse to DXY. Strengthens on positive China data and rising commodity prices.",
+    "USDCAD": "USDCAD is inversely correlated with crude oil prices. If USOIL is bullish, USDCAD should face downward pressure (CAD strengthens). Should partially align with DXY direction.",
+    "NZDUSD": "NZDUSD is highly correlated with AUDUSD. If AUDUSD is bullish, NZDUSD should generally be bullish too. Inverse to DXY. Risk-on currency.",
+    "USDCHF": "USDCHF tends to move with DXY. CHF is a safe haven — if risk-off sentiment is high and XAUUSD is bullish, USDCHF should face downward pressure. Generally inversely correlated with EURUSD.",
+    "BTCUSD": "BTC tends to correlate with risk appetite. If NAS100 is strongly bullish, BTC often follows. Inversely correlated with DXY in most environments. Crypto-specific news can override macro correlations.",
+    "ETHUSD": "ETH is highly correlated with BTC. If BTCUSD is bullish, ETHUSD should generally be bullish. ETH-specific catalysts (upgrades, DeFi activity) can cause divergence.",
+    "USOIL": "Oil prices inversely affect USDCAD (CAD is petrocurrency). Rising oil tends to be inflationary, potentially supporting DXY if it leads to hawkish Fed. Geopolitical risk premium should align with XAUUSD direction.",
 }
 
 SYSTEM_PROMPT = """You are a senior forex and CFD fundamental analyst at a top-tier investment bank.

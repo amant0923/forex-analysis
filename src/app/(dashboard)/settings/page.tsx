@@ -17,9 +17,10 @@ import {
   CreditCard,
   ExternalLink,
   Crown,
+  Mail,
 } from "lucide-react";
 
-const ALL_INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500"];
+const ALL_INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "AUDUSD", "USDCAD", "NZDUSD", "USDCHF", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500", "BTCUSD", "ETHUSD", "USOIL"];
 
 const CONFIDENCE_LEVELS = [
   { value: "high", label: "High Impact", color: "text-red-400", bg: "bg-red-500/15 border-red-500/20", activeBg: "bg-red-500/20 border-red-500/30" },
@@ -41,6 +42,7 @@ export default function SettingsPage() {
   const [copied, setCopied] = useState(false);
   const [sendingTest, setSendingTest] = useState(false);
   const [testSent, setTestSent] = useState(false);
+  const [emailDigestEnabled, setEmailDigestEnabled] = useState(false);
 
   // Load current state
   useEffect(() => {
@@ -53,6 +55,12 @@ export default function SettingsPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+
+    // Load email preferences
+    fetch("/api/email/preferences")
+      .then((r) => r.json())
+      .then((data) => setEmailDigestEnabled(data.enabled || false))
+      .catch(() => {});
   }, []);
 
   // Poll for connection while code is shown
@@ -329,6 +337,43 @@ export default function SettingsPage() {
           )}
         </div>
       )}
+
+      {/* Email Digest */}
+      <div className="bg-white/[0.06] rounded-[1.25rem] border border-white/10 backdrop-blur-xl p-6 mb-6">
+        <div className="flex items-center gap-3 mb-4">
+          <Mail className="h-5 w-5 text-white/60" />
+          <h2 className="text-lg font-semibold text-white">Email Digest</h2>
+          {emailDigestEnabled && (
+            <span className="flex items-center gap-1 text-xs font-medium text-green-400 bg-green-500/15 px-2 py-0.5 rounded-full">
+              <Check className="h-3 w-3" />
+              Active
+            </span>
+          )}
+        </div>
+        <p className="text-sm text-white/40 mb-5">
+          Receive a daily morning email with bias summaries for all instruments and any direction changes.
+        </p>
+        <button
+          onClick={async () => {
+            const next = !emailDigestEnabled;
+            setEmailDigestEnabled(next);
+            await fetch("/api/email/preferences", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ enabled: next }),
+            });
+          }}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+            emailDigestEnabled
+              ? "text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20"
+              : "text-white bg-[#2563eb] hover:bg-[#1d4ed8]"
+          )}
+        >
+          <Mail className="h-4 w-4" />
+          {emailDigestEnabled ? "Disable Daily Digest" : "Enable Daily Digest"}
+        </button>
+      </div>
 
       {/* Confidence Filter */}
       {connected && (

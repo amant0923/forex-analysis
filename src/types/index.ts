@@ -1,7 +1,7 @@
 export interface Instrument {
   code: string;
   name: string;
-  category: "forex" | "index" | "commodity";
+  category: "forex" | "index" | "commodity" | "crypto";
 }
 
 export interface Article {
@@ -63,10 +63,14 @@ export interface EconomicEvent {
 
 // Maps currency to affected instruments
 export const CURRENCY_INSTRUMENTS: Record<string, string[]> = {
-  USD: ["DXY", "USDJPY", "XAUUSD", "XAGUSD", "US30", "NAS100", "SP500"],
+  USD: ["DXY", "USDJPY", "USDCAD", "USDCHF", "XAUUSD", "XAGUSD", "US30", "NAS100", "SP500", "BTCUSD", "ETHUSD", "USOIL"],
   EUR: ["EURUSD", "EURJPY", "EURGBP", "GER40"],
   GBP: ["GBPUSD", "GBPJPY", "EURGBP"],
   JPY: ["USDJPY", "EURJPY", "GBPJPY"],
+  AUD: ["AUDUSD"],
+  CAD: ["USDCAD", "USOIL"],
+  NZD: ["NZDUSD"],
+  CHF: ["USDCHF"],
 };
 
 export interface InstrumentQuote {
