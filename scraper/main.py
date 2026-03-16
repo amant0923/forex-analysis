@@ -28,6 +28,17 @@ INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP"
 TIMEFRAME_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
 TIMEFRAME_SETTLE_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
 
+# Instrument waves for parallel bias generation.
+# Each wave runs in parallel; waves run sequentially so cross-instrument
+# context from earlier waves is available to later ones.
+INSTRUMENT_WAVES = [
+    ["DXY"],                                                                    # Foundation
+    ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "USDCAD", "NZDUSD", "USDCHF"],  # USD majors
+    ["EURJPY", "GBPJPY", "EURGBP"],                                            # Crosses
+    ["XAUUSD", "XAGUSD", "USOIL", "BTCUSD", "ETHUSD"],                        # Commodities + Crypto
+    ["GER40", "US30", "NAS100", "SP500"],                                       # Indices
+]
+
 
 def _analyze_article_batch(batch, db, article_analyzer):
     """Process a single batch of articles for analysis. Thread-safe."""
@@ -67,6 +78,65 @@ def _analyze_article_batch(batch, db, article_analyzer):
                 print(f"    Error storing analysis for article {aid}: {e}")
         stored += 1
     return stored
+
+
+def _analyze_instrument_bias(instrument, db, analyzer, now, all_quotes, econ_by_instrument, track_records, generated_biases):
+    """Analyze bias for a single instrument. Thread-safe (reads generated_biases, no writes)."""
+    articles_for_inst = db.get_articles_for_instrument(instrument, days=90)
+    print(f"    {instrument}: {len(articles_for_inst)} articles in last 90 days")
+
+    if not articles_for_inst:
+        print(f"    {instrument}: skipped — no articles")
+        return instrument, None, None, None
+
+    bias, bias_provider, bias_model = analyzer.analyze(
+        instrument=instrument,
+        articles=articles_for_inst,
+        economic_events=econ_by_instrument.get(instrument, []),
+        price_data=all_quotes.get(instrument),
+        track_record=track_records.get(instrument),
+        other_biases=generated_biases,
+    )
+
+    # Store biases and outcomes
+    for timeframe, result in bias.items():
+        bias_id = db.insert_bias(
+            instrument=instrument,
+            timeframe=timeframe,
+            direction=result["direction"],
+            summary=result.get("summary", ""),
+            key_drivers=result.get("key_drivers", []),
+            supporting_articles=result.get("supporting_articles", []),
+            generated_at=now,
+            model_provider=bias_provider,
+            model_name=bias_model,
+            confidence=result.get("confidence"),
+            confidence_rationale=result.get("confidence_rationale"),
+        )
+        if bias_id:
+            price = db.get_instrument_price(instrument)
+            if price:
+                settle_days = TIMEFRAME_SETTLE_DAYS.get(timeframe, 7)
+                settles_at = (datetime.utcnow() + timedelta(days=settle_days)).isoformat()
+                db.insert_bias_outcome(
+                    bias_id=bias_id,
+                    instrument=instrument,
+                    timeframe=timeframe,
+                    predicted_direction=result["direction"],
+                    open_price=price,
+                    generated_at=now,
+                    settles_at=settles_at,
+                )
+
+    d = bias.get("daily", {}).get("direction", "?").upper()
+    w = bias.get("1week", {}).get("direction", "?").upper()
+    m = bias.get("1month", {}).get("direction", "?").upper()
+    q = bias.get("3month", {}).get("direction", "?").upper()
+    dc = bias.get("daily", {}).get("confidence", "?")
+    wc = bias.get("1week", {}).get("confidence", "?")
+    print(f"    {instrument}: Daily={d}({dc}%) 1W={w}({wc}%) 1M={m} 3M={q}")
+
+    return instrument, bias, bias_provider, bias_model
 
 
 def run():
@@ -192,7 +262,7 @@ def run():
     else:
         print("  Skipped — FMP_API_KEY not set")
 
-    # Step 5: Generate AI bias analysis (with full context from steps 3-4)
+    # Step 5: Generate AI bias analysis (with economic events, price context, track record)
     print("\nStep 5: Generating AI bias analysis (with economic events, price context, track record)...")
     now = datetime.utcnow().isoformat()
 
@@ -211,77 +281,39 @@ def run():
             if inst in econ_by_instrument:
                 econ_by_instrument[inst].append(ev)
 
-    # Track biases as they're generated for cross-instrument consistency
+    # Wave-based parallel execution: each wave completes before the next starts,
+    # so cross-instrument context accumulates correctly.
     generated_biases = {}
 
-    for instrument in INSTRUMENTS:
-        print(f"\n  Analyzing {instrument}...")
-        articles_for_inst = db.get_articles_for_instrument(instrument, days=90)
-        print(f"    {len(articles_for_inst)} articles in last 90 days")
-
-        if not articles_for_inst:
-            print(f"    Skipping — no articles")
+    for wave_num, wave_instruments in enumerate(INSTRUMENT_WAVES, 1):
+        # Filter to instruments that exist in INSTRUMENTS list
+        wave = [inst for inst in wave_instruments if inst in INSTRUMENTS]
+        if not wave:
             continue
 
-        # Get price context for this instrument
-        price_data = all_quotes.get(instrument)
+        print(f"\n  Wave {wave_num}/{len(INSTRUMENT_WAVES)}: {', '.join(wave)}")
 
-        # Get economic events for this instrument
-        instrument_events = econ_by_instrument.get(instrument, [])
-
-        # Get track record for this instrument
-        instrument_track_record = track_records.get(instrument)
-
-        bias, bias_provider, bias_model = analyzer.analyze(
-            instrument=instrument,
-            articles=articles_for_inst,
-            economic_events=instrument_events,
-            price_data=price_data,
-            track_record=instrument_track_record,
-            other_biases=generated_biases,
-        )
-
-        # Store biases for cross-instrument consistency in next iterations
-        generated_biases[instrument] = {}
-
-        for timeframe, result in bias.items():
-            generated_biases[instrument][timeframe] = result.get("direction", "neutral")
-
-            bias_id = db.insert_bias(
-                instrument=instrument,
-                timeframe=timeframe,
-                direction=result["direction"],
-                summary=result.get("summary", ""),
-                key_drivers=result.get("key_drivers", []),
-                supporting_articles=result.get("supporting_articles", []),
-                generated_at=now,
-                model_provider=bias_provider,
-                model_name=bias_model,
-                confidence=result.get("confidence"),
-                confidence_rationale=result.get("confidence_rationale"),
-            )
-            if bias_id:
-                price = db.get_instrument_price(instrument)
-                if price:
-                    settle_days = TIMEFRAME_SETTLE_DAYS.get(timeframe, 7)
-                    settles_at = (datetime.utcnow() + timedelta(days=settle_days)).isoformat()
-                    db.insert_bias_outcome(
-                        bias_id=bias_id,
-                        instrument=instrument,
-                        timeframe=timeframe,
-                        predicted_direction=result["direction"],
-                        open_price=price,
-                        generated_at=now,
-                        settles_at=settles_at,
-                    )
-
-        d = bias.get("daily", {}).get("direction", "?").upper()
-        w = bias.get("1week", {}).get("direction", "?").upper()
-        m = bias.get("1month", {}).get("direction", "?").upper()
-        q = bias.get("3month", {}).get("direction", "?").upper()
-        dc = bias.get("daily", {}).get("confidence", "?")
-        wc = bias.get("1week", {}).get("confidence", "?")
-        print(f"    Daily: {d} ({dc}%) | 1W: {w} ({wc}%) | 1M: {m} | 3M: {q}")
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            futures = {
+                executor.submit(
+                    _analyze_instrument_bias,
+                    inst, db, analyzer, now, all_quotes,
+                    econ_by_instrument, track_records, generated_biases,
+                ): inst
+                for inst in wave
+            }
+            for future in as_completed(futures):
+                inst = futures[future]
+                try:
+                    instrument, bias, _, _ = future.result()
+                    if bias:
+                        # Record for cross-instrument context in subsequent waves
+                        generated_biases[instrument] = {
+                            tf: data.get("direction", "neutral")
+                            for tf, data in bias.items()
+                        }
+                except Exception as e:
+                    print(f"    {inst}: failed — {e}")
 
     # Step 5.5: Detect bias direction changes
     print("\nStep 5.5: Detecting bias direction changes...")
