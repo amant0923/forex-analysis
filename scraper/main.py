@@ -3,6 +3,7 @@
 
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
@@ -26,6 +27,46 @@ from scraper.translate_biases import translate_recent_biases
 INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "AUDUSD", "USDCAD", "NZDUSD", "USDCHF", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500", "BTCUSD", "ETHUSD", "USOIL"]
 TIMEFRAME_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
 TIMEFRAME_SETTLE_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
+
+
+def _analyze_article_batch(batch, db, article_analyzer):
+    """Process a single batch of articles for analysis. Thread-safe."""
+    article_instruments = {}
+    for a in batch:
+        cur = db.execute(
+            "SELECT instrument FROM article_instruments WHERE article_id = %s",
+            (a["id"],),
+        )
+        article_instruments[a["id"]] = [row["instrument"] for row in cur.fetchall()]
+
+    results, art_provider, art_model = article_analyzer.analyze_batch(batch, article_instruments)
+
+    stored = 0
+    for art_result in results:
+        aid = art_result.get("id")
+        if not aid:
+            continue
+        summary = art_result.get("summary", "")
+        if summary:
+            db.update_article_summary(aid, summary)
+        for impact in art_result.get("impacts", []):
+            try:
+                db.insert_article_analysis(
+                    article_id=aid,
+                    instrument=impact["instrument"],
+                    event=impact["event"],
+                    mechanism=impact["mechanism"],
+                    impact_direction=impact["impact_direction"],
+                    impact_timeframes=impact.get("impact_timeframes", []),
+                    confidence=impact.get("confidence", "medium"),
+                    commentary=impact["commentary"],
+                    model_provider=art_provider,
+                    model_name=art_model,
+                )
+            except Exception as e:
+                print(f"    Error storing analysis for article {aid}: {e}")
+        stored += 1
+    return stored
 
 
 def run():
@@ -101,51 +142,25 @@ def run():
     unanalyzed = db.get_unanalyzed_articles(days=7)
     print(f"  {len(unanalyzed)} articles need analysis")
 
-    # Process in batches of 8
-    for i in range(0, len(unanalyzed), 8):
-        batch = unanalyzed[i:i + 8]
-        batch_ids = [a["id"] for a in batch]
-        print(f"  Batch {i // 8 + 1}: articles {batch_ids}")
+    # Split into batches of 8, process 3 concurrently
+    batches = [unanalyzed[i:i + 8] for i in range(0, len(unanalyzed), 8)]
+    total_analyzed = 0
 
-        # Get instruments for each article in this batch
-        article_instruments = {}
-        for a in batch:
-            cur = db.execute(
-                "SELECT instrument FROM article_instruments WHERE article_id = %s",
-                (a["id"],),
-            )
-            article_instruments[a["id"]] = [row["instrument"] for row in cur.fetchall()]
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = {
+            executor.submit(_analyze_article_batch, batch, db, article_analyzer): i
+            for i, batch in enumerate(batches)
+        }
+        for future in as_completed(futures):
+            batch_num = futures[future] + 1
+            try:
+                count = future.result()
+                total_analyzed += count
+                print(f"  Batch {batch_num}/{len(batches)}: analyzed {count} articles")
+            except Exception as e:
+                print(f"  Batch {batch_num}/{len(batches)}: failed — {e}")
 
-        results, art_provider, art_model = article_analyzer.analyze_batch(batch, article_instruments)
-
-        for art_result in results:
-            aid = art_result.get("id")
-            if not aid:
-                continue
-            # Store summary
-            summary = art_result.get("summary", "")
-            if summary:
-                db.update_article_summary(aid, summary)
-
-            # Store per-instrument impacts
-            for impact in art_result.get("impacts", []):
-                try:
-                    db.insert_article_analysis(
-                        article_id=aid,
-                        instrument=impact["instrument"],
-                        event=impact["event"],
-                        mechanism=impact["mechanism"],
-                        impact_direction=impact["impact_direction"],
-                        impact_timeframes=impact.get("impact_timeframes", []),
-                        confidence=impact.get("confidence", "medium"),
-                        commentary=impact["commentary"],
-                        model_provider=art_provider,
-                        model_name=art_model,
-                    )
-                except Exception as e:
-                    print(f"    Error storing analysis for article {aid}: {e}")
-
-        print(f"    Analyzed {len(results)} articles")
+    print(f"  Total: {total_analyzed} articles analyzed")
 
     # Step 3: Economic Calendar (moved before bias analysis so events are available)
     print("\nStep 3: Scraping economic calendar...")
