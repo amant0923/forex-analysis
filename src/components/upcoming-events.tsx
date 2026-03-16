@@ -44,7 +44,7 @@ export function UpcomingEvents({ events }: { events: EconomicEvent[] }) {
   if (events.length === 0) return null;
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 min-w-0 overflow-hidden">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-white/30">
           Upcoming Events

@@ -14,7 +14,7 @@ function getLabelColor(label: string): string {
 
 export function MarketSentiment({ sentiment }: { sentiment: MarketSentimentType }) {
   return (
-    <div className="mb-6 glass rounded-xl p-4 sm:p-5">
+    <div className="mb-6 glass rounded-xl p-4 sm:p-5 overflow-hidden">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-white/30">
           Market Sentiment

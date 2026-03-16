@@ -53,7 +53,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${baskerville.variable} ${jetbrains.variable} font-sans bg-[#09090b]`}>
+      <body className={`${inter.variable} ${baskerville.variable} ${jetbrains.variable} font-sans bg-[#09090b] overflow-x-hidden`}>
         {children}
         <PWARegister />
         <PWAInstallPrompt />

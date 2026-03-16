@@ -77,7 +77,7 @@ export function HomeFeed({ instruments, articles }: HomeFeedProps) {
       : articles.filter((a) => a.instruments.includes(filter));
 
   return (
-    <div>
+    <div className="min-w-0 overflow-hidden">
       {/* Page title */}
       <div className="mb-4 sm:mb-6">
         <h1 className="font-serif text-xl sm:text-2xl font-bold text-white">Dashboard</h1>
@@ -86,9 +86,9 @@ export function HomeFeed({ instruments, articles }: HomeFeedProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-4 sm:gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-4 sm:gap-6 lg:gap-8 min-w-0">
         {/* ─── Main column: News feed ─── */}
-        <div>
+        <div className="min-w-0">
           {/* Instrument filter strip */}
           <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
             <button
@@ -135,7 +135,7 @@ export function HomeFeed({ instruments, articles }: HomeFeedProps) {
         </div>
 
         {/* ─── Sidebar: Journal stats + Instrument biases ─── */}
-        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start min-w-0">
           {/* Journal quick stats */}
           <div className="relative rounded-[1.25rem]">
             <GlowingEffect spread={40} glow proximity={64} inactiveZone={0.01} borderWidth={3} disabled={false} />
@@ -283,7 +283,7 @@ function ArticleCard({ article }: { article: RecentArticle }) {
   return (
     <Link
       href={`/articles/${article.id}`}
-      className="block bg-white/[0.06] rounded-lg sm:rounded-xl border border-white/10 p-3 sm:p-4 hover:bg-white/[0.08] hover:border-white/15 transition-all cursor-pointer group overflow-hidden"
+      className="block bg-white/[0.06] rounded-lg sm:rounded-xl border border-white/10 p-3 sm:p-4 hover:bg-white/[0.08] hover:border-white/15 transition-all cursor-pointer group overflow-hidden min-w-0"
     >
       {/* Top row: instruments + time */}
       <div className="flex items-center justify-between mb-2">
@@ -315,7 +315,7 @@ function ArticleCard({ article }: { article: RecentArticle }) {
 
       {/* Summary */}
       {article.summary && (
-        <p className="text-xs text-white/40 leading-relaxed line-clamp-2 mb-2.5 break-words">
+        <p className="text-xs text-white/40 leading-relaxed line-clamp-2 mb-2.5 break-words overflow-hidden">
           {article.summary}
         </p>
       )}

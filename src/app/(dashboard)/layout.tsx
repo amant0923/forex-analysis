@@ -10,7 +10,7 @@ export default async function DashboardLayout({
 }) {
   const instruments = await getInstruments();
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-x-hidden">
       {/* Mesh gradient blobs */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.08),transparent_70%)]" />
@@ -20,7 +20,7 @@ export default async function DashboardLayout({
       {/* Content */}
       <div className="relative z-10">
         <TopNav instruments={instruments} />
-        <main className="mx-auto max-w-[1400px] px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 xl:px-12">{children}</main>
+        <main className="mx-auto max-w-[1400px] px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 xl:px-12 overflow-hidden">{children}</main>
       </div>
     </div>
   );
