@@ -12,5 +12,5 @@ CREATE TABLE IF NOT EXISTS bias_alerts (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_bias_alerts_created ON bias_alerts(created_at DESC);
-CREATE INDEX idx_bias_alerts_instrument ON bias_alerts(instrument);
+CREATE INDEX IF NOT EXISTS idx_bias_alerts_created ON bias_alerts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bias_alerts_instrument ON bias_alerts(instrument);

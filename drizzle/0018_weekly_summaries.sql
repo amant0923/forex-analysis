@@ -13,4 +13,4 @@ CREATE TABLE IF NOT EXISTS weekly_summaries (
   UNIQUE(instrument, week_start)
 );
 
-CREATE INDEX idx_weekly_summaries_instrument ON weekly_summaries(instrument, week_start DESC);
+CREATE INDEX IF NOT EXISTS idx_weekly_summaries_instrument ON weekly_summaries(instrument, week_start DESC);

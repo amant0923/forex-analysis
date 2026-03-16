@@ -13,4 +13,4 @@ CREATE TABLE IF NOT EXISTS b2b_clients (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_b2b_clients_key ON b2b_clients(api_key_hash);
+CREATE INDEX IF NOT EXISTS idx_b2b_clients_key ON b2b_clients(api_key_hash);

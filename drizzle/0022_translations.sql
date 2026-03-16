@@ -10,5 +10,5 @@ CREATE TABLE IF NOT EXISTS bias_translations (
   UNIQUE(bias_id, locale)
 );
 
-CREATE INDEX idx_bias_translations_bias ON bias_translations(bias_id);
-CREATE INDEX idx_bias_translations_locale ON bias_translations(locale);
+CREATE INDEX IF NOT EXISTS idx_bias_translations_bias ON bias_translations(bias_id);
+CREATE INDEX IF NOT EXISTS idx_bias_translations_locale ON bias_translations(locale);
