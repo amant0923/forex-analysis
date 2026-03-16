@@ -79,8 +79,13 @@ def _analyze_article_batch(batch, db, article_analyzer):
     return stored
 
 
-def _analyze_instrument_bias(instrument, db, analyzer, now, all_quotes, econ_by_instrument, track_records, generated_biases):
+def _analyze_instrument_bias(instrument, db, analyzer, now, all_quotes, econ_by_instrument, track_records, generated_biases, force=False):
     """Analyze bias for a single instrument. Thread-safe (reads generated_biases, no writes)."""
+    # Skip if no new articles since last bias (saves API costs)
+    if not force and not db.has_new_articles_since_last_bias(instrument):
+        print(f"    {instrument}: skipped — no new articles since last bias")
+        return instrument, None, None, None
+
     articles_for_inst = db.get_articles_for_instrument(instrument, days=90)
     print(f"    {instrument}: {len(articles_for_inst)} articles in last 90 days")
 
@@ -152,25 +157,37 @@ def run():
         print("ERROR: DATABASE_URL not set")
         sys.exit(1)
 
-    # Build AI provider with failover chain
-    ai_provider = AIProvider()
-    if anthropic_key:
-        ai_provider.add_anthropic(anthropic_key)
-    if openai_key:
-        ai_provider.add_openai(openai_key)
+    # Build AI providers: cheap model for article analysis, best model for bias generation
+    # Article analysis (summarization/tagging) — use cheapest available
+    article_provider = AIProvider()
     if gemini_key:
-        ai_provider.add_google(gemini_key)
+        article_provider.add_google(gemini_key)
+    if openai_key:
+        article_provider.add_openai(openai_key)
+    if anthropic_key:
+        article_provider.add_anthropic(anthropic_key)
 
-    if not ai_provider._providers:
+    # Bias generation (core product) — use best available
+    bias_provider = AIProvider()
+    if anthropic_key:
+        bias_provider.add_anthropic(anthropic_key)
+    if openai_key:
+        bias_provider.add_openai(openai_key)
+    if gemini_key:
+        bias_provider.add_google(gemini_key)
+
+    if not bias_provider._providers:
         print("ERROR: No AI API keys set (need at least one of ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY)")
         sys.exit(1)
 
-    provider_names = [p[0] for p in ai_provider._providers]
-    print(f"AI providers: {', '.join(provider_names)} (failover order)")
+    art_names = [p[0] for p in article_provider._providers]
+    bias_names = [p[0] for p in bias_provider._providers]
+    print(f"Article analysis: {', '.join(art_names)} (failover order)")
+    print(f"Bias generation:  {', '.join(bias_names)} (failover order)")
 
     db = Database(database_url)
     rss = RssScraper()
-    analyzer = Analyzer(provider=ai_provider)
+    analyzer = Analyzer(provider=bias_provider)
 
     # Step 1: Scrape RSS
     print("Step 1: Scraping RSS feeds...")
@@ -207,7 +224,7 @@ def run():
 
     # Step 2.5: Per-article analysis
     print("\nStep 2.5: Generating per-article AI analysis...")
-    article_analyzer = ArticleAnalyzer(provider=ai_provider)
+    article_analyzer = ArticleAnalyzer(provider=article_provider)
     unanalyzed = db.get_unanalyzed_articles(days=7)
     print(f"  {len(unanalyzed)} articles need analysis")
 

@@ -184,5 +184,22 @@ class Database:
             }
         return result
 
+    def has_new_articles_since_last_bias(self, instrument: str) -> bool:
+        """Check if there are new articles for this instrument since the last bias was generated."""
+        cur = self.execute(
+            """SELECT EXISTS(
+                SELECT 1 FROM articles a
+                JOIN article_instruments ai ON a.id = ai.article_id
+                WHERE ai.instrument = %s
+                  AND a.published_at > COALESCE(
+                    (SELECT MAX(generated_at) FROM biases WHERE instrument = %s),
+                    '1970-01-01'
+                  )
+            ) as has_new""",
+            (instrument, instrument),
+        )
+        row = cur.fetchone()
+        return row["has_new"] if row else True
+
     def close(self):
         self.conn.close()
