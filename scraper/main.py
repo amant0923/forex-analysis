@@ -22,7 +22,6 @@ from scraper.fmp_quotes import FmpQuoteFetcher, store_quotes
 from scraper.telegram_reporter import TelegramReporter
 from scraper.bias_alerts import detect_bias_changes
 from scraper.email_digest import send_email_digests
-from scraper.translate_biases import translate_recent_biases
 
 INSTRUMENTS = ["DXY", "EURUSD", "GBPUSD", "USDJPY", "EURJPY", "GBPJPY", "EURGBP", "AUDUSD", "USDCAD", "NZDUSD", "USDCHF", "XAUUSD", "XAGUSD", "GER40", "US30", "NAS100", "SP500", "BTCUSD", "ETHUSD", "USOIL"]
 TIMEFRAME_DAYS = {"daily": 1, "1week": 7, "1month": 30, "3month": 90}
@@ -333,13 +332,6 @@ def run():
             print(f"  Warning: Telegram reports failed: {e}")
     else:
         print("  Skipped — TELEGRAM_BOT_TOKEN not set")
-
-    # Step 6.5: Translate biases to Spanish
-    print("\nStep 6.5: Translating biases to Spanish...")
-    try:
-        translate_recent_biases(db, ai_provider, locale="es", limit=40)
-    except Exception as e:
-        print(f"  Warning: Translation failed: {e}")
 
     # Step 7: Send email digests
     print("\nStep 7: Sending email digests...")
