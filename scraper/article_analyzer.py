@@ -2,37 +2,60 @@ import json
 
 from scraper.ai_provider import AIProvider
 
-SYSTEM_PROMPT = """You are a senior forex and CFD research analyst at a top investment bank.
-You produce institutional-quality analysis of news articles for trading professionals.
-You must respond in valid JSON only — no markdown, no explanation outside the JSON."""
+SYSTEM_PROMPT = """You are a forex/CFD analyst. Analyze news articles and return valid JSON only."""
 
-ARTICLE_ANALYSIS_PROMPT = """Analyze these news articles and produce summaries and impact analyses.
+ARTICLE_ANALYSIS_PROMPT = """Analyze these articles. For each: summarize it and assess impact on tagged instruments.
 
-For each article, generate:
-1. A 2-3 paragraph institutional-quality summary
-2. For each instrument the article affects, a structured impact analysis
-
-Articles to analyze:
 {articles_text}
 
-Instruments each article is tagged with:
+Tagged instruments:
 {instruments_text}
 
-Respond ONLY with this exact JSON structure:
+Return this JSON exactly:
 {{
   "articles": [
     {{
-      "id": <article_id>,
-      "summary": "2-3 paragraph summary of the article. Write like a Goldman Sachs morning brief — authoritative, concise, factual.",
+      "id": 123,
+      "summary": "2-3 sentence summary of what happened and why it matters.",
       "impacts": [
         {{
           "instrument": "EURUSD",
-          "event": "1 sentence: what happened",
-          "mechanism": "1-2 sentences: the cause-effect chain explaining WHY this affects the instrument",
-          "impact_direction": "bullish" | "bearish" | "neutral",
+          "event": "what happened",
+          "mechanism": "why it affects this instrument",
+          "impact_direction": "bullish",
           "impact_timeframes": ["daily", "1week"],
-          "confidence": "high" | "medium" | "low",
-          "commentary": "3-4 sentence analyst paragraph. Write like a research note — explain the reasoning chain from event to market impact, reference historical precedent if relevant, note any caveats."
+          "confidence": "high",
+          "commentary": "1-2 sentence analysis of the market implication."
+        }}
+      ]
+    }}
+  ]
+}}
+
+Example for one article:
+{{
+  "articles": [
+    {{
+      "id": 999,
+      "summary": "The Fed held rates at 5.5% but signaled two cuts in 2025. Markets rallied on the dovish pivot, with Treasury yields dropping sharply.",
+      "impacts": [
+        {{
+          "instrument": "DXY",
+          "event": "Fed holds rates, signals 2025 cuts",
+          "mechanism": "Dovish forward guidance weakens USD as rate differential narrows",
+          "impact_direction": "bearish",
+          "impact_timeframes": ["daily", "1week", "1month"],
+          "confidence": "high",
+          "commentary": "Clear dovish shift from the Fed. USD likely to weaken as markets price in earlier cuts."
+        }},
+        {{
+          "instrument": "XAUUSD",
+          "event": "Fed signals rate cuts",
+          "mechanism": "Lower real yields reduce opportunity cost of holding gold",
+          "impact_direction": "bullish",
+          "impact_timeframes": ["1week", "1month"],
+          "confidence": "high",
+          "commentary": "Gold benefits directly from falling real yields and a weaker dollar."
         }}
       ]
     }}
@@ -40,13 +63,10 @@ Respond ONLY with this exact JSON structure:
 }}
 
 Rules:
-- summary must be 2-3 paragraphs, professional tone, no fluff
-- event is factual: what happened in the article
-- mechanism explains the economic transmission channel (e.g. "Higher rates attract capital inflows, strengthening the currency")
-- impact_timeframes: which timeframes this is most relevant to
-- confidence: high = direct and clear causal link, medium = indirect or contested, low = speculative
-- commentary should read like a research analyst's note — authoritative but measured
-- Only include instruments that are actually listed in the instruments_text for each article"""
+- impact_direction: "bullish", "bearish", or "neutral"
+- confidence: "high" (direct causal link), "medium" (indirect), "low" (speculative)
+- Only include instruments listed in tagged instruments for each article
+- summary: concise, factual, no filler"""
 
 
 class ArticleAnalyzer:
@@ -86,7 +106,7 @@ class ArticleAnalyzer:
             raw, provider_name, model_name = self.provider.complete(
                 system=SYSTEM_PROMPT,
                 user=prompt,
-                max_tokens=16000,
+                max_tokens=6000,
             )
             result = json.loads(raw)
             return result.get("articles", []), provider_name, model_name
