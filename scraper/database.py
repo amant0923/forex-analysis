@@ -1,4 +1,5 @@
 import json
+import time
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from typing import Optional
@@ -7,19 +8,50 @@ from typing import Optional
 class Database:
     def __init__(self, database_url: str):
         self.database_url = database_url
-        self._connect()
+        self.conn = None
 
     def _connect(self):
-        self.conn = psycopg2.connect(self.database_url, cursor_factory=RealDictCursor)
-        self.conn.autocommit = True
+        """Connect with retry + backoff for Neon cold starts."""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                if self.conn:
+                    try:
+                        self.conn.close()
+                    except Exception:
+                        pass
+                self.conn = psycopg2.connect(
+                    self.database_url,
+                    cursor_factory=RealDictCursor,
+                    connect_timeout=30,
+                )
+                self.conn.autocommit = True
+                return
+            except psycopg2.OperationalError:
+                if attempt == max_retries - 1:
+                    raise
+                wait = 2 ** attempt  # 1s, 2s
+                print(f"  DB connect attempt {attempt + 1} failed, retrying in {wait}s...")
+                time.sleep(wait)
+
+    def _ensure_connected(self):
+        """Ensure we have a live connection, reconnecting if needed."""
+        if self.conn is None:
+            self._connect()
+            return
+        try:
+            # Lightweight check — doesn't hit the network on healthy connections
+            self.conn.cursor().execute("SELECT 1")
+        except (psycopg2.OperationalError, psycopg2.InterfaceError):
+            self._connect()
 
     def execute(self, query: str, params: tuple = ()):
+        self._ensure_connected()
         try:
             cur = self.conn.cursor()
             cur.execute(query, params)
             return cur
         except (psycopg2.OperationalError, psycopg2.InterfaceError):
-            # Reconnect on dropped connections (common with Neon free tier)
             self._connect()
             cur = self.conn.cursor()
             cur.execute(query, params)
