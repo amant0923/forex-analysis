@@ -298,16 +298,16 @@ export async function createTrade(userId: number, data: Partial<Trade>): Promise
       emotion_before, emotion_after, rule_adherence_score,
       rule_adherence_details, notes
     ) VALUES (
-      ${userId}, ${data.account_id!}, ${data.playbook_id || null},
+      ${userId}, ${data.account_id!}, ${data.playbook_id ?? null},
       ${data.instrument!}, ${data.direction!},
-      ${data.entry_price!}, ${data.exit_price || null},
-      ${data.stop_loss || null}, ${data.take_profit || null},
-      ${data.lot_size!}, ${data.opened_at!}, ${data.closed_at || null},
-      ${data.pnl_pips || null}, ${data.pnl_ticks || null},
-      ${data.pnl_dollars || null}, ${data.rr_ratio || null},
-      ${data.account_pct_impact || null}, ${data.session || null},
-      ${data.timeframe_traded || null}, ${data.emotion_before || null},
-      ${data.emotion_after || null}, ${data.rule_adherence_score || null},
+      ${data.entry_price!}, ${data.exit_price ?? null},
+      ${data.stop_loss ?? null}, ${data.take_profit ?? null},
+      ${data.lot_size!}, ${data.opened_at!}, ${data.closed_at ?? null},
+      ${data.pnl_pips ?? null}, ${data.pnl_ticks ?? null},
+      ${data.pnl_dollars ?? null}, ${data.rr_ratio ?? null},
+      ${data.account_pct_impact ?? null}, ${data.session ?? null},
+      ${data.timeframe_traded ?? null}, ${data.emotion_before ?? null},
+      ${data.emotion_after ?? null}, ${data.rule_adherence_score ?? null},
       ${data.rule_adherence_details ? JSON.stringify(data.rule_adherence_details) : null},
       ${data.notes || null}
     ) RETURNING *

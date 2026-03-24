@@ -3,7 +3,7 @@
 
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env.local"))
@@ -64,9 +64,12 @@ def backfill():
     for bias in biases:
         gen_at = bias["generated_at"]
         if isinstance(gen_at, str):
-            gen_dt = datetime.fromisoformat(gen_at.replace("Z", "+00:00").replace("+00:00", ""))
+            gen_dt = datetime.fromisoformat(gen_at.replace("Z", "+00:00"))
         else:
-            gen_dt = gen_at.replace(tzinfo=None) if gen_at.tzinfo else gen_at
+            gen_dt = gen_at
+        # Ensure timezone-aware for comparison
+        if gen_dt.tzinfo is None:
+            gen_dt = gen_dt.replace(tzinfo=timezone.utc)
 
         settle_days = TIMEFRAME_SETTLE_DAYS.get(bias["timeframe"], 7)
         settles_at = gen_dt + timedelta(days=settle_days)
@@ -78,7 +81,7 @@ def backfill():
             continue
 
         # If the settlement date has passed, mark as settled with current price
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if settles_at <= now:
             # For historical biases, we can't get exact historical prices without
             # a premium API. Insert as settled with the open=close (neutral) approach,

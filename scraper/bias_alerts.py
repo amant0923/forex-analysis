@@ -10,14 +10,14 @@ def detect_bias_changes(db):
     Neutral -> bullish/bearish and vice versa also count.
     """
     instruments = db.execute(
-        "SELECT DISTINCT code FROM instruments ORDER BY code"
+        "SELECT DISTINCT instrument FROM biases ORDER BY instrument"
     ).fetchall()
 
     timeframes = ["daily", "1week", "1month", "3month"]
     alerts = []
 
     for row in instruments:
-        instrument = row["code"]
+        instrument = row["instrument"]
         for tf in timeframes:
             # Get the two most recent biases for this instrument+timeframe
             cur = db.execute(

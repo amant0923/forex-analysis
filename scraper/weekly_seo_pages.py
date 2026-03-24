@@ -4,7 +4,7 @@
 import os
 import sys
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env.local"))
@@ -64,7 +64,7 @@ def generate_weekly_summaries():
     db = Database(database_url)
 
     # Calculate last week's date range (Monday to Sunday)
-    today = datetime.utcnow().date()
+    today = datetime.now(timezone.utc).date()
     last_sunday = today - timedelta(days=today.weekday() + 1)
     last_monday = last_sunday - timedelta(days=6)
 

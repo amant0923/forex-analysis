@@ -1,6 +1,6 @@
 import feedparser
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from bs4 import BeautifulSoup
 from scraper.feeds import RSS_FEEDS
@@ -37,7 +37,7 @@ class RssScraper:
             try:
                 published_at = parsedate_to_datetime(entry.get("published", "")).isoformat()
             except Exception:
-                published_at = datetime.utcnow().isoformat()
+                published_at = datetime.now(timezone.utc).isoformat()
 
             # Try to get full article content
             content = self._fetch_full_content(url, summary)

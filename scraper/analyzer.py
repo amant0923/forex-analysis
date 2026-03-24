@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from scraper.ai_provider import AIProvider
 
@@ -122,10 +122,13 @@ def _days_ago(published_at) -> int:
     """Calculate how many days ago an article was published."""
     try:
         if isinstance(published_at, str):
-            pub = datetime.fromisoformat(published_at.replace("Z", "+00:00")).replace(tzinfo=None)
+            pub = datetime.fromisoformat(published_at.replace("Z", "+00:00"))
         else:
-            pub = published_at.replace(tzinfo=None) if published_at.tzinfo else published_at
-        delta = datetime.utcnow() - pub
+            pub = published_at
+        # Ensure both sides are timezone-aware for comparison
+        if pub.tzinfo is None:
+            pub = pub.replace(tzinfo=timezone.utc)
+        delta = datetime.now(timezone.utc) - pub
         return max(0, delta.days)
     except Exception:
         return 30  # default to old

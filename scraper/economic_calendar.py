@@ -203,9 +203,8 @@ class EconomicCalendarScraper:
 
 def store_events(db, events: list[dict]):
     """Store events in the economic_events table."""
-    cur = db.conn.cursor()
     for event in events:
-        cur.execute(
+        db.execute(
             """
             INSERT INTO economic_events (event_name, country, currency, event_date, event_time, impact, actual, forecast, previous, updated_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
@@ -229,5 +228,4 @@ def store_events(db, events: list[dict]):
                 event["previous"] or None,
             ),
         )
-    db.conn.commit()
     print(f"[EconomicCalendar] Stored {len(events)} events")

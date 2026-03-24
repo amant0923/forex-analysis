@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Libre_Baskerville, JetBrains_Mono } from "next/font/google";
+import { AuthSessionProvider } from "@/components/session-provider";
 import { PWARegister } from "@/components/pwa-register";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import "./globals.css";
@@ -54,7 +55,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${baskerville.variable} ${jetbrains.variable} font-sans bg-[#09090b] overflow-x-hidden`}>
-        {children}
+        <AuthSessionProvider>
+          {children}
+        </AuthSessionProvider>
         <PWARegister />
         <PWAInstallPrompt />
       </body>

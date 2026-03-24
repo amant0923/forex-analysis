@@ -140,7 +140,7 @@ export default function InsightsPage() {
             and a monthly Trader DNA Profile with actionable goals.
           </p>
           <Link
-            href="/settings/billing"
+            href="/pricing"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
           >
             Upgrade Plan

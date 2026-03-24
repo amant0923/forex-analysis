@@ -4,7 +4,7 @@
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
 # Load .env from project root
@@ -120,7 +120,7 @@ def _analyze_instrument_bias(instrument, db, analyzer, now, all_quotes, econ_by_
             price = db.get_instrument_price(instrument)
             if price:
                 settle_days = TIMEFRAME_SETTLE_DAYS.get(timeframe, 7)
-                settles_at = (datetime.utcnow() + timedelta(days=settle_days)).isoformat()
+                settles_at = (datetime.now(timezone.utc) + timedelta(days=settle_days)).isoformat()
                 db.insert_bias_outcome(
                     bias_id=bias_id,
                     instrument=instrument,
@@ -144,7 +144,7 @@ def _analyze_instrument_bias(instrument, db, analyzer, now, all_quotes, econ_by_
 
 def run():
     print(f"\n{'='*60}")
-    print(f"Forex Analysis Pipeline — {datetime.utcnow().strftime('%Y-%m-%d %H:%M')} UTC")
+    print(f"Forex Analysis Pipeline — {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC")
     print(f"{'='*60}\n")
 
     database_url = os.getenv("DATABASE_URL")
@@ -269,7 +269,7 @@ def run():
 
     # Step 5: Generate AI bias analysis (with economic events, price context, track record)
     print("\nStep 5: Generating AI bias analysis (with economic events, price context, track record)...")
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     # Pre-load track record stats per instrument
     print("  Loading historical accuracy data...")

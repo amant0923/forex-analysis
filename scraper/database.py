@@ -91,7 +91,7 @@ class Database:
                FROM articles a
                JOIN article_instruments ai ON a.id = ai.article_id
                WHERE ai.instrument = %s
-                 AND a.published_at >= NOW() - INTERVAL '%s days'
+                 AND a.published_at >= NOW() - make_interval(days => %s)
                ORDER BY a.published_at DESC""",
             (instrument, days),
         )
@@ -184,7 +184,7 @@ class Database:
             """SELECT a.id, a.title, a.content, a.source, a.published_at, a.url
                FROM articles a
                WHERE a.summary IS NULL
-                 AND a.published_at >= NOW() - INTERVAL '%s days'
+                 AND a.published_at >= NOW() - make_interval(days => %s)
                ORDER BY a.published_at DESC
                LIMIT 100""",
             (days,),
@@ -234,4 +234,5 @@ class Database:
         return row["has_new"] if row else True
 
     def close(self):
-        self.conn.close()
+        if self.conn:
+            self.conn.close()

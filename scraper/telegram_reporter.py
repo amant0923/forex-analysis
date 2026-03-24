@@ -1,7 +1,7 @@
 """Send daily Telegram reports to connected users."""
 
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 import requests
 
 TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
@@ -117,7 +117,7 @@ class TelegramReporter:
 
     def build_report(self, instruments: list[str], confidence_filter: list[str]) -> list[str]:
         """Build full report, splitting into multiple messages if needed."""
-        today = datetime.utcnow().strftime("%a, %b %d")
+        today = datetime.now(timezone.utc).strftime("%a, %b %d")
 
         # Filter label
         if len(confidence_filter) == 3:
