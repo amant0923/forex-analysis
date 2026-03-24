@@ -67,8 +67,8 @@ def detect_bias_changes(db):
                             "title": title_row["title"] if title_row else "",
                             "relevance": art_row.get("relevance", ""),
                         })
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"  Warning: could not fetch key articles for bias #{new_bias['id']}: {e}")
 
             db.execute(
                 """INSERT INTO bias_alerts

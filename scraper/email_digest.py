@@ -1,7 +1,6 @@
 """Send daily email digests with bias summaries."""
 
 import os
-import json
 
 try:
     import resend

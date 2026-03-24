@@ -286,6 +286,6 @@ class Analyzer:
                     result[tf].setdefault("confidence_rationale", "")
 
             return result, provider_name, model_name
-        except (json.JSONDecodeError, Exception) as e:
+        except Exception as e:
             print(f"[Analyzer] Error analyzing {instrument}: {e}")
             return NEUTRAL_BIAS, None, None

@@ -110,6 +110,6 @@ class ArticleAnalyzer:
             )
             result = json.loads(raw)
             return result.get("articles", []), provider_name, model_name
-        except (json.JSONDecodeError, Exception) as e:
+        except Exception as e:
             print(f"[ArticleAnalyzer] Error: {e}")
             return [], None, None
