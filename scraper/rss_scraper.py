@@ -1,7 +1,9 @@
 import feedparser
+import requests
 import urllib.request
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
+from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from scraper.feeds import RSS_FEEDS
 from scraper.categorizer import categorize_article
@@ -96,3 +98,79 @@ class RssScraper:
             soup = BeautifulSoup(fallback, "html.parser")
             return soup.get_text(strip=True)[:MAX_CONTENT_LENGTH]
         return fallback[:MAX_CONTENT_LENGTH]
+
+    def poll_sources(self, sources: list[dict]) -> list[dict]:
+        """
+        Poll a list of sources (from sources.py format).
+        Returns new articles with source metadata.
+        """
+        articles = []
+        for source in sources:
+            try:
+                if source.get("scrape_mode") == "html":
+                    new_articles = self._poll_html_source(source)
+                else:
+                    new_articles = self._poll_rss_source(source)
+                articles.extend(new_articles)
+            except Exception as e:
+                print(f"Error polling {source['name']}: {e}")
+        return articles
+
+    def _poll_rss_source(self, source: dict) -> list[dict]:
+        """Poll a single RSS source and return articles."""
+        feed = feedparser.parse(source["url"])
+        articles = []
+        for entry in feed.entries:
+            parsed = self._parse_entry(entry, source["name"])
+            if parsed:
+                parsed["source_tier"] = source["tier"]
+                parsed["source_keywords"] = source.get("keywords")
+                parsed["source_name"] = source["name"]
+                parsed["source_instruments"] = source["instruments"]
+                articles.append(parsed)
+        return articles
+
+    def _poll_html_source(self, source: dict) -> list[dict]:
+        """Poll a source by scraping its HTML page for new items."""
+        try:
+            resp = requests.get(source["url"], timeout=10, headers={
+                "User-Agent": "Mozilla/5.0 (compatible; Tradeora/1.0)"
+            })
+            if resp.status_code != 200:
+                return []
+
+            soup = BeautifulSoup(resp.text, "html.parser")
+            articles = []
+            links = (
+                soup.select("article a[href]") or
+                soup.select(".press-release a[href]") or
+                soup.select(".news-item a[href]") or
+                soup.select("li a[href]")
+            )
+
+            for link in links[:10]:
+                title = link.get_text(strip=True)
+                href = link.get("href", "")
+                if not title or len(title) < 10:
+                    continue
+                if href.startswith("/"):
+                    parsed_url = urlparse(source["url"])
+                    href = f"{parsed_url.scheme}://{parsed_url.netloc}{href}"
+
+                articles.append({
+                    "title": title,
+                    "content": "",
+                    "url": href,
+                    "source": source["name"],
+                    "published_at": datetime.now(timezone.utc).isoformat(),
+                    "instruments": source["instruments"],
+                    "source_tier": source["tier"],
+                    "source_keywords": source.get("keywords"),
+                    "source_name": source["name"],
+                    "source_instruments": source["instruments"],
+                })
+
+            return articles
+        except Exception as e:
+            print(f"HTML scrape error for {source['name']}: {e}")
+            return []
