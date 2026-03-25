@@ -13,6 +13,80 @@ async function sendTelegramMessage(chatId: string, text: string) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
+
+  // Handle callback queries (Approve/Skip buttons from draft review)
+  if (body.callback_query) {
+    const callbackQuery = body.callback_query;
+    const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+
+    // Only the admin can approve/skip
+    if (String(callbackQuery.from.id) !== adminChatId) {
+      return NextResponse.json({ ok: true });
+    }
+
+    try {
+      const sql = getDb();
+      const [action, draftIdStr] = callbackQuery.data.split(":");
+      const draft_id = parseInt(draftIdStr, 10);
+
+      if (action === "approve" || action === "skip") {
+        const status = action === "approve" ? "approved" : "skipped";
+        const postedAt = action === "approve" ? new Date().toISOString() : null;
+
+        // Update draft status
+        await sql`UPDATE telegram_drafts SET status = ${status}, posted_at = ${postedAt} WHERE id = ${draft_id}`;
+
+        if (action === "approve") {
+          // Get the draft and post to channel
+          const drafts = await sql`SELECT formatted_message, image_url, article_id FROM telegram_drafts WHERE id = ${draft_id}`;
+          if (drafts.length > 0) {
+            const draft = drafts[0];
+            const channelId = process.env.TELEGRAM_CHANNEL_ID;
+            const botToken = process.env.TELEGRAM_BOT_TOKEN;
+
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                chat_id: channelId,
+                text: draft.formatted_message,
+                disable_web_page_preview: true,
+              }),
+            });
+
+            if (draft.article_id) {
+              await sql`UPDATE articles SET posted_to_channel = TRUE, channel_posted_at = NOW() WHERE id = ${draft.article_id}`;
+            }
+          }
+        }
+
+        // Answer callback to remove loading spinner
+        const answerText = action === "approve" ? "Posted to channel!" : "Skipped.";
+        await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ callback_query_id: callbackQuery.id, text: answerText }),
+        });
+
+        // Update button to show result
+        const statusEmoji = action === "approve" ? "\u2705" : "\u274C";
+        await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/editMessageReplyMarkup`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: callbackQuery.message.chat.id,
+            message_id: callbackQuery.message.message_id,
+            reply_markup: { inline_keyboard: [[{ text: `${statusEmoji} ${status.toUpperCase()}`, callback_data: "noop" }]] },
+          }),
+        });
+      }
+    } catch (e) {
+      console.error("Callback query error:", e);
+    }
+
+    return NextResponse.json({ ok: true });
+  }
+
   const message = body?.message;
   if (!message?.text || !message?.chat?.id) {
     return NextResponse.json({ ok: true });
