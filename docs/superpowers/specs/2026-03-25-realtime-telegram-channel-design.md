@@ -13,7 +13,7 @@ The current system scrapes 43 RSS feeds once daily at 06:00 UTC, producing a ~24
 ## Goal
 
 Transform Tradeora into a real-time financial news channel that:
-1. Delivers breaking news to a public Telegram channel within 2-3 minutes of publication
+1. Delivers breaking news to a public Telegram channel within 5-10 minutes of publication (RSS feeds have inherent caching delay of 1-15 min; combined with 3-min poll cycle, worst case is ~18 min for slow feeds, but Tier 0/1 sources typically update within 1-3 min)
 2. Uses only high-quality, primary sources (government agencies, wire services, quality outlets)
 3. Includes instrument bias tags on every post (Tradeora's unique differentiator)
 4. Auto-generates data charts from free APIs when economic data is released
@@ -40,39 +40,39 @@ Transform Tradeora into a real-time financial news channel that:
 ## Architecture
 
 ```
-[35 Sources] ──poll every 3 min (cron)──→ [Poller Script]
-                                              │
-                                     ┌────────┴────────┐
-                                     │                  │
-                              [New articles?]     [Pending drafts
-                                     │              > 15 min?]
-                                     │                  │
-                                     ▼                  ▼
-                             [Dedup + Score]      [Auto-post them]
-                                     │
-                          ┌──────────┴──────────┐
-                          │                      │
-                   [Score ≥ 40]           [Score < 40]
-                          │                      │
-                          ▼                      ▼
-                  [Tier 0 source?]        [Store in DB only]
-                    │           │         (for morning batch)
-                  [YES]       [NO]
-                    │           │
-                    ▼           ▼
-             [Auto-post    [Send draft to
-              to channel]   user's private chat]
-                    │           │
-                    ▼           ▼
-             [Store in DB]  [Wait for tap]
-                               │
-                    ┌──────────┼──────────┐
-                    │          │          │
-                [Approve]   [Edit]    [Skip]
-                    │          │          │
-                    ▼          ▼          ▼
-                [Post to   [User edits  [Store in DB
-                 channel]   then post]   only]
+[35 Sources] ──poll every 1-3 min (cron)──→ [Poller Script]
+                                                 │
+                                        ┌────────┴────────┐
+                                        │                  │
+                                 [New articles?]     [Pending drafts
+                                        │              > 15 min?]
+                                        │                  │
+                                        ▼                  ▼
+                                [Dedup + Score]      [Auto-post them]
+                                        │
+                             ┌──────────┴──────────┐
+                             │                      │
+                      [Score ≥ 40]           [Score < 40]
+                             │                      │
+                             ▼                      ▼
+                  [Tier 0 + keyword match?]  [Store in DB only]
+                       │           │         (for morning batch)
+                     [YES]       [NO]
+                       │           │
+                       ▼           ▼
+                [Auto-post    [Send draft to
+                 to channel]   user's private chat]
+                       │           │
+                       ▼           ▼
+                [Store in DB]  [Wait for tap]
+                                  │
+                       ┌──────────┴──────────┐
+                       │                      │
+                   [Approve]              [Skip]
+                       │                      │
+                       ▼                      ▼
+                   [Post to              [Store in DB
+                    channel]              only]
 
 Morning batch (daily, unchanged):
 [All articles from past 24h] → [Claude bias generation] → [Site update + email digest]
@@ -82,9 +82,29 @@ Morning batch (daily, unchanged):
 
 ## Source Stack (35 sources, $0/month)
 
-### Tier 0 — Origin Sources (19) — Auto-post to channel
+**RSS availability note:** Not all sources have reliable RSS feeds. During implementation, each source must be verified for a working RSS/Atom endpoint. For sources without RSS (e.g., some government sites), fall back to HTML page polling with CSS selectors to detect new press releases. The `rss_scraper.py` rewrite must support both RSS and HTML-scraping modes per source.
+
+**Poll frequency:** Tier 0 sources polled every 1 minute (time-sensitive). Tier 1-3 sources polled every 3 minutes. Uses HTTP conditional requests (If-Modified-Since / ETag) to minimize bandwidth.
+
+### Tier 0 — Origin Sources (19) — Auto-post to channel (with keyword gate)
 
 These are the original publishers of the information. No journalist is faster.
+
+**Important:** Tier 0 auto-post does NOT mean every press release gets posted. Government agencies publish irrelevant content (staff papers, personnel notices, proclamations). Each Tier 0 source has a **keyword allowlist** — only articles matching these keywords auto-post. Non-matching Tier 0 articles are stored in DB for the morning batch but not posted to the channel.
+
+| Source Category | Auto-post keywords (must match at least one) |
+|----------------|----------------------------------------------|
+| Central banks | rate, interest, monetary policy, inflation, FOMC, MPC, governing council, quantitative, tightening, easing, balance sheet, yield curve, forward guidance, statement, press conference |
+| BLS | employment, unemployment, nonfarm, payroll, CPI, consumer price, PPI, producer price, inflation, jobs |
+| BEA | GDP, gross domestic, PCE, personal consumption, economic growth |
+| Census | retail sales, housing starts, trade balance, trade deficit, durable goods |
+| Treasury | sanctions, debt ceiling, auction, fiscal, tariff |
+| White House | tariff, trade, executive order, sanctions, emergency, war, military, tax, economic |
+| State Dept | sanctions, ceasefire, peace talks, military, conflict, nuclear, treaty |
+| Eurostat/ONS | GDP, inflation, HICP, CPI, unemployment, employment |
+| EIA | inventory, crude, petroleum, oil, stockpile |
+| OPEC | production, output, cut, quota, supply |
+| SEC | ETF, bitcoin, ethereum, crypto, digital asset |
 
 #### Central Banks (8)
 
@@ -183,9 +203,9 @@ Each new article receives a relevance score (0-100):
 
 Same event reported by multiple sources (e.g., Fed decision from Reuters, AP, WSJ simultaneously):
 
-1. **Fuzzy headline matching** — compare new headline against articles posted in last 2 hours using token overlap. 80%+ similarity = duplicate.
-2. **Entity + event clustering** — extract key entities (country names, people, organizations) and event type. If same entities + same event within 30-min window = cluster. Post only the first article in each cluster.
-3. **URL domain dedup** — same domain can only post about the same topic once per 2-hour window.
+1. **Fuzzy headline matching** — compare new headline against articles posted in last 2 hours using token overlap (split headline into words, count shared words / total words). **90%+ similarity = duplicate.** Threshold is high because financial headlines are formulaic — "Fed holds rates at 5.25%" and "Fed holds rates at 5.25%, signals June cut" share ~80% tokens but the second has material new info.
+2. **URL dedup** — exact URL match = always duplicate. Same domain can only post about the same topic once per 2-hour window (topic = same instrument set + same top 3 keywords).
+3. **V2: entity clustering** — deferred. V1 relies on fuzzy match + URL dedup, which covers 90%+ of duplicates. Entity extraction (spaCy or similar) adds complexity without proportional value for V1.
 
 ---
 
@@ -211,7 +231,7 @@ Full analysis → tradeora.com/XAUUSD
 📊 tradeora.com | Free 14-day trial
 ```
 
-Attached: og:image scraped from article URL.
+Attached: og:image from article URL. **Fallback:** if og:image is missing or is a generic site logo (detected by matching known logo URLs per domain), skip the image attachment entirely. For Tier 0 government sources that rarely have useful images, no image is attached by default — only charts when data is available.
 
 ### Central Bank Decision (Tier 0, auto-post)
 
@@ -316,13 +336,14 @@ Instruments: XAUUSD, USOIL
 ```
 
 - **Approve** — posts to public channel immediately
-- **Edit** — user types changes in reply, bot reformats and posts
 - **Skip** — discarded from channel, stored in DB for morning batch
 - **No response in 15 min** — auto-posts to channel
 
+Note: V1 has Approve/Skip only. If a post needs editing, skip it and manually post a corrected version to the channel. An Edit button can be added in V2 once the core flow is proven.
+
 ### Webhook Handling
 
-Telegram button callbacks are handled by a Vercel API route (`/api/telegram/callback`). When user taps a button:
+Telegram delivers inline keyboard callbacks to the same webhook endpoint as regular messages. The existing `/api/telegram/webhook` route will be extended to handle `callback_query` updates (button taps) alongside regular messages. No separate callback route is needed. When user taps a button:
 1. Vercel receives the callback
 2. Validates the user (only the admin can approve)
 3. Executes the action (post/edit/skip)
@@ -344,13 +365,17 @@ Instrument pages gain a "Live News" section showing articles as they arrive thro
 
 - Runs daily at 06:00 UTC via GitHub Actions
 - Uses ALL articles from the past 24 hours (both posted-to-channel and DB-only)
-- Generates Claude bias analysis for all 20 instruments
+- Generates Claude bias analysis for all instruments (currently 20 — the original 13 from CLAUDE.md plus AUDUSD, USDCAD, NZDUSD, USDCHF, USOIL, BTCUSD, ETHUSD which were added during development)
 - Updates site with new biases
 - Sends email digest to opted-in users
 
 ### Bias Tags in Telegram Posts
 
 The instrument bias tags shown in Telegram posts (e.g., "XAUUSD Bullish 78%") come from the **most recent bias stored in the DB** (generated by the morning batch). They are NOT generated in real-time — no additional AI cost.
+
+**How it works:** When a new article is matched to instruments (e.g., XAUUSD, USOIL), the system looks up the latest `biases` row for each instrument (any timeframe — defaults to 1week). It pulls the `direction` and `confidence` fields directly. This means all posts for the same instrument on the same day show the same bias until the next morning batch updates it. This is expected — the bias represents Tradeora's current view, not a per-article reaction.
+
+**If no bias exists yet** (new instrument or first day): the Impact section is omitted and replaced with "View analysis → tradeora.com/[instrument]".
 
 ---
 
@@ -400,7 +425,7 @@ Handled by existing Vercel deployment — add a new API route `/api/telegram/cal
 | `scraper/dedup.py` | Fuzzy headline matching, entity extraction, story clustering |
 | `scraper/quality_filter.py` | Relevance scoring engine (rule-based, no AI) |
 | `scraper/image_scraper.py` | Extracts og:image from article URLs for Telegram attachments |
-| `src/app/api/telegram/callback/route.ts` | Vercel API route for Telegram button callbacks |
+| `scraper/heartbeat.py` | Heartbeat writer for monitoring |
 
 ### Database Changes
 
@@ -425,7 +450,40 @@ CREATE TABLE telegram_drafts (
 -- Track which articles have been posted to the channel
 ALTER TABLE articles ADD COLUMN posted_to_channel BOOLEAN DEFAULT FALSE;
 ALTER TABLE articles ADD COLUMN channel_posted_at TIMESTAMP;
+
+-- Poller health monitoring
+CREATE TABLE poller_heartbeat (
+    id INTEGER PRIMARY KEY DEFAULT 1,
+    last_run TIMESTAMP NOT NULL,
+    articles_found INTEGER DEFAULT 0,
+    errors TEXT
+);
 ```
+
+---
+
+## Monitoring & Health Checks
+
+The poller writes a heartbeat timestamp to the DB on every successful run:
+
+```sql
+CREATE TABLE poller_heartbeat (
+    id INTEGER PRIMARY KEY DEFAULT 1,
+    last_run TIMESTAMP NOT NULL,
+    articles_found INTEGER DEFAULT 0,
+    errors TEXT
+);
+```
+
+A Vercel API route `/api/health/poller` checks this table. If `last_run` is older than 10 minutes, it sends an alert to the admin's private Telegram chat: "Poller has not run in 10+ minutes. Check the cron job."
+
+This endpoint can also be monitored by free uptime services (UptimeRobot, Betterstack) for redundancy.
+
+---
+
+## Neon Cold Start Mitigation
+
+Each cron invocation starts a fresh Python process, which means a new DB connection each time. On Neon free tier, compute scales to zero after 5 minutes of inactivity. With 3-min polling, the connection should stay warm. However, if a poll cycle takes > 2 min, the next cycle may cold-start. The existing `database.py` retry logic (exponential backoff) handles this. No architecture change needed, but worth noting in the latency budget: cold starts add 2-5 seconds.
 
 ---
 
@@ -446,7 +504,7 @@ ALTER TABLE articles ADD COLUMN channel_posted_at TIMESTAMP;
 
 | Item | Current | After |
 |------|---------|-------|
-| AI (Claude/Gemini) | ~$X/day | Same (no change) |
+| AI (Claude/Gemini) | Current spend (daily batch) | Same (no change) |
 | Vercel hosting | Free/hobby | Same |
 | Neon Postgres | Free tier | Same |
 | GitHub Actions | Free tier | Same (morning batch only) |
@@ -459,7 +517,7 @@ ALTER TABLE articles ADD COLUMN channel_posted_at TIMESTAMP;
 
 ## Success Criteria
 
-1. Breaking news appears in Telegram channel within 3 minutes of source publication
+1. Breaking news appears in Telegram channel within 5-10 minutes of source publication (accounting for RSS feed caching delays)
 2. Zero garbage articles posted (no opinion pieces, listicles, or delayed reporting)
 3. Every post includes instrument bias tags with confidence percentages
 4. Data release posts include auto-generated charts with Tradeora branding
