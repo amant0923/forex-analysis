@@ -233,6 +233,73 @@ class Database:
         row = cur.fetchone()
         return row["has_new"] if row else True
 
+    def insert_draft(self, article_id, formatted_message, image_url, chart_path,
+                     relevance_score, source_tier):
+        cur = self.execute(
+            """INSERT INTO telegram_drafts
+               (article_id, formatted_message, image_url, chart_path, relevance_score, source_tier)
+               VALUES (%s, %s, %s, %s, %s, %s) RETURNING id""",
+            (article_id, formatted_message, image_url, chart_path, relevance_score, source_tier),
+        )
+        return cur.fetchone()["id"]
+
+    def get_pending_drafts(self, older_than_minutes=15):
+        cur = self.execute(
+            """SELECT id, article_id, formatted_message, image_url, chart_path
+               FROM telegram_drafts
+               WHERE status = 'pending'
+               AND created_at < NOW() - INTERVAL '%s minutes'
+               ORDER BY created_at ASC""",
+            (older_than_minutes,),
+        )
+        return cur.fetchall()
+
+    def update_draft_status(self, draft_id, status):
+        self.execute(
+            """UPDATE telegram_drafts
+               SET status = %s,
+                   posted_at = CASE WHEN %s IN ('approved', 'auto_posted') THEN NOW() ELSE NULL END
+               WHERE id = %s""",
+            (status, status, draft_id),
+        )
+
+    def mark_article_posted(self, article_id):
+        self.execute(
+            "UPDATE articles SET posted_to_channel = TRUE, channel_posted_at = NOW() WHERE id = %s",
+            (article_id,),
+        )
+
+    def upsert_heartbeat(self, articles_found, errors=None):
+        self.execute(
+            """INSERT INTO poller_heartbeat (id, last_run, articles_found, errors)
+               VALUES (1, NOW(), %s, %s)
+               ON CONFLICT (id) DO UPDATE
+               SET last_run = NOW(), articles_found = %s, errors = %s""",
+            (articles_found, errors, articles_found, errors),
+        )
+
+    def get_latest_bias(self, instrument):
+        cur = self.execute(
+            """SELECT direction, confidence FROM biases
+               WHERE instrument = %s AND timeframe = '1week'
+               ORDER BY generated_at DESC LIMIT 1""",
+            (instrument,),
+        )
+        return cur.fetchone()
+
+    def is_url_known(self, url):
+        cur = self.execute("SELECT 1 FROM articles WHERE url = %s LIMIT 1", (url,))
+        return cur.fetchone() is not None
+
+    def get_recent_headlines(self, hours=2):
+        cur = self.execute(
+            """SELECT title FROM articles
+               WHERE created_at > NOW() - INTERVAL '%s hours'
+               ORDER BY created_at DESC""",
+            (hours,),
+        )
+        return [row["title"] for row in cur.fetchall()]
+
     def close(self):
         if self.conn:
             self.conn.close()
