@@ -11,3 +11,4 @@ pytest-mock==3.14.0
 matplotlib==3.9.0
 Pillow
 fredapi==0.5.2
+yfinance==0.2.36
