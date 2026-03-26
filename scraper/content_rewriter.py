@@ -41,7 +41,7 @@ def rewrite_for_channel(title: str, content: str) -> str | None:
         return None
 
     provider = AIProvider()
-    provider.add_google(gemini_key, model="gemini-2.0-flash")
+    provider.add_google(gemini_key, model="gemini-2.5-flash")
 
     user_prompt = f"""Rewrite this article for our Telegram channel:
 
@@ -52,7 +52,7 @@ Content: {content[:2000]}
 Write 2-4 punchy paragraphs with specific data points. If there's no meaningful data/news, respond with just "SKIP"."""
 
     try:
-        response, _, _ = provider.complete(SYSTEM_PROMPT, user_prompt, max_tokens=300)
+        response, _, _ = provider.complete(SYSTEM_PROMPT, user_prompt, max_tokens=1000)
         response = response.strip()
 
         if response.upper() == "SKIP" or len(response) < 20:
