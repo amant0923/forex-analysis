@@ -1,6 +1,6 @@
 """
 Curated news sources for real-time monitoring.
-35 sources across 4 tiers, each with instrument mapping and (for Tier 0) keyword gates.
+33 sources across 4 tiers, each with instrument mapping and (for Tier 0) keyword gates.
 """
 
 SOURCES = [
@@ -129,7 +129,7 @@ SOURCES = [
     },
     {
         "name": "White House",
-        "url": "https://www.whitehouse.gov/feed/",
+        "url": "https://news.google.com/rss/search?q=site:whitehouse.gov&hl=en-US&gl=US&ceid=US:en",
         "tier": 0,
         "category": "us_data",
         "instruments": ["DXY", "XAUUSD", "USOIL", "US30", "NAS100", "SP500"],
@@ -204,43 +204,28 @@ SOURCES = [
     # TIER 1 — Wire Services (5) — Review via phone
     # ═══════════════════════════════════════════════
     {
-        "name": "Reuters World",
-        "url": "https://www.reutersagency.com/feed/?taxonomy=best-sectors&post_type=best",
+        "name": "Reuters",
+        "url": "https://news.google.com/rss/search?q=source:Reuters+when:1d&hl=en-US&gl=US&ceid=US:en",
         "tier": 1,
         "category": "wire",
-        "instruments": ["XAUUSD", "USOIL", "DXY"],
+        "instruments": ["DXY", "EURUSD", "GBPUSD", "USDJPY", "XAUUSD", "USOIL", "US30", "NAS100", "SP500"],
         "scrape_mode": "rss",
     },
     {
-        "name": "Reuters Business",
-        "url": "https://www.reutersagency.com/feed/?best-topics=business-finance&post_type=best",
+        "name": "AP News",
+        "url": "https://news.google.com/rss/search?q=site:apnews.com&hl=en-US&gl=US&ceid=US:en",
         "tier": 1,
         "category": "wire",
-        "instruments": ["DXY", "EURUSD", "GBPUSD", "US30", "NAS100", "SP500"],
+        "instruments": ["XAUUSD", "USOIL", "DXY", "US30", "NAS100", "SP500"],
         "scrape_mode": "rss",
     },
+
     {
-        "name": "Reuters Markets",
-        "url": "https://www.reutersagency.com/feed/?best-topics=markets&post_type=best",
+        "name": "DOD/Pentagon",
+        "url": "https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?max=20&ContentType=1&Site=945",
         "tier": 1,
         "category": "wire",
-        "instruments": ["DXY", "EURUSD", "XAUUSD", "US30", "SP500"],
-        "scrape_mode": "rss",
-    },
-    {
-        "name": "AP World",
-        "url": "https://rsshub.app/apnews/topics/world-news",
-        "tier": 1,
-        "category": "wire",
-        "instruments": ["XAUUSD", "USOIL", "DXY"],
-        "scrape_mode": "rss",
-    },
-    {
-        "name": "AP Business",
-        "url": "https://rsshub.app/apnews/topics/business",
-        "tier": 1,
-        "category": "wire",
-        "instruments": ["DXY", "US30", "NAS100", "SP500"],
+        "instruments": ["XAUUSD", "USOIL", "DXY", "US30", "SP500"],
         "scrape_mode": "rss",
     },
 
