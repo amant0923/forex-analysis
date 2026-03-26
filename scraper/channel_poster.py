@@ -66,7 +66,9 @@ def _extract_summary(content: str, max_sentences: int = 3) -> str:
             continue
         # Skip navigation/boilerplate
         if any(skip in s.lower() for skip in ["subscribe", "sign up", "click here",
-               "read more", "share this", "follow us", "cookie", "privacy policy"]):
+               "read more", "share this", "follow us", "cookie", "privacy policy",
+               "browser settings", "consent", "we use cookies", "accept all",
+               "third party", "disable these", "javascript", "enable javascript"]):
             continue
         good_sentences.append(s)
         if len(good_sentences) >= max_sentences:

@@ -49,7 +49,9 @@ Title: {title}
 
 Content: {content[:2000]}
 
-Write 2-4 punchy paragraphs with specific data points. If there's no meaningful data/news, respond with just "SKIP"."""
+Write 2-4 punchy paragraphs with specific data points. If there's no meaningful market-moving data/news, respond with just "SKIP".
+
+SKIP if: regulatory housekeeping, cookie/privacy notices, website boilerplate, personnel appointments, routine compliance updates, consultation papers, or anything that wouldn't move a forex/commodity/index price."""
 
     try:
         response, _, _ = provider.complete(SYSTEM_PROMPT, user_prompt, max_tokens=1000)
