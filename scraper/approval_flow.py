@@ -1,7 +1,7 @@
 """
 Draft approval flow for Telegram channel posts.
 Sends drafts to admin's private chat with Approve/Skip buttons.
-Auto-posts drafts older than 15 minutes.
+Expired drafts (>15 min) are auto-skipped, not posted.
 """
 
 import json
@@ -69,24 +69,16 @@ def send_draft_for_review(
 
 def process_auto_posts(db, channel_id: str, bot_token: str | None = None, timeout_minutes: int = 15) -> int:
     """
-    Auto-post any drafts that have been pending longer than timeout_minutes.
-    Returns count of auto-posted messages.
+    Auto-SKIP any drafts that have been pending longer than timeout_minutes.
+    Previously auto-posted, but this flooded the channel with unapproved junk.
+    Admin must explicitly approve — no approval = no post.
+    Returns count of auto-skipped messages.
     """
     expired_drafts = db.get_pending_drafts(older_than_minutes=timeout_minutes)
-    posted = 0
+    skipped = 0
 
     for draft in expired_drafts:
-        success = send_channel_message(
-            channel_id=channel_id,
-            text=draft["formatted_message"],
-            image_url=draft.get("image_url"),
-            chart_path=draft.get("chart_path"),
-            bot_token=bot_token,
-        )
-        if success:
-            db.update_draft_status(draft["id"], "auto_posted")
-            if draft.get("article_id"):
-                db.mark_article_posted(draft["article_id"])
-            posted += 1
+        db.update_draft_status(draft["id"], "expired")
+        skipped += 1
 
-    return posted
+    return skipped

@@ -69,9 +69,9 @@ def run():
 
     try:
         # 1. Auto-post any expired drafts (pending > 15 min)
-        auto_posted = process_auto_posts(db, channel_id, bot_token)
-        if auto_posted:
-            print(f"Auto-posted {auto_posted} expired drafts")
+        auto_skipped = process_auto_posts(db, channel_id, bot_token)
+        if auto_skipped:
+            print(f"Auto-skipped {auto_skipped} expired drafts (no approval = no post)")
 
         # 2. Poll all sources
         raw_articles = scraper.poll_sources(SOURCES)

@@ -220,14 +220,9 @@ SOURCES = [
         "scrape_mode": "rss",
     },
 
-    {
-        "name": "DOD/Pentagon",
-        "url": "https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?max=20&ContentType=1&Site=945",
-        "tier": 1,
-        "category": "wire",
-        "instruments": ["XAUUSD", "USOIL", "DXY", "US30", "SP500"],
-        "scrape_mode": "rss",
-    },
+    # DOD/Pentagon removed — publishes military boilerplate (personnel appointments,
+    # routine hearings, base operations) that matches "war"/"military" keywords but
+    # never moves forex/commodity prices. Actual conflicts covered by Reuters/AP.
 
     # ═══════════════════════════════════════════════
     # TIER 2 — Quality Outlets (5) — Review via phone
