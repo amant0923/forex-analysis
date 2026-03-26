@@ -139,8 +139,8 @@ def run():
 
             # If Gemini says SKIP (no meaningful data), skip the article
             if rewritten is None and not score_result["is_urgent"]:
-                # Only skip non-urgent articles — urgent ones still post with headline
-                pass  # Continue to format with fallback
+                print(f"  Skip (no rewrite): {article['title'][:60]}")
+                continue
 
             # Format the message
             message = format_breaking_news(

@@ -129,12 +129,12 @@ SOURCES = [
     },
     {
         "name": "White House",
-        "url": "https://news.google.com/rss/search?q=site:whitehouse.gov&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=site:whitehouse.gov/briefing-room/statements-releases&hl=en-US&gl=US&ceid=US:en",
         "tier": 0,
         "category": "us_data",
         "instruments": ["DXY", "XAUUSD", "USOIL", "US30", "NAS100", "SP500"],
-        "keywords": ["tariff", "trade", "executive order", "sanctions", "emergency",
-                     "war", "military", "tax", "economic"],
+        "keywords": ["tariff", "trade", "sanctions", "war", "military",
+                     "tax", "economic", "emergency declaration"],
         "scrape_mode": "rss",
     },
     {

@@ -14,6 +14,14 @@ URGENCY_KEYWORDS = [
 ]
 
 NOISE_PATTERNS = [
+    # Government boilerplate and archive pages
+    r"^(further )?continuance of",
+    r"archives?\s*[-–—]",
+    r"^a proclamation on",
+    r"^notice on",
+    r"^memorandum on",
+    r"^designation of",
+    r"^letters? to the",
     # Listicles and previews
     r"\d+ things to watch",
     r"\d+ stocks to",
