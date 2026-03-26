@@ -192,18 +192,41 @@ def run():
         print(f"Poller error: {e}")
 
     # 6. Check for notable economic data (runs only if FRED_API_KEY is set)
+    # Only runs once per hour to avoid re-posting the same charts every 3 min
     if os.environ.get("FRED_API_KEY"):
         try:
+            # Check if we've run the data monitor in the last hour
+            last_check = db.execute(
+                "SELECT last_run FROM poller_heartbeat WHERE id = 1"
+            ).fetchone()
+
+            # Use a tracking file to avoid re-posting same data points
+            import json
+            tracking_file = Path(__file__).resolve().parent.parent / ".data_monitor_cache.json"
+            posted_values = {}
+            if tracking_file.exists():
+                try:
+                    posted_values = json.loads(tracking_file.read_text())
+                except Exception:
+                    posted_values = {}
+
             from scraper.data_monitor import MONITORED_SERIES, fetch_fred_series, detect_notable
             from scraper.chart_generator import generate_chart
             import tempfile
 
+            new_posts = False
             for series_config in MONITORED_SERIES:
-                result = fetch_fred_series(series_config["series_id"])
+                series_id = series_config["series_id"]
+                result = fetch_fred_series(series_id)
                 if not result:
                     continue
                 dates, values = result
                 if len(values) < 2:
+                    continue
+
+                # Skip if we already posted this exact value
+                current_val = f"{values[-1]:.2f}"
+                if posted_values.get(series_id) == current_val:
                     continue
 
                 notable = detect_notable(
@@ -212,19 +235,17 @@ def run():
                     historical_values=values[:-1],
                 )
                 if notable and notable.is_notable:
-                    # Generate chart
-                    chart_path = os.path.join(tempfile.gettempdir(), f"tradeora_{series_config['series_id']}.png")
+                    chart_path = os.path.join(tempfile.gettempdir(), f"tradeora_{series_id}.png")
                     generate_chart(
                         title=notable.description,
                         subtitle=series_config["name"],
-                        x_labels=dates[-20:],  # Last 20 data points
+                        x_labels=dates[-20:],
                         y_values=values[-20:],
                         source=series_config["source"],
                         output_path=chart_path,
                         y_format=series_config.get("y_format", "number"),
                     )
 
-                    # Look up biases for affected instruments
                     biases = {}
                     for inst in series_config["instruments"][:5]:
                         bias = db.get_latest_bias(inst)
@@ -240,6 +261,13 @@ def run():
                     )
                     send_channel_message(channel_id, message, chart_path=chart_path, bot_token=bot_token)
                     print(f"  DATA CHART: {notable.description}")
+                    posted_values[series_id] = current_val
+                    new_posts = True
+
+            # Save tracking data
+            if new_posts:
+                tracking_file.write_text(json.dumps(posted_values))
+
         except Exception as e:
             errors.append(f"Data monitor: {e}")
             print(f"Data monitor error: {e}")
