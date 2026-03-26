@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import type { Instrument, Article, ArticleAnalysis, Bias, InstrumentWithBias, InstrumentQuote, EconomicEvent, TrackRecordStats, BiasOutcome } from "@/types";
+import type { Instrument, Article, ArticleAnalysis, Bias, InstrumentWithBias, InstrumentQuote, EconomicEvent, TrackRecordStats, BiasOutcome, LiveArticle } from "@/types";
 import { getInstrumentSentiment } from "./sentiment";
 
 export async function getInstruments(): Promise<Instrument[]> {
@@ -359,4 +359,61 @@ export async function getTrackRecordStats(): Promise<TrackRecordStats> {
       price_change_pct: r.price_change_pct ? Number(r.price_change_pct) : null,
     })) as BiasOutcome[],
   };
+}
+
+export async function getLiveFeedArticles(instrument?: string): Promise<LiveArticle[]> {
+  const sql = getDb();
+
+  if (instrument) {
+    const rows = await sql`
+      SELECT a.id, a.title, a.source, a.summary, a.url, a.channel_posted_at,
+             td.source_tier,
+             COALESCE(
+               (SELECT json_agg(json_build_object(
+                 'code', aa.instrument,
+                 'direction', aa.impact_direction,
+                 'confidence', aa.confidence
+               )) FROM article_analyses aa WHERE aa.article_id = a.id),
+               '[]'::json
+             ) as instruments
+      FROM articles a
+      LEFT JOIN telegram_drafts td ON td.article_id = a.id
+      WHERE a.posted_to_channel = TRUE
+        AND a.channel_posted_at > NOW() - INTERVAL '24 hours'
+        AND EXISTS (
+          SELECT 1 FROM article_instruments ai
+          WHERE ai.article_id = a.id AND ai.instrument = ${instrument}
+        )
+      ORDER BY a.channel_posted_at DESC
+      LIMIT 50
+    `;
+    return rows as LiveArticle[];
+  }
+
+  const rows = await sql`
+    SELECT a.id, a.title, a.source, a.summary, a.url, a.channel_posted_at,
+           td.source_tier,
+           COALESCE(
+             (SELECT json_agg(json_build_object(
+               'code', aa.instrument,
+               'direction', aa.impact_direction,
+               'confidence', aa.confidence
+             )) FROM article_analyses aa WHERE aa.article_id = a.id),
+             '[]'::json
+           ) as instruments
+    FROM articles a
+    LEFT JOIN telegram_drafts td ON td.article_id = a.id
+    WHERE a.posted_to_channel = TRUE
+      AND a.channel_posted_at > NOW() - INTERVAL '24 hours'
+    ORDER BY a.channel_posted_at DESC
+    LIMIT 50
+  `;
+  return rows as LiveArticle[];
+}
+
+export async function getPollerHealth(): Promise<{ last_run: string; articles_found: number } | null> {
+  const sql = getDb();
+  const rows = await sql`SELECT last_run, articles_found FROM poller_heartbeat WHERE id = 1`;
+  if (rows.length === 0) return null;
+  return { last_run: rows[0].last_run as string, articles_found: Number(rows[0].articles_found) };
 }
