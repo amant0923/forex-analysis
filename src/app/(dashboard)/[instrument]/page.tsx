@@ -12,6 +12,7 @@ import { InstrumentIcon } from "@/components/instrument-icon";
 import { BiasIndicator } from "@/components/bias-indicator";
 import { SentimentGauge } from "@/components/sentiment-gauge";
 import { TradingViewWidget } from "@/components/tradingview-widget";
+import { LiveFeedSection } from "@/components/live-feed-section";
 import { ArrowLeft, ExternalLink, Clock, AlertCircle, Newspaper } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -104,6 +105,8 @@ export default async function InstrumentPage({ params, searchParams }: PageProps
       <div className="mb-6">
         <TradingViewWidget instrument={inst.code} height={500} />
       </div>
+
+      <LiveFeedSection instrument={inst.code} />
 
       {/* Timeframe tabs */}
       <div className="flex items-center gap-0 border-b border-white/10 mb-6 sm:mb-8 overflow-x-auto">
