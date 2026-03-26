@@ -14,13 +14,17 @@ URGENCY_KEYWORDS = [
 ]
 
 NOISE_PATTERNS = [
+    # Listicles and previews
     r"\d+ things to watch",
     r"\d+ stocks to",
     r"\d+ reasons",
     r"what to expect",
     r"what to watch",
-    r"analyst says",
-    r"analysts say",
+    r"week ahead",
+    r"weekly forecast",
+    r"daily forecast",
+    r"weekly outlook",
+    r"daily outlook",
     r"preview:",
     r"opinion:",
     r"editorial:",
@@ -29,6 +33,41 @@ NOISE_PATTERNS = [
     r"webinar",
     r"subscribe to",
     r"sign up for",
+    # Forex commentary garbage — price descriptions, not news
+    r"edges (up|down|higher|lower)",
+    r"remains (firm|steady|stable|subdued|flat|weak|soft)",
+    r"holds (steady|firm|near|above|below)",
+    r"trades (near|around|flat|sideways)",
+    r"hovers (near|around|above|below)",
+    r"drifts (lower|higher|below|above)",
+    r"hangs near",
+    r"stays (near|above|below)",
+    r"little changed",
+    r"moves little",
+    r"treads water",
+    r"range.?bound",
+    r"price forecast[: ]",
+    r"price prediction",
+    r"technical analysis[: ]",
+    r"elliott wave",
+    r"fibonacci",
+    r"support and resistance",
+    r"key levels",
+    # Analyst opinions, not news
+    r"analyst says",
+    r"analysts say",
+    r"analysts expect",
+    r"according to analysts",
+    r"outlook[: ]",
+    r"forecast[: ].*\d+\.\d+",
+    r"\u2013 (ubs|rabobank|ing|hsbc|citi|barclays|jpmorgan|socgen|commerzbank|mufg)",
+    r"– (ubs|rabobank|ing|hsbc|citi|barclays|jpmorgan|socgen|commerzbank|mufg)",
+    # Scheduled data with no surprise (just meeting expectations)
+    r"meets expectations",
+    r"in line with",
+    r"as expected",
+    r"registered at.*above expectations",
+    r"came in at.*below expectations",
 ]
 
 
@@ -64,8 +103,8 @@ def score_article(
     content_lower = (content or "").lower()
     text = f"{title_lower} {content_lower}"
 
-    # 1. Source tier score
-    tier_scores = {0: 40, 1: 30, 2: 20, 3: 15}
+    # 1. Source tier score (Tier 3 gets less — they need urgency or strong thematic match)
+    tier_scores = {0: 40, 1: 30, 2: 20, 3: 10}
     tier_score = tier_scores.get(source_tier, 10)
     score += tier_score
     reasons.append(f"tier {source_tier}: +{tier_score}")

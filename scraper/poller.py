@@ -125,13 +125,14 @@ def run():
                 if bias:
                     biases[inst] = {"direction": bias["direction"], "confidence": bias["confidence"]}
 
-            # Format the message
+            # Format the message (include article content for context)
             message = format_breaking_news(
                 title=article["title"],
                 source=article.get("source_name", article.get("source", "")),
                 biases=biases,
                 article_url=article["url"],
                 is_urgent=score_result["is_urgent"],
+                content=article.get("content", ""),
             )
 
             # Get article image

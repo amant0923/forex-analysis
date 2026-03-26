@@ -49,12 +49,38 @@ def _format_footer(primary_instrument: str | None = None) -> str:
     )
 
 
+def _extract_summary(content: str, max_sentences: int = 3) -> str:
+    """Extract the first 2-3 meaningful sentences from article content."""
+    if not content or len(content.strip()) < 20:
+        return ""
+    # Clean up the content
+    text = content.strip()
+    # Split into sentences (simple approach)
+    import re
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    # Filter out very short fragments and navigation text
+    good_sentences = []
+    for s in sentences:
+        s = s.strip()
+        if len(s) < 15:
+            continue
+        # Skip navigation/boilerplate
+        if any(skip in s.lower() for skip in ["subscribe", "sign up", "click here",
+               "read more", "share this", "follow us", "cookie", "privacy policy"]):
+            continue
+        good_sentences.append(s)
+        if len(good_sentences) >= max_sentences:
+            break
+    return " ".join(good_sentences)
+
+
 def format_breaking_news(
     title: str,
     source: str,
     biases: dict,
     article_url: str,
     is_urgent: bool = True,
+    content: str = "",
 ) -> str:
     """Format a breaking news post for the channel."""
     prefix = "\U0001F534 BREAKING: " if is_urgent else "\U0001F4F0 "
@@ -67,6 +93,12 @@ def format_breaking_news(
         f"{prefix}{safe_title}",
     ]
 
+    # Add article summary (2-3 sentences of context)
+    summary = _extract_summary(content)
+    if summary:
+        parts.append("")
+        parts.append(_html_escape(summary))
+
     impact = _format_impact_section(biases)
     if impact:
         parts.append(impact)
@@ -76,11 +108,16 @@ def format_breaking_news(
 
     message = "\n".join(parts)
 
-    # Truncate title if message exceeds Telegram limit
+    # Truncate if exceeds Telegram limit
     if len(message) > 4096:
+        # Shorten summary first
+        if summary:
+            short_summary = _extract_summary(content, max_sentences=1)
+            return format_breaking_news(title, source, biases, article_url, is_urgent, "")
+        # Then truncate title
         excess = len(message) - 4000
         truncated_title = title[:len(title) - excess] + "..."
-        return format_breaking_news(truncated_title, source, biases, article_url, is_urgent)
+        return format_breaking_news(truncated_title, source, biases, article_url, is_urgent, "")
 
     return message
 
