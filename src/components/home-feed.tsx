@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { cn, timeAgo } from "@/lib/utils";
 import { InstrumentIcon } from "@/components/instrument-icon";
@@ -17,16 +17,11 @@ import {
   ChevronRight,
   BarChart3,
 } from "lucide-react";
-import type { InstrumentWithBias, JournalStats, Article } from "@/types";
-
-type RecentArticle = Article & {
-  instruments: string[];
-  analyses: { instrument: string; impact_direction: string; confidence: string }[];
-};
+import type { InstrumentWithBias, JournalStats, LiveArticle } from "@/types";
 
 interface HomeFeedProps {
   instruments: InstrumentWithBias[];
-  articles: RecentArticle[];
+  initialArticles: LiveArticle[];
 }
 
 function formatDollars(value: number): string {
@@ -50,29 +45,51 @@ function getDominantBias(biases: Record<string, any>): "bullish" | "bearish" | "
 }
 
 
-export function HomeFeed({ instruments, articles }: HomeFeedProps) {
+export function HomeFeed({ instruments, initialArticles }: HomeFeedProps) {
   const [stats, setStats] = useState<JournalStats | null>(null);
+  const [articles, setArticles] = useState<LiveArticle[]>(initialArticles);
   const [filter, setFilter] = useState<string>("all");
+
+  const fetchLiveArticles = useCallback(async () => {
+    try {
+      const res = await fetch("/api/live-feed");
+      if (res.ok) {
+        const data = await res.json();
+        setArticles(data.articles);
+      }
+    } catch {
+      // Keep showing stale data
+    }
+  }, []);
 
   useEffect(() => {
     fetch("/api/trades")
       .then((r) => r.json())
       .then((data) => setStats(data.stats))
       .catch(() => {});
-  }, []);
+    const interval = setInterval(fetchLiveArticles, 60_000);
+    return () => clearInterval(interval);
+  }, [fetchLiveArticles]);
 
   const filteredArticles =
     filter === "all"
       ? articles
-      : articles.filter((a) => a.instruments.includes(filter));
+      : articles.filter((a) => a.instruments.some((inst) => inst.code === filter));
 
   return (
     <div className="min-w-0 overflow-hidden">
       {/* Page title */}
       <div className="mb-4 sm:mb-6">
-        <h1 className="font-serif text-xl sm:text-2xl font-bold text-white">Dashboard</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="font-serif text-xl sm:text-2xl font-bold text-white">Dashboard</h1>
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+          </span>
+          <span className="font-serif text-xs font-semibold uppercase tracking-wider text-white/60">Live</span>
+        </div>
         <p className="mt-1 text-xs sm:text-sm text-white/40">
-          Latest news, market bias & journal overview
+          Breaking news, market bias & journal overview
         </p>
       </div>
 
@@ -255,18 +272,18 @@ function JournalStat({
   );
 }
 
-function ArticleCard({ article }: { article: RecentArticle }) {
-  const mainAnalysis = article.analyses?.[0];
+function ArticleCard({ article }: { article: LiveArticle }) {
+  const mainInstrument = article.instruments?.[0];
   const DirectionIcon =
-    mainAnalysis?.impact_direction === "bullish"
+    mainInstrument?.direction === "bullish"
       ? TrendingUp
-      : mainAnalysis?.impact_direction === "bearish"
+      : mainInstrument?.direction === "bearish"
         ? TrendingDown
         : Minus;
   const dirColor =
-    mainAnalysis?.impact_direction === "bullish"
+    mainInstrument?.direction === "bullish"
       ? "text-green-400"
-      : mainAnalysis?.impact_direction === "bearish"
+      : mainInstrument?.direction === "bearish"
         ? "text-red-400"
         : "text-white/30";
 
@@ -278,12 +295,19 @@ function ArticleCard({ article }: { article: RecentArticle }) {
       {/* Top row: instruments + time */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
-          {article.instruments.slice(0, 4).map((code) => (
+          {article.instruments.slice(0, 4).map((inst) => (
             <span
-              key={code}
-              className="text-[10px] font-medium bg-white/[0.08] text-white/50 px-1.5 py-0.5 rounded"
+              key={inst.code}
+              className={cn(
+                "text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/[0.08]",
+                inst.direction === "bullish"
+                  ? "text-green-400"
+                  : inst.direction === "bearish"
+                    ? "text-red-400"
+                    : "text-white/50"
+              )}
             >
-              {code}
+              {inst.code}
             </span>
           ))}
           {article.instruments.length > 4 && (
@@ -294,7 +318,7 @@ function ArticleCard({ article }: { article: RecentArticle }) {
         </div>
         <span className="flex items-center gap-1 text-[10px] text-white/30 shrink-0">
           <Clock className="h-3 w-3" />
-          {timeAgo(article.published_at)}
+          {timeAgo(article.channel_posted_at)}
         </span>
       </div>
 
@@ -313,47 +337,47 @@ function ArticleCard({ article }: { article: RecentArticle }) {
       {/* Bottom row: analysis badges + source */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {mainAnalysis && (
+          {mainInstrument && mainInstrument.direction && (
             <div className="flex items-center gap-1">
               <DirectionIcon className={cn("h-3.5 w-3.5", dirColor)} />
               <span className={cn("text-[11px] font-semibold capitalize", dirColor)}>
-                {mainAnalysis.impact_direction}
+                {mainInstrument.direction}
               </span>
             </div>
           )}
-          {mainAnalysis?.confidence && (
+          {mainInstrument?.confidence && (
             <span
               className={cn(
                 "text-[10px] font-medium px-1.5 py-0.5 rounded",
-                mainAnalysis.confidence === "high"
+                mainInstrument.confidence === "high"
                   ? "bg-green-500/15 text-green-400"
-                  : mainAnalysis.confidence === "medium"
+                  : mainInstrument.confidence === "medium"
                     ? "bg-yellow-500/15 text-yellow-400"
                     : "bg-white/[0.04] text-white/40"
               )}
             >
-              {mainAnalysis.confidence.charAt(0).toUpperCase() + mainAnalysis.confidence.slice(1)}
+              {mainInstrument.confidence.charAt(0).toUpperCase() + mainInstrument.confidence.slice(1)}
             </span>
           )}
           {/* Show per-instrument impacts if multiple */}
-          {article.analyses.length > 1 && (
+          {article.instruments.length > 1 && (
             <div className="flex items-center gap-1 ml-1">
-              {article.analyses.slice(0, 3).map((a) => (
+              {article.instruments.slice(1, 4).map((inst) => (
                 <span
-                  key={a.instrument}
+                  key={inst.code}
                   className={cn(
                     "text-[9px] font-medium px-1 py-0.5 rounded flex items-center gap-0.5",
-                    a.impact_direction === "bullish"
+                    inst.direction === "bullish"
                       ? "text-green-400/70"
-                      : a.impact_direction === "bearish"
+                      : inst.direction === "bearish"
                         ? "text-red-400/70"
                         : "text-white/30"
                   )}
                 >
-                  {a.instrument}
-                  {a.impact_direction === "bullish" ? (
+                  {inst.code}
+                  {inst.direction === "bullish" ? (
                     <TrendingUp className="h-2.5 w-2.5" />
-                  ) : a.impact_direction === "bearish" ? (
+                  ) : inst.direction === "bearish" ? (
                     <TrendingDown className="h-2.5 w-2.5" />
                   ) : null}
                 </span>
