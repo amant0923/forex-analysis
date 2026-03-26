@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, timeAgo } from "@/lib/utils";
 import { InstrumentIcon } from "@/components/instrument-icon";
 import { BiasDirectionDot } from "@/components/bias-indicator";
 import { SentimentGauge } from "@/components/sentiment-gauge";
@@ -49,16 +49,6 @@ function getDominantBias(biases: Record<string, any>): "bullish" | "bearish" | "
   return "neutral";
 }
 
-function timeAgo(dateStr: string | null): string {
-  if (!dateStr) return "";
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return `${days}d ago`;
-}
 
 export function HomeFeed({ instruments, articles }: HomeFeedProps) {
   const [stats, setStats] = useState<JournalStats | null>(null);

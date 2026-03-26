@@ -321,3 +321,18 @@ export interface TraderInsightsResponse {
   insights: TraderInsight[] | null;
   generated_at: string | null;
 }
+
+export interface LiveArticle {
+  id: number;
+  title: string;
+  source: string | null;
+  source_tier: number | null;
+  summary: string | null;
+  url: string;
+  channel_posted_at: string;
+  instruments: {
+    code: string;
+    direction: string | null;
+    confidence: string | null;
+  }[];
+}
