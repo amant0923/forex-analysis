@@ -148,10 +148,10 @@ export function LiveFeedSection({ instrument }: LiveFeedSectionProps) {
                     </div>
                   )}
 
-                  {/* Summary */}
-                  {article.summary && (
+                  {/* Summary or content snippet */}
+                  {(article.summary || article.content) && (
                     <p className="text-xs text-white/40 leading-relaxed line-clamp-2">
-                      {article.summary}
+                      {article.summary || article.content}
                     </p>
                   )}
                 </Link>

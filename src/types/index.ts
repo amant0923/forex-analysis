@@ -328,6 +328,7 @@ export interface LiveArticle {
   source: string | null;
   source_tier: number | null;
   summary: string | null;
+  content: string | null;
   url: string;
   channel_posted_at: string;
   instruments: {

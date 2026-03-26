@@ -366,14 +366,17 @@ export async function getLiveFeedArticles(instrument?: string): Promise<LiveArti
 
   if (instrument) {
     const rows = await sql`
-      SELECT a.id, a.title, a.source, a.summary, a.url, a.channel_posted_at,
+      SELECT a.id, a.title, a.source, a.summary, a.content, a.url, a.channel_posted_at,
              td.source_tier,
              COALESCE(
                (SELECT json_agg(json_build_object(
-                 'code', aa.instrument,
+                 'code', ai2.instrument,
                  'direction', aa.impact_direction,
                  'confidence', aa.confidence
-               )) FROM article_analyses aa WHERE aa.article_id = a.id),
+               ))
+               FROM article_instruments ai2
+               LEFT JOIN article_analyses aa ON aa.article_id = ai2.article_id AND aa.instrument = ai2.instrument
+               WHERE ai2.article_id = a.id),
                '[]'::json
              ) as instruments
       FROM articles a
@@ -395,10 +398,13 @@ export async function getLiveFeedArticles(instrument?: string): Promise<LiveArti
            td.source_tier,
            COALESCE(
              (SELECT json_agg(json_build_object(
-               'code', aa.instrument,
+               'code', ai2.instrument,
                'direction', aa.impact_direction,
                'confidence', aa.confidence
-             )) FROM article_analyses aa WHERE aa.article_id = a.id),
+             ))
+             FROM article_instruments ai2
+             LEFT JOIN article_analyses aa ON aa.article_id = ai2.article_id AND aa.instrument = ai2.instrument
+             WHERE ai2.article_id = a.id),
              '[]'::json
            ) as instruments
     FROM articles a

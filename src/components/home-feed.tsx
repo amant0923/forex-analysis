@@ -327,10 +327,10 @@ function ArticleCard({ article }: { article: LiveArticle }) {
         {article.title}
       </h3>
 
-      {/* Summary */}
-      {article.summary && (
+      {/* Summary or content snippet */}
+      {(article.summary || article.content) && (
         <p className="text-xs text-white/40 leading-relaxed line-clamp-2 mb-2.5 break-words overflow-hidden">
-          {article.summary}
+          {article.summary || article.content}
         </p>
       )}
 
