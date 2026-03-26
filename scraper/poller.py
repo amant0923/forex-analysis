@@ -6,6 +6,13 @@ scores them, deduplicates, and either auto-posts or queues for approval.
 
 import os
 import sys
+from pathlib import Path
+
+# Ensure project root is on Python path (needed when called directly by cron)
+_project_root = str(Path(__file__).resolve().parent.parent)
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
+
 from scraper.database import Database
 from scraper.sources import SOURCES
 from scraper.rss_scraper import RssScraper
@@ -232,5 +239,5 @@ def run():
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
     run()
