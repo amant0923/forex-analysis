@@ -23,6 +23,7 @@ from scraper.image_scraper import extract_og_image
 from scraper.channel_poster import format_breaking_news, send_channel_message
 from scraper.approval_flow import send_draft_for_review, process_auto_posts
 from scraper.heartbeat import write_heartbeat
+from scraper.content_rewriter import rewrite_for_channel
 
 
 def filter_new_articles(articles: list[dict], db: Database) -> list[dict]:
@@ -132,14 +133,24 @@ def run():
                 if bias:
                     biases[inst] = {"direction": bias["direction"], "confidence": bias["confidence"]}
 
-            # Format the message (include article content for context)
+            # Rewrite content with Gemini Flash for Kobeissi-style summary
+            article_content = article.get("content", "")
+            rewritten = rewrite_for_channel(article["title"], article_content)
+
+            # If Gemini says SKIP (no meaningful data), skip the article
+            if rewritten is None and not score_result["is_urgent"]:
+                # Only skip non-urgent articles — urgent ones still post with headline
+                pass  # Continue to format with fallback
+
+            # Format the message
             message = format_breaking_news(
                 title=article["title"],
                 source=article.get("source_name", article.get("source", "")),
                 biases=biases,
                 article_url=article["url"],
                 is_urgent=score_result["is_urgent"],
-                content=article.get("content", ""),
+                content=article_content,
+                rewritten_summary=rewritten,
             )
 
             # Get article image
