@@ -64,11 +64,16 @@ def _extract_summary(content: str, max_sentences: int = 3) -> str:
         s = s.strip()
         if len(s) < 15:
             continue
-        # Skip navigation/boilerplate
+        # Skip navigation/boilerplate/paywalls
         if any(skip in s.lower() for skip in ["subscribe", "sign up", "click here",
                "read more", "share this", "follow us", "cookie", "privacy policy",
                "browser settings", "consent", "we use cookies", "accept all",
-               "third party", "disable these", "javascript", "enable javascript"]):
+               "third party", "disable these", "javascript", "enable javascript",
+               "per month", "free trial", "cancel anytime", "digital access",
+               "complete access", "start your", "unlimited access", "full access",
+               "premium content", "subscriber", "membership", "already a member",
+               "log in to read", "register for free", "create an account",
+               "continue reading", "unlock this article", "paywall"]):
             continue
         good_sentences.append(s)
         if len(good_sentences) >= max_sentences:

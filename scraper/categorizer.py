@@ -93,8 +93,8 @@ INSTRUMENT_KEYWORDS: dict[str, list[str]] = {
         "bitcoin mining", "bitcoin regulation",
     ],
     "ETHUSD": [
-        "ethusd", "eth/usd", "ethereum", "eth price", "ether",
-        "ethereum etf", "ethereum upgrade", "defi",
+        "ethusd", "eth/usd", "ethereum", "eth price",
+        "ethereum etf", "ethereum upgrade", "defi protocol", "defi market",
         "ethereum staking", "eth 2.0", "ethereum network",
     ],
     "USOIL": [
@@ -180,19 +180,21 @@ THEMATIC_KEYWORDS: dict[str, list[str]] = {
 
 
 def categorize_article(title: str, content: str) -> list[str]:
+    import re
     text = f"{title} {content}".lower()
     matched = set()
 
-    # Direct instrument keyword matching
+    # Direct instrument keyword matching (word-boundary to avoid substring traps
+    # like "ether" in "whether", "defi" in "deficit", "oil" in "turmoil")
     for instrument, keywords in INSTRUMENT_KEYWORDS.items():
         for kw in keywords:
-            if kw in text:
+            if re.search(r'\b' + re.escape(kw) + r'\b', text):
                 matched.add(instrument)
                 break
 
     # Thematic keyword matching
     for theme, instruments in THEMATIC_KEYWORDS.items():
-        if theme in text:
+        if re.search(r'\b' + re.escape(theme) + r'\b', text):
             matched.update(instruments)
 
     return list(matched)

@@ -88,7 +88,17 @@ class RssScraper:
 
             text = " ".join(p.get_text(strip=True) for p in paragraphs if p.get_text(strip=True))
 
-            if len(text) > 200:
+            # Detect paywall-only content (e.g. FT subscription banner)
+            paywall_markers = ["per month", "cancel anytime", "digital access",
+                               "free trial", "complete access", "unlimited access",
+                               "premium content", "already a member", "log in to read",
+                               "unlock this article"]
+            text_lower = text.lower()
+            paywall_hits = sum(1 for m in paywall_markers if m in text_lower)
+            if paywall_hits >= 2:
+                # Content is mostly paywall text, fall back to RSS summary
+                pass
+            elif len(text) > 200:
                 return text[:MAX_CONTENT_LENGTH]
         except Exception:
             pass
