@@ -1,6 +1,6 @@
 """
 Headline deduplication using token overlap.
-Threshold: 90%+ token similarity = duplicate.
+Threshold: 75%+ token similarity = duplicate.
 """
 
 import re
@@ -19,9 +19,31 @@ STOP_WORDS = {
     "said", "according", "report", "reports", "breaking", "update",
 }
 
+# Google News RSS appends " - Source Name" to headlines.
+# This inflates token count and causes near-identical stories from different
+# outlets to fall below the dedup threshold.
+_SOURCE_SUFFIX = re.compile(
+    r"\s*[-–—|]\s*"
+    r"(?:Reuters|AP\s?News|The\s+Straits\s+Times|Yahoo\s+News\s+\w*|Bloomberg"
+    r"|CNBC|Financial\s+Times|Wall\s+Street\s+Journal|WSJ|Al\s+Jazeera"
+    r"|Axios|ForexLive|FXStreet|Kitco|OilPrice|CoinDesk|The\s+Block"
+    r"|vijesti\.me|BBC|CNN|The\s+Guardian|Sky\s+News|Fox\s+News"
+    r"|The\s+Independent|The\s+Telegraph|Politico|The\s+Hill"
+    r"|[A-Z][\w\s]{2,30})"
+    r"\s*$",
+    re.IGNORECASE,
+)
+
+
+def _strip_source_suffix(headline: str) -> str:
+    """Remove Google News source attribution from end of headline."""
+    return _SOURCE_SUFFIX.sub("", headline).strip()
+
 
 def tokenize(headline: str) -> set[str]:
     """Extract meaningful tokens from a headline."""
+    # Strip trailing source attribution (e.g. " - Reuters", " - The Straits Times")
+    headline = _strip_source_suffix(headline)
     # Remove punctuation, lowercase, split
     cleaned = re.sub(r"[^\w\s]", "", headline.lower())
     words = cleaned.split()
@@ -43,11 +65,11 @@ def token_overlap(tokens_a: set[str], tokens_b: set[str]) -> float:
 def is_duplicate_headline(
     new_headline: str,
     existing_headlines: list[str],
-    threshold: float = 0.90,
+    threshold: float = 0.75,
 ) -> bool:
     """
     Check if a headline is a duplicate of any existing headlines.
-    Uses 90% token overlap threshold.
+    Uses 75% token overlap threshold.
     """
     new_tokens = tokenize(new_headline)
     if not new_tokens:
